@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import styles from './NowPlaying.module.css';
 
 export default function NowPlaying() {
@@ -10,14 +11,14 @@ export default function NowPlaying() {
           </svg>
         </div>
         <div className={styles.trackPlayAuthor}>
-          <a className={styles.trackPlayAuthorLink} href="">
+          <Link className={styles.trackPlayAuthorLink} href="">
             Ты та...
-          </a>
+          </Link>
         </div>
         <div className={styles.trackPlayAlbum}>
-          <a className={styles.trackPlayAlbumLink} href="">
+          <Link className={styles.trackPlayAlbumLink} href="">
             Баста
-          </a>
+          </Link>
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './Header.module.css';
-import classNames from 'classnames';
 
 export default function Header() {
   return (
@@ -23,19 +23,19 @@ export default function Header() {
       <div className={styles.navMenu}>
         <ul className={styles.menuList}>
           <li className={styles.menuItem}>
-            <a href="#" className={styles.menuLink}>
+            <Link href="/" className={styles.menuLink}>
               Главное
-            </a>
+            </Link>
           </li>
           <li className={styles.menuItem}>
-            <a href="#" className={styles.menuLink}>
+            <Link href="/playlist" className={styles.menuLink}>
               Мой плейлист
-            </a>
+            </Link>
           </li>
           <li className={styles.menuItem}>
-            <a href="/auth/signin" className={styles.menuLink}>
+            <Link href="/auth/signin" className={styles.menuLink}>
               Войти
-            </a>
+            </Link>
           </li>
         </ul>
       </div>

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './SidebarPlaylistItem.module.css';
 
 interface SidebarPlaylistItemProps {
@@ -14,7 +15,7 @@ export default function SidebarPlaylistItem({
 }: SidebarPlaylistItemProps) {
   return (
     <div className={styles.sidebarItem}>
-      <a className={styles.sidebarLink} href={href}>
+      <Link className={styles.sidebarLink} href={href}>
         <Image
           className={styles.sidebarImg}
           src={src}
@@ -24,7 +25,7 @@ export default function SidebarPlaylistItem({
           style={{ objectFit: 'cover', width: 'auto', height: 'auto' }}
           sizes="(max-width: 768px) 100vw, 250px"
         />
-      </a>
+      </Link>
     </div>
   );
 }
