@@ -1,3 +1,6 @@
+import styles from './TrackItem.module.css';
+import classNames from 'classnames';
+
 interface TrackItemProps {
   title: string;
   titleSpan?: string;
@@ -18,36 +21,38 @@ export default function TrackItem({
   duration,
 }: TrackItemProps) {
   return (
-    <div className={'playlist__item'}>
-      <div className={'playlist__track'}>
-        <div className={'track__title'}>
-          <div className={'track__titleImage'}>
-            <svg className={'track__titleSvg'}>
+    <div className={styles.playlistItem}>
+      <div className={styles.playlistTrack}>
+        <div className={styles.trackTitle}>
+          <div className={styles.trackTitleImage}>
+            <svg className={styles.trackTitleSvg}>
               <use href="/img/icon/sprite.svg#icon-note"></use>
             </svg>
           </div>
-          <div className="track__title-text">
-            <a className={'track__titleLink'} href="">
+          <div className={styles.trackTitleText}>
+            <a className={styles.trackTitleLink} href="">
               {title}
-              {titleSpan && <span className={'track__titleSpan'}>{titleSpan}</span>}
+              {titleSpan && (
+                <span className={styles.trackTitleSpan}>{titleSpan}</span>
+              )}
             </a>
           </div>
         </div>
-        <div className={'track__author'}>
-          <a className={'track__authorLink'} href={authorLink}>
+        <div className={styles.trackAuthor}>
+          <a className={styles.trackAuthorLink} href={authorLink}>
             {author}
           </a>
         </div>
-        <div className={'track__album'}>
-          <a className={'track__albumLink'} href={albumLink}>
+        <div className={styles.trackAlbum}>
+          <a className={styles.trackAlbumLink} href={albumLink}>
             {album}
           </a>
         </div>
-        <div className="track__time">
-          <svg className={'track__timeSvg'}>
+        <div className={styles.trackTime}>
+          <svg className={styles.trackTimeSvg}>
             <use href="/img/icon/sprite.svg#icon-like"></use>
           </svg>
-          <span className={'track__timeText'}>{duration}</span>
+          <span className={styles.trackTimeText}>{duration}</span>
         </div>
       </div>
     </div>

@@ -1,0 +1,13 @@
+.footer {
+  padding: 20px 0;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 80px; /* Отступ для фиксированного плеера */
+}
+
+@media (max-width: 768px) {
+  .footer {
+    margin-bottom: 100px;
+  }
+}

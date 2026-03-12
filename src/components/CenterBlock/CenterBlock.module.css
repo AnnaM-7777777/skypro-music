@@ -1,0 +1,24 @@
+.centerblock {
+  flex-grow: 1;
+  padding: 20px 0;
+}
+
+.centerblockH2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.centerblockContent {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .centerblockH2 {
+    font-size: 20px;
+  }
+}

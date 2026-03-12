@@ -1,0 +1,60 @@
+.mainSidebar {
+  width: 300px;
+  flex-shrink: 0;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-left: 20px;
+}
+
+.sidebarPersonal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+}
+
+.sidebarPersonalName {
+  font-weight: 600;
+  color: #333;
+}
+
+.sidebarIcon {
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.sidebarIcon:hover {
+  opacity: 0.7;
+}
+
+.sidebarIcon svg {
+  width: 24px;
+  height: 24px;
+  fill: #666;
+}
+
+.sidebarBlock {
+  overflow-y: auto;
+  max-height: calc(100vh - 300px);
+}
+
+.sidebarList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+@media (max-width: 1024px) {
+  .mainSidebar {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 20px;
+  }
+
+  .sidebarBlock {
+    max-height: none;
+  }
+}

@@ -1,4 +1,4 @@
-import './page.css';
+import styles from './page.module.css';
 import Header from '@/components/Header/Header';
 import CenterBlock from '@/components/CenterBlock/CenterBlock';
 import Sidebar from '@/components/Sidebar/Sidebar';
@@ -7,9 +7,9 @@ import Footer from '@/components/Footer/Footer';
 
 export default function Home() {
   return (
-    <div className={'wrapper'}>
-      <div className={'container'}>
-        <main className={'main'}>
+    <div className={styles.wrapper}>
+      <div className={styles.container}>
+        <main className={styles.main}>
           <Header />
           <CenterBlock />
           <Sidebar />

@@ -1,0 +1,27 @@
+.sidebarItem {
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sidebarItem:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sidebarLink {
+  display: block;
+}
+
+.sidebarImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+@media (max-width: 1024px) {
+  .sidebarItem {
+    max-width: 200px;
+  }
+}

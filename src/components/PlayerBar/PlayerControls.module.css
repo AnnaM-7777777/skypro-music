@@ -1,0 +1,57 @@
+.playerControls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.playerBtnPrev,
+.playerBtnNext,
+.playerBtnPlay,
+.playerBtnRepeat,
+.playerBtnShuffle {
+  cursor: pointer;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.playerBtnPrev:hover,
+.playerBtnNext:hover,
+.playerBtnPlay:hover,
+.playerBtnRepeat:hover,
+.playerBtnShuffle:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.playerBtnPrevSvg,
+.playerBtnNextSvg,
+.playerBtnPlaySvg,
+.playerBtnRepeatSvg,
+.playerBtnShuffleSvg {
+  width: 24px;
+  height: 24px;
+  fill: #fff;
+}
+
+.playerBtnPlaySvg {
+  width: 32px;
+  height: 32px;
+}
+
+.btnIcon {
+  opacity: 0.6;
+}
+
+.btnIcon:hover {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .playerControls {
+    justify-content: center;
+  }
+
+  .playerBtnRepeat,
+  .playerBtnShuffle {
+    display: none;
+  }
+}

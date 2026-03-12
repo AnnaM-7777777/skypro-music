@@ -1,36 +1,39 @@
 import Image from 'next/image';
+import styles from './Header.module.css';
+import classNames from 'classnames';
 
 export default function Header() {
   return (
-    <nav className={'main__nav'}>
-      <div className={'nav__logo'}>
+    <nav className={styles.mainNav}>
+      <div className={styles.navLogo}>
         <Image
           width={250}
           height={170}
-          className={'logo__image'}
+          className={styles.logoImage}
           src="/img/logo.png"
-          alt={'logo'}
+          alt="logo"
+          priority
         />
       </div>
-      <div className={'nav__burger'}>
-        <span className={'burger__line'}></span>
-        <span className={'burger__line'}></span>
-        <span className={'burger__line'}></span>
+      <div className={styles.navBurger}>
+        <span className={styles.burgerLine}></span>
+        <span className={styles.burgerLine}></span>
+        <span className={styles.burgerLine}></span>
       </div>
-      <div className={'nav__menu'}>
-        <ul className={'menu__list'}>
-          <li className={'menu__item'}>
-            <a href="#" className={'menu__link'}>
+      <div className={styles.navMenu}>
+        <ul className={styles.menuList}>
+          <li className={styles.menuItem}>
+            <a href="#" className={styles.menuLink}>
               Главное
             </a>
           </li>
-          <li className={'menu__item'}>
-            <a href="#" className={'menu__link'}>
+          <li className={styles.menuItem}>
+            <a href="#" className={styles.menuLink}>
               Мой плейлист
             </a>
           </li>
-          <li className={'menu__item'}>
-            <a href="/auth/signin" className={'menu__link'}>
+          <li className={styles.menuItem}>
+            <a href="/auth/signin" className={styles.menuLink}>
               Войти
             </a>
           </li>

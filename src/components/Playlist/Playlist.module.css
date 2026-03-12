@@ -1,0 +1,10 @@
+.contentPlaylist {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .contentPlaylist {
+    gap: 10px;
+  }
+}

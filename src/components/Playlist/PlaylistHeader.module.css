@@ -1,0 +1,49 @@
+.contentTitle {
+  display: grid;
+  grid-template-columns: 4fr 3fr 3fr 1fr;
+  gap: 15px;
+  padding: 15px 10px;
+  border-bottom: 2px solid #e0e0e0;
+  font-weight: 600;
+  color: #666;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.playlistTitleCol {
+  padding: 0 10px;
+}
+
+.col01 {
+  justify-self: start;
+}
+
+.col02 {
+  justify-self: start;
+}
+
+.col03 {
+  justify-self: start;
+}
+
+.col04 {
+  justify-self: end;
+}
+
+.playlistTitleSvg {
+  width: 20px;
+  height: 20px;
+  fill: #666;
+}
+
+@media (max-width: 768px) {
+  .contentTitle {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .col03,
+  .col04 {
+    display: none;
+  }
+}

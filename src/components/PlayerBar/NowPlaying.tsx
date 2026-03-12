@@ -1,32 +1,34 @@
+import styles from './NowPlaying.module.css';
+
 export default function NowPlaying() {
   return (
-    <div className={'player__trackPlay'}>
-      <div className={'trackPlay__contain'}>
-        <div className={'trackPlay__image'}>
-          <svg className={'trackPlay__svg'}>
+    <div className={styles.playerTrackPlay}>
+      <div className={styles.trackPlayContain}>
+        <div className={styles.trackPlayImage}>
+          <svg className={styles.trackPlaySvg}>
             <use href="/img/icon/sprite.svg#icon-note"></use>
           </svg>
         </div>
-        <div className={'trackPlay__author'}>
-          <a className={'trackPlay__authorLink'} href="">
+        <div className={styles.trackPlayAuthor}>
+          <a className={styles.trackPlayAuthorLink} href="">
             Ты та...
           </a>
         </div>
-        <div className={'trackPlay__album'}>
-          <a className={'trackPlay__albumLink'} href="">
+        <div className={styles.trackPlayAlbum}>
+          <a className={styles.trackPlayAlbumLink} href="">
             Баста
           </a>
         </div>
       </div>
 
-      <div className={'trackPlay__dislike'}>
-        <div className={'player__btnShuffle btnIcon'}>
-          <svg className={'trackPlay__likeSvg'}>
+      <div className={styles.trackPlayDislike}>
+        <div className={styles.playerBtnShuffle}>
+          <svg className={styles.trackPlayLikeSvg}>
             <use href="/img/icon/sprite.svg#icon-like"></use>
           </svg>
         </div>
-        <div className={'trackPlay__dislike btnIcon'}>
-          <svg className={'trackPlay__dislikeSvg'}>
+        <div className={styles.trackPlayDislike}>
+          <svg className={styles.trackPlayDislikeSvg}>
             <use href="/img/icon/sprite.svg#icon-dislike"></use>
           </svg>
         </div>

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import styles from './SidebarPlaylistItem.module.css';
 
 interface SidebarPlaylistItemProps {
   src: string;
@@ -12,10 +13,10 @@ export default function SidebarPlaylistItem({
   href = '#',
 }: SidebarPlaylistItemProps) {
   return (
-    <div className={'sidebar__item'}>
-      <a className={'sidebar__link'} href={href}>
+    <div className={styles.sidebarItem}>
+      <a className={styles.sidebarLink} href={href}>
         <Image
-          className={'sidebar__img'}
+          className={styles.sidebarImg}
           src={src}
           alt={alt}
           width={250}

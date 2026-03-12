@@ -1,0 +1,74 @@
+.mainNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.navLogo {
+  flex-shrink: 0;
+}
+
+.logoImage {
+  object-fit: contain;
+}
+
+.navBurger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.burgerLine {
+  width: 25px;
+  height: 3px;
+  background-color: #333;
+  border-radius: 2px;
+}
+
+.navMenu {
+  flex-grow: 1;
+}
+
+.menuList {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+  justify-content: flex-end;
+}
+
+.menuItem {
+  position: relative;
+}
+
+.menuLink {
+  padding: 8px 12px;
+  transition: color 0.3s ease;
+}
+
+.menuLink:hover {
+  color: #6c5ce7;
+}
+
+@media (max-width: 768px) {
+  .navBurger {
+    display: flex;
+  }
+
+  .navMenu {
+    display: none;
+  }
+
+  .menuList {
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+  }
+}

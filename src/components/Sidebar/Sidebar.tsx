@@ -1,18 +1,19 @@
 import SidebarPlaylistItem from './SidebarPlaylistItem';
+import styles from './Sidebar.module.css';
 
 export default function Sidebar() {
   return (
-    <div className={'main__sidebar'}>
-      <div className={'sidebar__personal'}>
-        <p className={'sidebar__personalName'}>Sergey.Ivanov</p>
-        <div className={'sidebar__icon'}>
+    <div className={styles.mainSidebar}>
+      <div className={styles.sidebarPersonal}>
+        <p className={styles.sidebarPersonalName}>Sergey.Ivanov</p>
+        <div className={styles.sidebarIcon}>
           <svg>
             <use href="/img/icon/sprite.svg#logout"></use>
           </svg>
         </div>
       </div>
-      <div className={'sidebar__block'}>
-        <div className={'sidebar__list'}>
+      <div className={styles.sidebarBlock}>
+        <div className={styles.sidebarList}>
           <SidebarPlaylistItem
             src="/img/playlist01.png"
             alt="day's playlist"

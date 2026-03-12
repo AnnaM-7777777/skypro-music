@@ -1,0 +1,53 @@
+.bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #1a1a1a;
+  padding: 10px 20px;
+  z-index: 1000;
+}
+
+.barContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.barPlayerProgress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: #333;
+  cursor: pointer;
+}
+
+.barPlayerProgress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30%;
+  height: 100%;
+  background-color: #6c5ce7;
+}
+
+.barPlayerBlock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+}
+
+@media (max-width: 768px) {
+  .bar {
+    padding: 10px;
+  }
+
+  .barPlayerBlock {
+    flex-direction: column;
+    gap: 15px;
+  }
+}

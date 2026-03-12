@@ -1,0 +1,91 @@
+.playerTrackPlay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+  margin: 0 30px;
+  min-width: 200px;
+}
+
+.trackPlayContain {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.trackPlayImage {
+  flex-shrink: 0;
+}
+
+.trackPlaySvg {
+  width: 40px;
+  height: 40px;
+  fill: #6c5ce7;
+  background-color: #333;
+  border-radius: 50%;
+  padding: 8px;
+}
+
+.trackPlayAuthor,
+.trackPlayAlbum {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trackPlayAuthorLink,
+.trackPlayAlbumLink {
+  color: #fff;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.trackPlayAuthorLink:hover,
+.trackPlayAlbumLink:hover {
+  color: #6c5ce7;
+}
+
+.trackPlayAuthorLink {
+  font-weight: 500;
+}
+
+.trackPlayAlbumLink {
+  color: #aaa;
+}
+
+.trackPlayDislike {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.trackPlayLikeSvg,
+.trackPlayDislikeSvg {
+  width: 20px;
+  height: 20px;
+  fill: #fff;
+  cursor: pointer;
+  transition: fill 0.3s ease, transform 0.3s ease;
+}
+
+.trackPlayLikeSvg:hover,
+.trackPlayDislikeSvg:hover {
+  fill: #6c5ce7;
+  transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  .playerTrackPlay {
+    margin: 0 15px;
+    min-width: 150px;
+  }
+
+  .trackPlaySvg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .trackPlayAlbum {
+    display: none;
+  }
+}

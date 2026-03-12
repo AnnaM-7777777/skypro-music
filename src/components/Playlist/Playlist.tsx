@@ -1,4 +1,5 @@
 import TrackItem from './TrackItem';
+import styles from './Playlist.module.css';
 
 const tracks = [
   {
@@ -42,7 +43,7 @@ const tracks = [
 
 export default function Playlist() {
   return (
-    <div className={'content__playlist'}>
+    <div className={styles.contentPlaylist}>
       {tracks.map((track) => (
         <TrackItem key={track.id} {...track} />
       ))}

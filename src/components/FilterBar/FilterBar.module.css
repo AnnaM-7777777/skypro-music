@@ -1,0 +1,44 @@
+.centerblockFilter {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filterTitle {
+  font-weight: 600;
+  color: #333;
+  margin-right: 10px;
+}
+
+.filterButton {
+  padding: 8px 16px;
+  background-color: #e0e0e0;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.filterButton:hover {
+  background-color: #6c5ce7;
+  color: white;
+}
+
+.filterButton.active {
+  background-color: #6c5ce7;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .centerblockFilter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filterTitle {
+    margin-bottom: 10px;
+  }
+}
