@@ -1,91 +1,66 @@
 .playerTrackPlay {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-grow: 1;
-  margin: 0 30px;
-  min-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: 31px;
+    flex-grow: 1;
 }
 
 .trackPlayContain {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .trackPlayImage {
-  flex-shrink: 0;
+    background-color: #313131;
+    border: 1px solid #4e4e4e;
+    justify-content: center;
+    align-items: center;
+    width: 51px;
+    height: 51px;
+    display: flex;
 }
 
 .trackPlaySvg {
-  width: 40px;
-  height: 40px;
-  fill: #6c5ce7;
-  background-color: #333;
-  border-radius: 50%;
-  padding: 8px;
+    width: 20px;
+    height: 20px;
+    fill: none;
+    background-color: transparent;
+    color: rgba(78, 78, 78, 1);
 }
 
-.trackPlayAuthor,
-.trackPlayAlbum {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.NowPlayingTrack {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.trackPlayAuthorLink,
-.trackPlayAlbumLink {
-  color: #fff;
-  font-size: 14px;
-  transition: color 0.3s ease;
+.NowPlayingTrackAuthorLink,
+.NowPlayingTrackAlbumLink {
+    transition: color 0.3s ease;
 }
 
-.trackPlayAuthorLink:hover,
-.trackPlayAlbumLink:hover {
-  color: #6c5ce7;
+.NowPlayingTrackAuthorLink:hover,
+.NowPlayingTrackAlbumLink:hover {
+    color: #6c5ce7;
 }
 
-.trackPlayAuthorLink {
-  font-weight: 500;
+.NowPlayingTrackAuthorLink {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18px;
+    letter-spacing: 0.1%;
+    color: rgba(255, 255, 255, 1);
 }
 
-.trackPlayAlbumLink {
-  color: #aaa;
-}
-
-.trackPlayDislike {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.trackPlayLikeSvg,
-.trackPlayDislikeSvg {
-  width: 20px;
-  height: 20px;
-  fill: #fff;
-  cursor: pointer;
-  transition: fill 0.3s ease, transform 0.3s ease;
-}
-
-.trackPlayLikeSvg:hover,
-.trackPlayDislikeSvg:hover {
-  fill: #6c5ce7;
-  transform: scale(1.2);
-}
-
-@media (max-width: 768px) {
-  .playerTrackPlay {
-    margin: 0 15px;
-    min-width: 150px;
-  }
-
-  .trackPlaySvg {
-    width: 30px;
-    height: 30px;
-  }
-
-  .trackPlayAlbum {
-    display: none;
-  }
+.NowPlayingTrackAlbumLink {
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 24px;
+    letter-spacing: 0px;
 }

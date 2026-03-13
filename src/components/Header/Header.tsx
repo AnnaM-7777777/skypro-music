@@ -1,44 +1,29 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './Header.module.css';
+import SearchBar from '@/components/SearchBar/SearchBar';
 
 export default function Header() {
-  return (
-    <nav className={styles.mainNav}>
-      <div className={styles.navLogo}>
-        <Image
-          width={250}
-          height={170}
-          className={styles.logoImage}
-          src="/img/logo.png"
-          alt="logo"
-          priority
-        />
-      </div>
-      <div className={styles.navBurger}>
-        <span className={styles.burgerLine}></span>
-        <span className={styles.burgerLine}></span>
-        <span className={styles.burgerLine}></span>
-      </div>
-      <div className={styles.navMenu}>
-        <ul className={styles.menuList}>
-          <li className={styles.menuItem}>
-            <Link href="/" className={styles.menuLink}>
-              Главное
-            </Link>
-          </li>
-          <li className={styles.menuItem}>
-            <Link href="/playlist" className={styles.menuLink}>
-              Мой плейлист
-            </Link>
-          </li>
-          <li className={styles.menuItem}>
-            <Link href="/auth/signin" className={styles.menuLink}>
-              Войти
-            </Link>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  );
+    return (
+        <div className={styles.header}>
+            <div className={styles.headerLogo}>
+                <Image
+                    width={113}
+                    height={17}
+                    className={styles.headerLogoImage}
+                    src='/img/logo.png'
+                    alt='logo'
+                    priority
+                />
+            </div>
+
+            <SearchBar />
+
+            <div className={styles.headerUserIcon}>
+                <svg>
+                    <use href='/img/icon/sprite.svg#logout'></use>
+                </svg>
+            </div>
+        </div>
+    );
 }
