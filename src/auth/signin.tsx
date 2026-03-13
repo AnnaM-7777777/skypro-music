@@ -9,22 +9,22 @@ export default function Signin() {
                 <div className={styles.containerEnter}>
                     <div className={styles.modal__block}>
                         <form className={styles.modal__form}>
-                            <a href="/music/main">
+                            <a href='/music/main'>
                                 <div className={styles.modal__logo}>
-                                    <img src="/img/logo_modal.png" alt="logo" />
+                                    <img src='/img/logo_modal.png' alt='logo' />
                                 </div>
                             </a>
                             <input
                                 className={classNames(styles.modal__input, styles.login)}
-                                type="text"
-                                name="login"
-                                placeholder="Почта"
+                                type='text'
+                                name='login'
+                                placeholder='Почта'
                             />
                             <input
                                 className={classNames(styles.modal__input)}
-                                type="password"
-                                name="password"
-                                placeholder="Пароль"
+                                type='password'
+                                name='password'
+                                placeholder='Пароль'
                             />
                             <div className={styles.errorContainer}>{/*Блок для ошибок*/}</div>
                             <button className={styles.modal__btnEnter}>Войти</button>
