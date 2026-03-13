@@ -1,0 +1,40 @@
+.contentTitle {
+    display: grid;
+    grid-template-columns: 4fr 3fr 3fr 1fr;
+    gap: 12px;
+    width: 100%;
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 24px;
+    color: rgba(78, 78, 78, 1);
+    margin-bottom: 24px;
+}
+
+.col01,
+.col02,
+.col03 {
+    justify-self: start;
+}
+
+.col04 {
+    justify-self: end;
+}
+
+.playlistTitleSvg {
+    width: 12px;
+    height: 12px;
+    fill: transparent;
+}
+
+@media (max-width: 768px) {
+    .contentTitle {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .col03,
+    .col04 {
+        display: none;
+    }
+}

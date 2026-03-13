@@ -1,0 +1,128 @@
+.playlistItem:hover {
+    background-color: #2a2a2a;
+}
+
+.playlistTrack {
+    display: grid;
+    grid-template-columns: 4fr 3fr 3fr 1fr;
+    gap: 12px;
+    align-items: center;
+}
+
+.trackTitle {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    overflow: hidden;
+}
+
+.trackTitleImage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 51px;
+    height: 51px;
+    background-color: rgba(49, 49, 49, 1);
+    border: 1px solid rgba(78, 78, 78, 1);
+}
+
+.trackTitleSvg {
+    width: 20px;
+    height: 20px;
+    fill: transparent;
+}
+
+.trackTitleText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.trackTitleLink {
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18px;
+    color: rgba(255, 255, 255, 1);
+}
+
+.trackTitleSpan {
+    color: rgba(78, 78, 78, 1);
+    margin-left: 6px;
+}
+
+.trackAuthor {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.trackAuthorLink {
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18px;
+    color: rgba(255, 255, 255, 1);
+    overflow: hidden;
+}
+
+/* .trackAlbum {
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: rgba(78, 78, 78, 1);
+} */
+
+.trackAlbumLink {
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18px;
+    color: rgba(78, 78, 78, 1);
+}
+
+.trackTime {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 24px;
+    color: rgba(78, 78, 78, 1);
+    overflow: hidden;
+}
+
+.trackTimeSvg {
+    transition: transform 0.2s ease;
+}
+
+.trackTimeSvg:active {
+    transform: scale(0.9);
+    transition: transform 0.1s;
+}
+
+.trackTimeText {
+    min-width: 40px;
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    .playlistTrack {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .trackAlbum,
+    .trackTimeSvg {
+        display: none;
+    }
+
+    .trackTime {
+        justify-self: end;
+    }
+}
