@@ -4,6 +4,9 @@ import { useState } from 'react';
 import styles from './TrackItem.module.css';
 import { IconLike } from '@/components/Icons';
 import Link from 'next/link';
+import { useAppDispatch } from '../../store/store';
+import { setCurrentTrack } from '@/store/features/trackSlice';
+import { TrackType } from '@/sharedTypes/types';
 
 interface TrackItemProps {
     title: string;
@@ -14,6 +17,7 @@ interface TrackItemProps {
     albumLink?: string;
     duration: string;
     isLiked?: boolean;
+    track: TrackType;
 }
 
 export default function TrackItem({
@@ -25,6 +29,7 @@ export default function TrackItem({
     albumLink = '#',
     duration,
     isLiked: initialLiked = false,
+    track,
 }: TrackItemProps) {
     const [isLiked, setIsLiked] = useState(initialLiked);
     const [isHovered, setIsHovered] = useState(false);
@@ -34,8 +39,13 @@ export default function TrackItem({
         console.log(`Like toggled: ${!isLiked}`);
     };
 
+    const dispatch = useAppDispatch();
+    const onClickTrack = () => {
+        dispatch(setCurrentTrack(track));
+    };
+
     return (
-        <div className={styles.playlistItem}>
+        <div className={styles.playlistItem} onClick={onClickTrack}>
             <div className={styles.playlistTrack}>
                 <div className={styles.trackTitle}>
                     <div className={styles.trackTitleImage}>

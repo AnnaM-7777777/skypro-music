@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import '../../globals.css';
+import ReduxProvider from '../store/ReduxProvider';
 
 const montserrat = Montserrat({
     variable: '--font-montserrat',
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     description: 'Музыкальный проект на Next.js',
 };
 
-export default function RootLayout({
+/* export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
@@ -24,5 +25,21 @@ export default function RootLayout({
             {''}
             <body className={montserrat.variable}>{children}</body>
         </html>
+    );
+} */
+
+export default function RootLayout({
+    children,
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
+    return (
+        <ReduxProvider>
+            <html lang='ru'>
+                {''}
+                <body className={montserrat.variable}>{children}</body>
+                {/* <body className={inter.className}>{children}</body> */}
+            </html>
+        </ReduxProvider>
     );
 }
