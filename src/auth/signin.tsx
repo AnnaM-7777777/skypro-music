@@ -1,6 +1,7 @@
 import styles from './signin.module.css';
 import classNames from 'classnames';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Signin() {
     return (
@@ -9,11 +10,18 @@ export default function Signin() {
                 <div className={styles.containerEnter}>
                     <div className={styles.modal__block}>
                         <form className={styles.modal__form}>
-                            <a href='/music/main'>
+                            <Link href='/music/main'>
                                 <div className={styles.modal__logo}>
-                                    <img src='/img/logo_modal.png' alt='logo' />
+                                    <Image
+                                        width={113}
+                                        height={17}
+                                        className={styles.headerLogoImage}
+                                        src='/img/logo_modal.png'
+                                        alt='logo'
+                                        priority
+                                    />
                                 </div>
-                            </a>
+                            </Link>
                             <input
                                 className={classNames(styles.modal__input, styles.login)}
                                 type='text'

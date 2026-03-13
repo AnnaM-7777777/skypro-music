@@ -60,11 +60,6 @@
     background-color: transparent;
 }
 
-.modal__logo img {
-    width: 140px;
-    height: auto;
-}
-
 .modal__input {
     width: 100%;
     border-top: none;

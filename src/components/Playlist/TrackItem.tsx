@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import styles from './TrackItem.module.css';
 import { IconLike } from '@/components/Icons';
+import Link from 'next/link';
 
 interface TrackItemProps {
     title: string;
@@ -43,23 +44,23 @@ export default function TrackItem({
                         </svg>
                     </div>
                     <div className={styles.trackTitleText}>
-                        <a className={styles.trackTitleLink} href=''>
+                        <Link className={styles.trackTitleLink} href=''>
                             {title}
                             {titleSpan && (
                                 <span className={styles.trackTitleSpan}>{titleSpan}</span>
                             )}
-                        </a>
+                        </Link>
                     </div>
                 </div>
                 <div className={styles.trackAuthor}>
-                    <a className={styles.trackAuthorLink} href={authorLink}>
+                    <Link className={styles.trackAuthorLink} href={authorLink}>
                         {author}
-                    </a>
+                    </Link>
                 </div>
                 <div className={styles.trackAlbum}>
-                    <a className={styles.trackAlbumLink} href={albumLink}>
+                    <Link className={styles.trackAlbumLink} href={albumLink}>
                         {album}
-                    </a>
+                    </Link>
                 </div>
 
                 <div className={styles.trackTime}>
