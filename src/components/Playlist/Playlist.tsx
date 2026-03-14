@@ -1,5 +1,8 @@
+'use client';
+
 import TrackItem from './TrackItem';
 import { data } from '@/app/data';
+import { useAppSelector } from '../../store/store';
 import styles from './Playlist.module.css';
 
 const formatDuration = (seconds: number): string => {
@@ -9,6 +12,8 @@ const formatDuration = (seconds: number): string => {
 };
 
 export default function Playlist() {
+    const currentTrack = useAppSelector(state => state.tracks.currentTrack);
+
     return (
         <div className={styles.contentPlaylist}>
             {data.map(track => (
@@ -21,6 +26,8 @@ export default function Playlist() {
                     duration={formatDuration(track.duration_in_seconds)}
                     authorLink='#'
                     albumLink='#'
+                    isCurrent={currentTrack?._id === track._id}
+                    isPlaying={currentTrack?._id === track._id}
                 />
             ))}
         </div>
