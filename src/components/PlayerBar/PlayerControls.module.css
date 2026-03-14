@@ -5,10 +5,23 @@
     width: 258px;
     box-sizing: border-box;
     padding-right: 32px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .playerAudio {
     width: 200px;
+    display: none;
 }
 
 .playerBtnPrev,

@@ -34,7 +34,8 @@ export default function TrackItem({
     const [isLiked, setIsLiked] = useState(initialLiked);
     const [isHovered, setIsHovered] = useState(false);
 
-    const toggleLike = () => {
+    const toggleLike = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Останавливаем всплытие клика
         setIsLiked(!isLiked);
         console.log(`Like toggled: ${!isLiked}`);
     };
@@ -54,6 +55,7 @@ export default function TrackItem({
                             <use href='/img/icon/sprite.svg#icon-note'></use>
                         </svg>
                     </div>
+
                     <div className={styles.trackTitleText}>
                         <Link className={styles.trackTitleLink} href=''>
                             {title}
@@ -63,11 +65,13 @@ export default function TrackItem({
                         </Link>
                     </div>
                 </div>
+
                 <div className={styles.trackAuthor}>
                     <Link className={styles.trackAuthorLink} href={authorLink}>
                         {author}
                     </Link>
                 </div>
+
                 <div className={styles.trackAlbum}>
                     <Link className={styles.trackAlbumLink} href={albumLink}>
                         {album}
@@ -78,7 +82,7 @@ export default function TrackItem({
                     <IconLike
                         className={styles.trackTimeSvg}
                         isFilled={isLiked || isHovered}
-                        onClick={toggleLike}
+                        onClick={toggleLike as () => void}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                     />
