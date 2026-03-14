@@ -40,6 +40,7 @@ export default function TrackItem({
     };
 
     const dispatch = useAppDispatch();
+
     const onClickTrack = () => {
         dispatch(setCurrentTrack(track));
     };

@@ -4,9 +4,9 @@ export interface TrackType {
   author: string;
   release_date: string;
   genre: string[];
-  durtion_in_seconds: number;
+  duration_in_seconds: number;
   album: string;
   logo: null;
   track_file: string;
-  stared_user: [];
+  stared_user: number[];
 }
