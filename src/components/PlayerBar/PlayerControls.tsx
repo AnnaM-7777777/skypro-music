@@ -1,14 +1,17 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
-import { useAppSelector } from '@/store/store';
+import { useAppSelector, useAppDispatch } from '@/store/store';
 import { getSafeTrackUrl } from '@/utils/testTracks';
+import { setPlaying } from '@/store/features/trackSlice';
 import { IconLike } from '@/components/Icons';
 import styles from './PlayerControls.module.css';
 import classNames from 'classnames';
 
 export default function PlayerControls() {
     const currentTrack = useAppSelector(state => state.tracks.currentTrack);
+    const isPlayingRedux = useAppSelector(state => state.tracks.isPlaying);
+    const dispatch = useAppDispatch();
     const audioRef = useRef<HTMLAudioElement>(null);
 
     const [isPlaying, setIsPlaying] = useState(false);
@@ -18,6 +21,11 @@ export default function PlayerControls() {
     const [volume, setVolume] = useState(1);
 
     const audioSrc = getSafeTrackUrl(currentTrack?.track_file);
+
+    // Синхронизация локального состояния с Redux
+    useEffect(() => {
+        setIsPlaying(isPlayingRedux);
+    }, [isPlayingRedux]);
 
     // Загрузка и автовоспроизведение при смене трека
     useEffect(() => {
@@ -29,18 +37,25 @@ export default function PlayerControls() {
 
             audioRef.current
                 .play()
-                .then(() => setIsPlaying(true))
+                .then(() => {
+                    setIsPlaying(true);
+                    dispatch(setPlaying(true)); // Синхронизация с Redux
+                })
                 .catch(e => console.log('▶️ Autoplay:', e.message));
         }
-    }, [audioSrc]);
+    }, [audioSrc, dispatch]);
 
     // Play/Pause
     const togglePlay = () => {
         if (!audioRef.current) return;
         if (isPlaying) {
             audioRef.current.pause();
+            setIsPlaying(false);
+            dispatch(setPlaying(false)); // Синхронизация с Redux
         } else {
             audioRef.current.play();
+            setIsPlaying(true);
+            dispatch(setPlaying(true)); // Синхронизация с Redux
         }
     };
 
@@ -85,15 +100,24 @@ export default function PlayerControls() {
     };
 
     // События аудио
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
+    const handlePlay = () => {
+        setIsPlaying(true);
+        dispatch(setPlaying(true)); // Синхронизация с Redux
+    };
+
+    const handlePause = () => {
+        setIsPlaying(false);
+        dispatch(setPlaying(false)); // Синхронизация с Redux
+    };
+
     const handleEnded = () => {
         setIsPlaying(false);
         setCurrentTime(0);
+        dispatch(setPlaying(false)); // Синхронизация с Redux
     };
 
     // Если нет трека - плеер не рендерится
-    if (!currentTrack) return null;
+    if (!currentTrack || !audioSrc) return null;
 
     return (
         <div className={styles.playerControls}>

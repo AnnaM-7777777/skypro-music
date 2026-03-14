@@ -13,6 +13,7 @@ const formatDuration = (seconds: number): string => {
 
 export default function Playlist() {
     const currentTrack = useAppSelector(state => state.tracks.currentTrack);
+    const isPlayingGlobal = useAppSelector(state => state.tracks.isPlaying);
 
     return (
         <div className={styles.contentPlaylist}>
@@ -27,7 +28,8 @@ export default function Playlist() {
                     authorLink='#'
                     albumLink='#'
                     isCurrent={currentTrack?._id === track._id}
-                    isPlaying={currentTrack?._id === track._id}
+                    // Точка пульсирует ТОЛЬКО если: трек текущий И идёт воспроизведение
+                    isPlaying={isPlayingGlobal && currentTrack?._id === track._id}
                 />
             ))}
         </div>
