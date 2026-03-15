@@ -14,14 +14,18 @@
     align-items: center;
     gap: 17px;
     overflow: hidden;
+    min-width: 0;
 }
 
 .trackTitleImage {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
     width: 51px;
     height: 51px;
+    min-width: 51px;
+    min-height: 51px;
     background-color: rgba(49, 49, 49, 1);
     border: 1px solid rgba(78, 78, 78, 1);
 }

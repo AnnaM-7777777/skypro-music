@@ -15,19 +15,6 @@ export const metadata: Metadata = {
     description: 'Музыкальный проект на Next.js',
 };
 
-/* export default function RootLayout({
-    children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
-    return (
-        <html lang='ru'>
-            {''}
-            <body className={montserrat.variable}>{children}</body>
-        </html>
-    );
-} */
-
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -38,7 +25,6 @@ export default function RootLayout({
             <html lang='ru'>
                 {''}
                 <body className={montserrat.variable}>{children}</body>
-                {/* <body className={inter.className}>{children}</body> */}
             </html>
         </ReduxProvider>
     );
