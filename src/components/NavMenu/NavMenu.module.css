@@ -1,5 +1,6 @@
 .mainNav {
     width: 258px;
+    margin-top: 71px;
 }
 
 .navBurger {
@@ -33,9 +34,13 @@
 }
 
 .menuLink {
-    padding: 8px 12px;
-    color: #999999;
+    color: rgba(211, 211, 211, 1);
     transition: color 0.3s ease;
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18px;
+    letter-spacing: 0.1%;
 }
 
 .menuLink:hover {
