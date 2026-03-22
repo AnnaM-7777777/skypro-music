@@ -6,6 +6,7 @@ import IconLikeFilled from './IconLikeFilled';
 interface IconLikeProps {
     className?: string;
     isFilled?: boolean;
+    isHovered?: boolean;
     onClick?: () => void;
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
@@ -14,6 +15,7 @@ interface IconLikeProps {
 export default function IconLike({
     className,
     isFilled = false,
+    isHovered = false,
     onClick,
     onMouseEnter,
     onMouseLeave,
@@ -28,6 +30,7 @@ export default function IconLike({
     ) : (
         <IconLikeOutline
             className={className}
+            isHovered={isHovered}
             onClick={onClick}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}

@@ -1,0 +1,242 @@
+.bar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 78px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+    padding: 0 36px;
+    animation: fadeIn 0.3s ease-in;
+    border-top: 5px solid rgba(46, 46, 46, 1);
+    background-color: rgba(24, 24, 24, 1);
+    box-shadow: 0 0 20px rgba(24, 24, 24, 1);
+    z-index: 1000;
+}
+
+.player__audio {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Кнопки управления */
+.bar__btn {
+    width: 258px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 33px;
+}
+
+.bar__btn div {
+    height: 100%;
+}
+
+.bar__btn svg {
+    width: 100%;
+    height: 100%;
+    fill: #fff;
+}
+
+.btn__prev,
+.btn__next {
+    width: 15px;
+}
+
+.btn__play,
+.btn__repeat,
+.btn__shuffle {
+    width: 18px;
+}
+
+.btn__prev,
+.btn__next,
+.btn__play,
+.btn__repeat,
+.btn__shuffle {
+    cursor: pointer;
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.btn__prev:hover,
+.btn__next:hover,
+.btn__play:hover,
+.btn__repeat:hover,
+.btn__shuffle:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+}
+
+.btn__play {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Трек */
+.bar__trackPlay {
+    display: flex;
+    flex-grow: 1;
+    gap: 12px;
+    align-items: center;
+}
+
+.trackPlay__image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 51px;
+    height: 51px;
+    background-color: rgba(49, 49, 49, 1);
+    border: 1px solid rgba(78, 78, 78, 1);
+}
+
+.trackPlay__svg {
+    width: 20px;
+    height: 20px;
+    fill: transparent;
+}
+
+.trackPlay__info {
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px;
+}
+
+.trackPlay__title {
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.trackPlay__author {
+    color: #aaa;
+    font-size: 12px;
+}
+
+.trackPlay__like {
+    cursor: pointer;
+}
+
+.trackPlay__iconLike {
+    cursor: pointer;
+    transition:
+        fill 0.2s ease,
+        stroke 0.2s ease;
+}
+
+/* Громкость */
+.bar__volume {
+    width: auto;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 0 92px 0 0;
+}
+
+.volume__content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: flex-end;
+    -ms-flex-pack: flex-end;
+    justify-content: flex-end;
+    gap: 17px;
+}
+
+.volume__svg {
+    width: 13px;
+    height: 18px;
+    fill: transparent;
+}
+
+.volume__progress {
+    width: 109px;
+    display: flex;
+    align-items: center;
+}
+
+.volume__progressLine {
+    width: 100%;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    background: transparent;
+}
+
+/* Видимая полоска громкости - slider track */
+.volume__progressLine::-webkit-slider-runnable-track {
+    height: 2px;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 1) var(--volume-percent, 0%),
+        rgba(121, 121, 121, 1) var(--volume-percent, 0%)
+    );
+}
+
+/* Сам кружок-ползунок - slider thumb */
+.volume__progressLine::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: rgba(26, 26, 26, 1);
+    border: 2px solid rgba(255, 255, 255, 1);
+    border-radius: 50%;
+    margin-top: -5px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+/* Кружок в момент перетаскивания */
+.volume__progressLine::-webkit-slider-thumb:active {
+    transform: scale(1.1);
+}
+
+/* Для Firefox (опционально) */
+.volume__progressLine::-moz-range-track {
+    height: 2px;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 1) var(--volume-percent, 0%),
+        rgba(121, 121, 121, 1) var(--volume-percent, 0%)
+    );
+    border: none;
+}
+
+.volume__progressLine::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: rgba(24, 24, 24, 1);
+    border: 2px solid rgba(255, 255, 255, 1);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none; /* убрать дефолтный бордер Firefox */
+}
