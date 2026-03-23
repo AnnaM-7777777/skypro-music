@@ -20,6 +20,18 @@
     overflow-y: auto;
     color: rgba(255, 255, 255, 1);
     padding-right: 18px;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Для Firefox */
@@ -52,17 +64,6 @@
     background-color: rgba(255, 255, 255, 1);
     border-radius: 10px;
     cursor: pointer;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .dropdown__item {
