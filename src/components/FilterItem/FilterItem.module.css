@@ -1,0 +1,85 @@
+.filter__dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    border-radius: 12px;
+    padding: 34px;
+    background-color: rgba(49, 49, 49, 1);
+    z-index: 101;
+    box-sizing: border-box;
+}
+
+.dropdown__list {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    max-width: 248px;
+    max-height: 237px;
+    width: max-content;
+    height: max-content;
+    overflow-y: auto;
+    color: rgba(255, 255, 255, 1);
+    padding-right: 18px;
+}
+
+/* Для Firefox */
+.dropdown__list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 1) rgba(75, 73, 73, 1);
+}
+
+/* Скроллбар для WebKit (Chrome, Safari, Edge) */
+/* Убираем стрелочки */
+.dropdown__list::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+/* Ширина скроллбара */
+.dropdown__list::-webkit-scrollbar {
+    width: 4px;
+}
+
+/* Дорожка(фон) */
+.dropdown__list::-webkit-scrollbar-track {
+    background-color: rgba(75, 73, 73, 1);
+    border-radius: 10px;
+}
+
+/* Ползунок */
+.dropdown__list::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown__item {
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: 0%;
+    color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.dropdown__item:hover,
+.dropdown__item:active {
+    color: rgba(182, 114, 255, 1);
+    text-decoration: underline solid rgba(182, 114, 255, 1) 0%;
+}
