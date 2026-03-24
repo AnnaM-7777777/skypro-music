@@ -1,21 +1,22 @@
 import styles from './page.module.css';
-import Header from '@/components/Header/Header';
-import NavMenu from '@/components/NavMenu/NavMenu';
+import Navigation from '@/components/Navigation/Navigation';
 import CenterBlock from '@/components/CenterBlock/CenterBlock';
 import Sidebar from '@/components/Sidebar/Sidebar';
-import PlayerBar from '@/components/PlayerBar/PlayerBar';
+import Bar from '@/components/Bar/Bar';
 
 export default function Home() {
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>
-                <Header />
                 <main className={styles.main}>
-                    <NavMenu />
+                    <Navigation />
                     <CenterBlock />
                     <Sidebar />
                 </main>
-                <PlayerBar />
+
+                <Bar />
+
+                <footer className='footer'></footer>
             </div>
         </div>
     );

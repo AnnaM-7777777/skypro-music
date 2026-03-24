@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TrackType } from '@/sharedTypes/types';
+import { TrackType } from '@/sharedTypes/sharedTypes';
 import { getSafeTrackUrl } from '@/utils/testTracks';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type initialStateType = {
     currentTrack: TrackType | null;

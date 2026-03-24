@@ -1,11 +1,13 @@
-.centerblockFilter {
+.centerblock__filter {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 52px;
+    position: relative;
+    z-index: 100;
 }
 
-.filterTitle {
+.filter__title {
     font-family: 'Montserrat';
     font-weight: 400;
     font-size: 16px;
@@ -15,7 +17,11 @@
     margin-right: 5px;
 }
 
-.filterButton {
+.filter__wrapper {
+    position: relative;
+}
+
+.filter__button {
     display: flex;
     align-items: center;
     height: 39px;
@@ -33,23 +39,8 @@
     padding: 0 20px;
 }
 
-.filterButton:hover {
+.filter__button:hover,
+.active {
     color: rgba(182, 114, 255, 1);
     border: 1px solid rgba(154, 72, 241, 1);
-}
-
-.filterButton.active {
-    color: rgba(182, 114, 255, 1);
-    border: 1px solid rgba(154, 72, 241, 1);
-}
-
-@media (max-width: 768px) {
-    .centerblockFilter {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .filterTitle {
-        margin-bottom: 10px;
-    }
 }
