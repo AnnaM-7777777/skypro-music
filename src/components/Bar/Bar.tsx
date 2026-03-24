@@ -24,6 +24,9 @@ export default function Bar() {
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(1);
 
+    // Состояние загрузки
+    const [isLoading, setIsLoading] = useState(false);
+
     // Состояния для Repeat и Shuffle
     const [isRepeat, setIsRepeat] = useState(false);
     const [isShuffle, setIsShuffle] = useState(false);
@@ -103,6 +106,7 @@ export default function Bar() {
         const audio = audioRef.current;
         if (!audio || !audioSrc) return;
 
+        setIsLoading(true); // ← Начинаем загрузку
         setCurrentTime(0);
         setDuration(0);
         audio.src = audioSrc;
@@ -112,6 +116,7 @@ export default function Bar() {
         // Если воспроизведение должно быть активным — ждём canplay и запускаем
         if (isPlayingRedux) {
             const onCanPlay = () => {
+                setIsLoading(false); // ← Загрузка завершена
                 audio.play().catch(err => {
                     if (err.name === 'NotAllowedError') {
                         console.warn('🔊 Требуется взаимодействие пользователя');
@@ -121,6 +126,8 @@ export default function Bar() {
                 audio.removeEventListener('canplay', onCanPlay);
             };
             audio.addEventListener('canplay', onCanPlay);
+        } else {
+            setIsLoading(false);
         }
     }, [audioSrc]);
 
@@ -227,10 +234,18 @@ export default function Bar() {
     return (
         <div className={styles.bar}>
             <div className={styles.bar__progress}>
+                {/* Индикатор загрузки трека */}
+                {isLoading && (
+                    <div className={styles.progress__loading}>
+                        <span className={styles.progress__loadingText}>Загрузка трека...</span>
+                    </div>
+                )}
+
                 <div className={styles.progress__time}>{getTimePanel(currentTime, duration)}</div>
                 <ProgressBar max={duration} value={currentTime} step={0.1} onChange={handleSeek} />
             </div>
 
+            {/* Блок плеера */}
             <div className={styles.bar__block}>
                 <audio
                     ref={audioRef}
@@ -245,6 +260,7 @@ export default function Bar() {
                 />
 
                 <div className={styles.bar__btn}>
+                    {/* Prev */}
                     <div
                         className={`${styles.btn__prev} ${isFirstTrack && !isShuffle ? styles.btn__disabled : ''}`}
                         onClick={handlePrev}
@@ -258,6 +274,7 @@ export default function Bar() {
                         </svg>
                     </div>
 
+                    {/* Play/Pause */}
                     <div className={classNames(styles.btn__play, styles.btn)} onClick={togglePlay}>
                         <svg className={styles.btn__playSvg}>
                             <use
@@ -266,6 +283,7 @@ export default function Bar() {
                         </svg>
                     </div>
 
+                    {/* Next */}
                     <div
                         className={`${styles.btn__next} ${isLastTrack && !isShuffle ? styles.btn__disabled : ''}`}
                         onClick={handleNext}
@@ -279,6 +297,7 @@ export default function Bar() {
                         </svg>
                     </div>
 
+                    {/* Repeat */}
                     <div
                         className={classNames(styles.btn__repeat, styles.btnIcon, {
                             [styles.btn__active]: isRepeat,
@@ -291,6 +310,7 @@ export default function Bar() {
                         </svg>
                     </div>
 
+                    {/* Shuffle */}
                     <div
                         className={classNames(styles.btn__shuffle, styles.btnIcon, {
                             [styles.btn__active]: isShuffle,
@@ -304,6 +324,7 @@ export default function Bar() {
                     </div>
                 </div>
 
+                {/* Блок с картинкой, текущим треком и кнопкой like */}
                 <div className={styles.bar__trackPlay}>
                     <div className={styles.trackPlay__image}>
                         <svg className={styles.trackPlay__svg}>
@@ -326,6 +347,7 @@ export default function Bar() {
                     </div>
                 </div>
 
+                {/* Громкость */}
                 <div className={styles.bar__volume}>
                     <div className={styles.volume__content}>
                         <svg className={styles.volume__svg}>
