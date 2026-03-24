@@ -97,44 +97,46 @@
 .bar__btn svg {
     width: 100%;
     height: 100%;
-    fill: #fff;
+    transition: filter 0.3s ease;
 }
 
+/* Кнопки Prev/Next */
 .btn__prev,
 .btn__next {
     width: 15px;
 }
 
-.btn__play,
+/* Кнопка Play */
+.btn__play {
+    width: 22px;
+    cursor: pointer;
+}
+
+.bar__btn .btn__prev:hover .btn__prevSvg,
+.bar__btn .btn__next:hover .btn__nextSvg,
+.bar__btn .btn__play:hover .btn__playSvg {
+    filter: brightness(0) saturate(100%) invert(60%) sepia(0%) saturate(0%) hue-rotate(0deg)
+        brightness(90%) contrast(85%);
+}
+
+/* Кнопки Repeat/Shuffle */
 .btn__repeat,
 .btn__shuffle {
     width: 18px;
-}
-
-.btn__prev,
-.btn__next,
-.btn__play,
-.btn__repeat,
-.btn__shuffle {
     cursor: pointer;
-    transition:
-        opacity 0.3s ease,
-        transform 0.3s ease;
 }
 
-.btn__prev:hover,
-.btn__next:hover,
-.btn__play:hover,
-.btn__repeat:hover,
-.btn__shuffle:hover {
-    opacity: 0.8;
-    transform: scale(1.1);
+.bar__btn .btn__repeat:hover .btn__repeatSvg,
+.bar__btn .btn__shuffle:hover .btn__shuffleSvg {
+    filter: brightness(0) saturate(100%) invert(85%) sepia(0%) saturate(0%) hue-rotate(0deg)
+        brightness(107%) contrast(93%);
 }
 
-.btn__play {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Активное состояние кнопок Repeat/Shuffle */
+.btn__repeat.btn__active svg,
+.btn__shuffle.btn__active svg {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg)
+        brightness(103%) contrast(103%);
 }
 
 /* Трек */
@@ -302,22 +304,4 @@
     .bar__progress {
         display: none;
     }
-}
-
-/* Активное состояние кнопок Repeat/Shuffle */
-.btn__repeat.btn__active,
-.btn__shuffle.btn__active {
-    opacity: 1;
-}
-
-.btn__repeat.btn__active svg,
-.btn__shuffle.btn__active svg {
-    fill: rgba(182, 114, 255, 1);
-    stroke: rgba(182, 114, 255, 1);
-}
-
-.btn__repeat.btn__active:hover,
-.btn__shuffle.btn__active:hover {
-    opacity: 1;
-    transform: scale(1.1);
 }
