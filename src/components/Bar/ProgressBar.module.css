@@ -1,0 +1,77 @@
+/* Контейнер прогресс-бара */
+.progress__wrapper {
+    width: 100%;
+}
+
+/* Дорожка прогресса */
+.progress__line {
+    width: 100%;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    background: transparent;
+    height: 4px;
+}
+
+/* Дорожка прогресса - WebKit (Chrome, Safari, Edge) */
+.progress__line::-webkit-slider-runnable-track {
+    height: 4px;
+    background: linear-gradient(
+        to right,
+        rgba(182, 114, 255, 1) var(--progress-percent, 0%),
+        rgba(121, 121, 121, 1) var(--progress-percent, 0%)
+    );
+    border-radius: 2px;
+}
+
+/* Ползунок - WebKit */
+.progress__line::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background-color: rgba(182, 114, 255, 1);
+    border-radius: 50%;
+    margin-top: -7px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    opacity: 0;
+}
+
+/* Показываем ползунок при наведении */
+.progress__wrapper:hover .progress__line::-webkit-slider-thumb {
+    opacity: 1;
+}
+
+/* Ползунок при перетаскивании */
+.progress__line::-webkit-slider-thumb:active {
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+/* Дорожка - Firefox */
+.progress__line::-moz-range-track {
+    height: 4px;
+    background: linear-gradient(
+        to right,
+        rgba(182, 114, 255, 1) var(--progress-percent, 0%),
+        rgba(121, 121, 121, 1) var(--progress-percent, 0%)
+    );
+    border: none;
+    border-radius: 2px;
+}
+
+/* Ползунок - Firefox */
+.progress__line::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background-color: rgba(182, 114, 255, 1);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    opacity: 0;
+}
+
+/* Показываем ползунок при наведении - Firefox */
+.progress__wrapper:hover .progress__line::-moz-range-thumb {
+    opacity: 1;
+}
