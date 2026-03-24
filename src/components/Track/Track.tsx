@@ -5,13 +5,14 @@ import { IconLike } from '@/components/Icons';
 import { TrackType } from '@/sharedTypes/sharedTypes';
 import { setCurrentTrack } from '@/store/features/trackSlice';
 import { useAppDispatch, useAppSelector } from '@/store/store';
+import { formatDuration } from '@/utils/helpers';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useState } from 'react';
 import styles from './Track.module.css';
 
-// Внутренний компонент: строка трека (рендерится в map)
-function Track({
+// Внутренний компонент TrackItem: одна строка трека (рендерится в map)
+function TrackItem({
     title,
     author,
     album,
@@ -42,8 +43,8 @@ function Track({
     };
 
     return (
-        <div className={styles.track} onClick={onClickTrack}>
-            <div className={styles.track__name}>
+        <div className={styles.trackItem} onClick={onClickTrack}>
+            <div className={styles.trackItem__name}>
                 <div className={styles.name__image}>
                     {isCurrent && (
                         <span
@@ -66,19 +67,19 @@ function Track({
                 </div>
             </div>
 
-            <div className={styles.track__author}>
+            <div className={styles.trackItem__author}>
                 <Link className={styles.author__link} href='#'>
                     {author}
                 </Link>
             </div>
 
-            <div className={styles.track__album}>
+            <div className={styles.trackItem__album}>
                 <Link className={styles.album___link} href='#'>
                     {album}
                 </Link>
             </div>
 
-            <div className={styles.track__time}>
+            <div className={styles.trackItem__time}>
                 <IconLike
                     className={styles.time__svg}
                     isFilled={isLiked}
@@ -93,21 +94,15 @@ function Track({
     );
 }
 
-const formatDuration = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-};
-
-// Основной компонент: список треков с заголовком
-export default function TrackItem() {
+// Основной компонент TrackList: список всех треков с заголовком
+export default function TrackList() {
     const currentTrack = useAppSelector(state => state.tracks.currentTrack);
     const isPlayingGlobal = useAppSelector(state => state.tracks.isPlaying);
 
     return (
-        <div className={styles.trackItem}>
+        <div className={styles.trackItemList}>
             {/* Заголовок таблицы */}
-            <div className={styles.trackItem__title}>
+            <div className={styles.trackItemList__title}>
                 <div className={`${styles.title__col} ${styles.col01}`}>Трек</div>
                 <div className={`${styles.title__col} ${styles.col02}`}>Исполнитель</div>
                 <div className={`${styles.title__col} ${styles.col03}`}>Альбом</div>
@@ -120,7 +115,7 @@ export default function TrackItem() {
 
             {/* Список треков */}
             {data.map(track => (
-                <Track
+                <TrackItem
                     key={track._id}
                     track={track}
                     title={track.name}

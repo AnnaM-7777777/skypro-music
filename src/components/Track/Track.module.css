@@ -1,5 +1,5 @@
 /* Весь компонент */
-.trackItem {
+.trackItemList {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -7,7 +7,7 @@
 }
 
 /* Заголовок таблицы */
-.trackItem__title {
+.trackItemList__title {
     display: grid;
     grid-template-columns: 4fr 3fr 3fr 1fr;
     gap: 6px;
@@ -42,20 +42,20 @@
 }
 
 /* Внутренний компонент: строка трека (рендерится в map) */
-.track {
+.trackItem {
     display: grid;
     grid-template-columns: 4fr 3fr 3fr 1fr;
     gap: 6px;
     align-items: center;
 }
 
-.track:hover {
+.trackItem:hover {
     background-color: #2a2a2a;
     cursor: pointer;
 }
 
 /* Колонка - название трека */
-.track__name {
+.trackItem__name {
     display: flex;
     align-items: center;
     gap: 17px;
@@ -130,7 +130,7 @@
 }
 
 /* Колонка - автор */
-.track__author {
+.trackItem__author {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -146,7 +146,7 @@
 }
 
 /* Колонка - альбом */
-.track__album {
+.trackItem__album {
     overflow: hidden;
 }
 
@@ -159,7 +159,7 @@
 }
 
 /* Колонка - лайк и длина трека */
-.track__time {
+.trackItem__time {
     display: flex;
     align-items: center;
     justify-content: flex-end;

@@ -1,6 +1,6 @@
 import Filter from '@/components/Filter/Filter';
 import Search from '@/components/Search/Search';
-import TrackItem from '@/components/Track/Track';
+import TrackList from '@/components/Track/Track';
 import styles from './CenterBlock.module.css';
 
 export default function CenterBlock() {
@@ -11,7 +11,7 @@ export default function CenterBlock() {
             <h2 className={styles.centerblock__h2}>Треки</h2>
 
             <Filter />
-            <TrackItem />
+            <TrackList />
         </div>
     );
 }
