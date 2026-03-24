@@ -277,3 +277,21 @@
         display: none;
     }
 }
+
+/* Активное состояние кнопок Repeat/Shuffle */
+.btn__repeat.btn__active,
+.btn__shuffle.btn__active {
+    opacity: 1;
+}
+
+.btn__repeat.btn__active svg,
+.btn__shuffle.btn__active svg {
+    fill: rgba(182, 114, 255, 1);
+    stroke: rgba(182, 114, 255, 1);
+}
+
+.btn__repeat.btn__active:hover,
+.btn__shuffle.btn__active:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
