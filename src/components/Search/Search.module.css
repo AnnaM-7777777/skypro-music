@@ -31,8 +31,9 @@
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
-    line-height: 24px;
+    line-height: 18px;
     color: #ffffff;
+    outline: none;
 }
 
 .search__text::-webkit-input-placeholder {
@@ -41,29 +42,32 @@
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
-    line-height: 24px;
+    line-height: 18px;
 }
 
 .search__text:-ms-input-placeholder {
     background-color: transparent;
     color: #ffffff;
+    font-family: 'Montserrat';
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
-    line-height: 24px;
+    line-height: 18px;
 }
 
 .search__text::-ms-input-placeholder {
     background-color: transparent;
     color: #ffffff;
+    font-family: 'Montserrat';
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
-    line-height: 24px;
+    line-height: 18px;
 }
 
 .search__text::placeholder {
     background-color: transparent;
+    font-family: 'Montserrat';
     color: #ffffff;
     font-style: normal;
     font-weight: 400;
