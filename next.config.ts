@@ -1,8 +1,6 @@
 import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
-    /* config options here */
-    
+/* const nextConfig: NextConfig = {    
     async rewrites() {
         return [
             {
@@ -13,7 +11,17 @@ const nextConfig: NextConfig = {
     },
     // Иногда нужно отключить строгую проверку происхождения для прокси
     reactStrictMode: true,
-};
+}; */
 
-export default nextConfig;
+module.exports = {
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/music/main',
+        permanent: true,
+      },
+    ]
+  },
+}
 

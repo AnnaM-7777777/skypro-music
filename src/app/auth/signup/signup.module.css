@@ -1,0 +1,90 @@
+.modal__btnSignupEnt:hover {
+    background-color: rgba(63, 0, 125, 1);
+}
+
+.modal__btnSignupEnt:active {
+    background-color: rgba(39, 26, 88, 1);
+}
+
+.modal__block {
+    position: absolute;
+    z-index: 2;
+    left: calc(50% - (366px / 2));
+    top: calc(50% - (439px / 2));
+    opacity: 1;
+}
+
+.modal__logo {
+    width: 140px;
+    height: 21px;
+    margin-bottom: 34px;
+    background-color: transparent;
+}
+
+.modal__input {
+    width: 100%;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid rgba(208, 206, 206, 1);
+    outline: none;
+    padding: 8px 1px;
+    margin-right: 3px;
+    margin-bottom: 30px;
+}
+
+.modal__input::placeholder {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.3%;
+    color: rgba(208, 206, 206, 1);
+}
+
+.modal__input::-webkit-input-placeholder,
+.modal__input:-ms-input-placeholder,
+.modal__input::-ms-input-placeholder {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.3%;
+    color: rgba(208, 206, 206, 1);
+}
+
+.modal__btnSignupEnt {
+    width: 278px;
+    height: 62px;
+    background-color: rgba(88, 14, 162, 1);
+    border-radius: 6px;
+    margin-left: 4px;
+    border: none;
+    margin-top: 30px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    color: #ffffff;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: -0.05px;
+    cursor: pointer;
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 12px;
+    color: red;
+}
