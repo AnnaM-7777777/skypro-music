@@ -1,13 +1,30 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Sidebar.module.css';
 
 export default function Sidebar() {
+    const handleLogout = () => {
+        // 1. Удаляем токен (устанавливаем max-age=0)
+        document.cookie = 'token=; path=/; max-age=0; SameSite=Lax';
+        console.log(' Token cleared');
+
+        // 2. Перенаправляем на страницу входа
+        window.location.href = '/auth/signin';
+    };
+
     return (
         <div className={styles.sidebar}>
             <div className={styles.sidebar__personal}>
                 {/* <p className={styles.sidebar__personalName}>Sergey.Ivanov</p> */}
-                <div className={styles.sidebar__icon}>
+
+                <div
+                    className={styles.sidebar__icon}
+                    onClick={handleLogout}
+                    style={{ cursor: 'pointer' }}
+                    title='Выйти'
+                >
                     <svg>
                         <use xlinkHref='/img/icon/sprite.svg#logout'></use>
                     </svg>
