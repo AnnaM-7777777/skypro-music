@@ -1,7 +1,5 @@
 'use client';
 
-import { data } from '@/app/data';
-import { IconLike } from '@/components/Icons';
 import { TrackType } from '@/sharedTypes/sharedTypes';
 import { setCurrentTrack } from '@/store/features/trackSlice';
 import { useAppDispatch, useAppSelector } from '@/store/store';
@@ -10,8 +8,13 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import { useState } from 'react';
 import styles from './Track.module.css';
+import { IconLike } from '@/components/Icons';
 
-// Внутренний компонент TrackItem: одна строка трека (рендерится в map)
+interface TrackListProps {
+    tracks: TrackType[];
+}
+
+// Внутренний компонент одной строки трека
 function TrackItem({
     title,
     author,
@@ -54,31 +57,26 @@ function TrackItem({
                             )}
                         />
                     )}
-
                     <svg className={styles.name__svg}>
                         <use href='/img/icon/sprite.svg#icon-note'></use>
                     </svg>
                 </div>
-
                 <div className={styles.name__text}>
                     <Link className={styles.name__link} href=''>
                         {title}
                     </Link>
                 </div>
             </div>
-
             <div className={styles.trackItem__author}>
                 <Link className={styles.author__link} href='#'>
                     {author}
                 </Link>
             </div>
-
             <div className={styles.trackItem__album}>
                 <Link className={styles.album___link} href='#'>
                     {album}
                 </Link>
             </div>
-
             <div className={styles.trackItem__time}>
                 <IconLike
                     className={styles.time__svg}
@@ -94,14 +92,13 @@ function TrackItem({
     );
 }
 
-// Основной компонент TrackList: список всех треков с заголовком
-export default function TrackList() {
+// Основной компонент списка
+export default function TrackList({ tracks }: TrackListProps) {
     const currentTrack = useAppSelector(state => state.tracks.currentTrack);
     const isPlayingGlobal = useAppSelector(state => state.tracks.isPlaying);
 
     return (
         <div className={styles.trackItemList}>
-            {/* Заголовок таблицы */}
             <div className={styles.trackItemList__title}>
                 <div className={`${styles.title__col} ${styles.col01}`}>Трек</div>
                 <div className={`${styles.title__col} ${styles.col02}`}>Исполнитель</div>
@@ -113,8 +110,7 @@ export default function TrackList() {
                 </div>
             </div>
 
-            {/* Список треков */}
-            {data.map(track => (
+            {tracks.map(track => (
                 <TrackItem
                     key={track._id}
                     track={track}

@@ -7,11 +7,16 @@ import { setCurrentTrack, setPlaying } from '@/store/features/trackSlice';
 import { formatDuration, getTimePanel } from '@/utils/helpers';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { getSafeTrackUrl } from '@/utils/testTracks';
+import { TrackType } from '@/sharedTypes/sharedTypes';
 import classNames from 'classnames';
 import { useEffect, useRef, useState } from 'react';
 import styles from './Bar.module.css';
 
-export default function Bar() {
+interface BarProps {
+    tracks: TrackType[];
+}
+
+export default function Bar({ tracks }: BarProps) {
     const currentTrackItem = useAppSelector(state => state.tracks.currentTrack);
     const isPlayingRedux = useAppSelector(state => state.tracks.isPlaying);
     const dispatch = useAppDispatch();
@@ -41,9 +46,9 @@ export default function Bar() {
         return availableTracks[randomIndex];
     };
 
-    // Переключение на следующий трек (только диспатч, без play!)
+    // Переключение на следующий трек (используем tracks, а не data!)
     const handleNext = () => {
-        if (!currentTrackItem) return;
+        if (!currentTrackItem || tracks.length === 0) return;
 
         if (isShuffle) {
             const randomTrack = getRandomTrack(currentTrackItem._id);
@@ -54,11 +59,14 @@ export default function Bar() {
             return;
         }
 
-        const currentIndex = data.findIndex(track => track._id === currentTrackItem._id);
-        const isLastTrack = currentIndex === data.length - 1;
-        if (isLastTrack) return;
+        // Ищем индекс в РЕАЛЬНОМ массиве треков
+        const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
+        const isLastTrack = currentIndex === tracks.length - 1;
 
-        const nextTrack = data[currentIndex + 1];
+        // Если последний — начинаем сначала (циклический плейлист)
+        const nextIndex = isLastTrack ? 0 : currentIndex + 1;
+        const nextTrack = tracks[nextIndex];
+
         if (nextTrack) {
             dispatch(setCurrentTrack(nextTrack));
             dispatch(setPlaying(true));
@@ -67,7 +75,7 @@ export default function Bar() {
 
     // Переключение на предыдущий трек
     const handlePrev = () => {
-        if (!currentTrackItem) return;
+        if (!currentTrackItem || tracks.length === 0) return;
 
         if (isShuffle) {
             const randomTrack = getRandomTrack(currentTrackItem._id);
@@ -78,11 +86,13 @@ export default function Bar() {
             return;
         }
 
-        const currentIndex = data.findIndex(track => track._id === currentTrackItem._id);
+        const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
         const isFirstTrack = currentIndex === 0;
-        if (isFirstTrack) return;
 
-        const prevTrack = data[currentIndex - 1];
+        // Если первый — переходим к последнему (циклический плейлист)
+        const prevIndex = isFirstTrack ? tracks.length - 1 : currentIndex - 1;
+        const prevTrack = tracks[prevIndex];
+
         if (prevTrack) {
             dispatch(setCurrentTrack(prevTrack));
             dispatch(setPlaying(true));
@@ -119,7 +129,7 @@ export default function Bar() {
                 setIsLoading(false); // ← Загрузка завершена
                 audio.play().catch(err => {
                     if (err.name === 'NotAllowedError') {
-                        console.warn('🔊 Требуется взаимодействие пользователя');
+                        console.warn('Требуется взаимодействие пользователя');
                         dispatch(setPlaying(false));
                     }
                 });
@@ -129,7 +139,7 @@ export default function Bar() {
         } else {
             setIsLoading(false);
         }
-    }, [audioSrc]);
+    }, [audioSrc, currentTrackItem?._id]);
 
     // Инициализация градиента громкости
     useEffect(() => {
@@ -250,7 +260,7 @@ export default function Bar() {
                 <audio
                     ref={audioRef}
                     src={audioSrc || undefined}
-                    key={audioSrc || 'no-track'}
+                    key={currentTrackItem?._id ?? 'no-track'}
                     preload='auto'
                     onPlay={handlePlay}
                     onPause={handlePause}
