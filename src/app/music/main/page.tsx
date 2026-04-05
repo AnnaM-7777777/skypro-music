@@ -1,9 +1,6 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import styles from './page.module.css';
-import Navigation from '@/components/Navigation/Navigation';
-import CenterBlock from '@/components/CenterBlock/CenterBlock';
-import Sidebar from '@/components/Sidebar/Sidebar';
+import PageLayout from '@/components/PageLayout/PageLayout';
 
 import { getSafeTrackUrl } from '@/utils/testTracks';
 import { data } from '@/app/data';
@@ -27,7 +24,7 @@ async function getTracks(token?: string): Promise<TrackType[]> {
         if (!res.ok) {
             if (res.status === 401) redirect('/auth/signin');
             console.error('API error:', res.status);
-            return data; // Фоллбэк на моковые данные
+            return data;
         }
 
         const response = await res.json();
@@ -54,9 +51,9 @@ async function getTracks(token?: string): Promise<TrackType[]> {
             return data;
         }
 
-        console.log('🎵 Parsed tracks count:', tracks.length);
+        console.log('Parsed tracks count:', tracks.length);
 
-        // Подменяем ссылки через вашу функцию
+        // Подменяем ссылки через функцию
         return tracks.map(track => ({
             ...track,
             track_file: getSafeTrackUrl(track.track_file),
@@ -72,16 +69,5 @@ export default async function MusicMain() {
     const token = cookieStore.get('token')?.value;
     const tracks = await getTracks(token);
 
-    return (
-        <div className={styles.wrapper}>
-            <div className={styles.container}>
-                <main className={styles.main}>
-                    <Navigation />
-                    <CenterBlock tracks={tracks} />
-                    <Sidebar />
-                </main>
-                <footer className='footer'></footer>
-            </div>
-        </div>
-    );
+    return <PageLayout tracks={tracks} />;
 }

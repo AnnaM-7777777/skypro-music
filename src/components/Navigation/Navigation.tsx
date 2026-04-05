@@ -35,9 +35,9 @@ export default function Navigation() {
 
     return (
         <nav className={styles.nav}>
-            <div className={styles.nav__logo}>
+            <Link href='/' className={styles.nav__logo}>
                 <Image width={113} height={17} src='/img/logo.png' alt='logo' />
-            </div>
+            </Link>
 
             {/* Бургер-кнопка */}
             <div

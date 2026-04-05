@@ -1,6 +1,5 @@
 'use client';
 
-import { data } from '@/app/data';
 import { IconLike } from '@/components/Icons';
 import ProgressBar from '@/components/Bar/ProgressBar';
 import { setCurrentTrack, setPlaying } from '@/store/features/trackSlice';
@@ -28,25 +27,21 @@ export default function Bar({ tracks }: BarProps) {
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(1);
-
-    // Состояние загрузки
     const [isLoading, setIsLoading] = useState(false);
-
-    // Состояния для Repeat и Shuffle
     const [isRepeat, setIsRepeat] = useState(false);
     const [isShuffle, setIsShuffle] = useState(false);
 
     const audioSrc = getSafeTrackUrl(currentTrackItem?.track_file);
 
-    // Получение случайного трека (не текущего)
-    const getRandomTrack = (excludeId?: number): (typeof data)[0] | undefined => {
-        const availableTracks = data.filter(t => t._id !== excludeId);
+    // Получение случайного трека ИЗ ПЕРЕДАННОГО МАССИВА (не data)
+    const getRandomTrack = (excludeId?: number): TrackType | undefined => {
+        const availableTracks = tracks.filter(t => t._id !== excludeId);
         if (availableTracks.length === 0) return undefined;
         const randomIndex = Math.floor(Math.random() * availableTracks.length);
         return availableTracks[randomIndex];
     };
 
-    // Переключение на следующий трек (используем tracks, а не data!)
+    // Переключение на следующий трек (используем tracks, а не data)
     const handleNext = () => {
         if (!currentTrackItem || tracks.length === 0) return;
 
@@ -59,11 +54,8 @@ export default function Bar({ tracks }: BarProps) {
             return;
         }
 
-        // Ищем индекс в РЕАЛЬНОМ массиве треков
         const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
         const isLastTrack = currentIndex === tracks.length - 1;
-
-        // Если последний — начинаем сначала (циклический плейлист)
         const nextIndex = isLastTrack ? 0 : currentIndex + 1;
         const nextTrack = tracks[nextIndex];
 
@@ -88,8 +80,6 @@ export default function Bar({ tracks }: BarProps) {
 
         const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
         const isFirstTrack = currentIndex === 0;
-
-        // Если первый — переходим к последнему (циклический плейлист)
         const prevIndex = isFirstTrack ? tracks.length - 1 : currentIndex - 1;
         const prevTrack = tracks[prevIndex];
 
@@ -111,22 +101,25 @@ export default function Bar({ tracks }: BarProps) {
         }
     }, [volume]);
 
-    // Загрузка трека + автовоспроизведение при смене источника
+    // Загрузка трека + остановка старого перед загрузкой нового
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio || !audioSrc) return;
 
-        setIsLoading(true); // ← Начинаем загрузку
+        // Останавливаем и сбрасываем старое аудио перед загрузкой нового
+        audio.pause();
+        audio.currentTime = 0;
+
+        setIsLoading(true);
         setCurrentTime(0);
         setDuration(0);
         audio.src = audioSrc;
         audio.preload = 'auto';
         audio.load();
 
-        // Если воспроизведение должно быть активным — ждём canplay и запускаем
         if (isPlayingRedux) {
             const onCanPlay = () => {
-                setIsLoading(false); // ← Загрузка завершена
+                setIsLoading(false);
                 audio.play().catch(err => {
                     if (err.name === 'NotAllowedError') {
                         console.warn('Требуется взаимодействие пользователя');
@@ -139,7 +132,12 @@ export default function Bar({ tracks }: BarProps) {
         } else {
             setIsLoading(false);
         }
-    }, [audioSrc, currentTrackItem?._id]);
+
+        // Cleanup: останавливаем аудио при размонтировании
+        return () => {
+            audio.pause();
+        };
+    }, [audioSrc, currentTrackItem?._id]); // Зависимость по _id, а не по ссылке
 
     // Инициализация градиента громкости
     useEffect(() => {
@@ -159,7 +157,7 @@ export default function Bar({ tracks }: BarProps) {
         } else {
             audioRef.current.play().catch(err => {
                 if (err.name === 'NotAllowedError') {
-                    console.warn('🔊 Требуется взаимодействие пользователя');
+                    console.warn('Требуется взаимодействие пользователя');
                 }
             });
         }
@@ -215,36 +213,34 @@ export default function Bar({ tracks }: BarProps) {
     // Завершение трека: Repeat или переход к следующему
     const handleEnded = () => {
         if (isRepeat) {
-            // Повтор текущего трека
             if (audioRef.current) {
                 audioRef.current.currentTime = 0;
                 audioRef.current.play().catch(err => {
                     if (err.name === 'NotAllowedError') {
-                        console.warn('🔊 Требуется взаимодействие пользователя');
+                        console.warn('Требуется взаимодействие пользователя');
                         dispatch(setPlaying(false));
                     }
                 });
             }
         } else {
-            // Переход к следующему
             handleNext();
         }
     };
 
     const handleError = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
-        console.error('🔊 Audio error:', e);
+        console.error('Audio error:', e);
     };
 
     if (!currentTrackItem || !audioSrc) return null;
 
-    const currentIndex = data.findIndex(track => track._id === currentTrackItem._id);
+    // Индексы считаем из tracks, а не data (исправление "красного кружка")
+    const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
     const isFirstTrack = currentIndex === 0;
-    const isLastTrack = currentIndex === data.length - 1;
+    const isLastTrack = currentIndex === tracks.length - 1;
 
     return (
         <div className={styles.bar}>
             <div className={styles.bar__progress}>
-                {/* Индикатор загрузки трека */}
                 {isLoading && (
                     <div className={styles.progress__loading}>
                         <span className={styles.progress__loadingText}>Загрузка трека...</span>
@@ -255,11 +251,11 @@ export default function Bar({ tracks }: BarProps) {
                 <ProgressBar max={duration} value={currentTime} step={0.1} onChange={handleSeek} />
             </div>
 
-            {/* Блок плеера */}
             <div className={styles.bar__block}>
                 <audio
                     ref={audioRef}
                     src={audioSrc || undefined}
+                    // Ключ по ID трека (не по ссылке!)
                     key={currentTrackItem?._id ?? 'no-track'}
                     preload='auto'
                     onPlay={handlePlay}
@@ -334,7 +330,7 @@ export default function Bar({ tracks }: BarProps) {
                     </div>
                 </div>
 
-                {/* Блок с картинкой, текущим треком и кнопкой like */}
+                {/* Блок с информацией о треке */}
                 <div className={styles.bar__trackPlay}>
                     <div className={styles.trackPlay__image}>
                         <svg className={styles.trackPlay__svg}>

@@ -62,21 +62,24 @@ function TrackItem({
                     </svg>
                 </div>
                 <div className={styles.name__text}>
-                    <Link className={styles.name__link} href=''>
+                    <Link className={styles.name__link} href='#'>
                         {title}
                     </Link>
                 </div>
             </div>
+
             <div className={styles.trackItem__author}>
                 <Link className={styles.author__link} href='#'>
                     {author}
                 </Link>
             </div>
+
             <div className={styles.trackItem__album}>
                 <Link className={styles.album___link} href='#'>
                     {album}
                 </Link>
             </div>
+
             <div className={styles.trackItem__time}>
                 <IconLike
                     className={styles.time__svg}
