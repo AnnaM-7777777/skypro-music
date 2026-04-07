@@ -8,9 +8,14 @@ import Bar from '@/components/Bar/Bar';
 interface CenterBlockProps {
     tracks: TrackType[];
     title?: string;
+    isLoading?: boolean;
 }
 
-export default function CenterBlock({ tracks, title = 'Треки' }: CenterBlockProps) {
+export default function CenterBlock({
+    tracks,
+    title = 'Треки',
+    isLoading = false,
+}: CenterBlockProps) {
     const allGenres = tracks.flatMap(t => t.genre || []);
     const genres = [...new Set(allGenres)];
     const artists = [...new Set(tracks.map(t => t.author))];
@@ -23,7 +28,7 @@ export default function CenterBlock({ tracks, title = 'Треки' }: CenterBloc
                 <h2 className={styles.centerblock__h2}>{title}</h2>
 
                 <Filter genres={genres} artists={artists} />
-                <TrackList tracks={tracks} />
+                <TrackList tracks={tracks} isLoading={isLoading} />
             </div>
 
             <Bar tracks={tracks} />

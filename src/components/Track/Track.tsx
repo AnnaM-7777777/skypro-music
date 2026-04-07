@@ -9,9 +9,85 @@ import Link from 'next/link';
 import { useState } from 'react';
 import styles from './Track.module.css';
 import { IconLike } from '@/components/Icons';
+import '../../../skeleton.css';
 
 interface TrackListProps {
     tracks: TrackType[];
+    isLoading?: boolean;
+}
+
+// Skeleton для одной строки трека
+function TrackItemSkeleton() {
+    return (
+        <div className={styles.trackItem}>
+            <div className={styles.trackItem__name}>
+                <div className={styles.name__image}>
+                    <div className='skeleton skeleton__square' />
+                </div>
+
+                <div className={styles.name__text}>
+                    <div
+                        className='skeleton skeleton__line skeleton__line--sm'
+                        style={{ width: '70%' }}
+                    />
+                </div>
+            </div>
+
+            <div className={styles.trackItem__author}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '70%' }}
+                />
+            </div>
+
+            <div className={styles.trackItem__album}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '60%' }}
+                />
+            </div>
+
+            {/* Альбом, лайк и время - ОДНОЙ полосой */}
+            <div className={styles.trackItem__time}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '100%' }}
+                />
+            </div>
+        </div>
+    );
+}
+
+// Skeleton для заголовка
+function TrackListHeaderSkeleton() {
+    return (
+        <div className={styles.trackItemList__title}>
+            <div className={`${styles.title__col} ${styles.col01}`}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '70px' }}
+                />
+            </div>
+            <div className={`${styles.title__col} ${styles.col02}`}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '140px' }}
+                />
+            </div>
+            <div className={`${styles.title__col} ${styles.col03}`}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '60px' }}
+                />
+            </div>
+            <div className={`${styles.title__col} ${styles.col04}`}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '30px' }}
+                />
+            </div>
+        </div>
+    );
 }
 
 // Внутренний компонент одной строки трека
@@ -96,9 +172,20 @@ function TrackItem({
 }
 
 // Основной компонент списка
-export default function TrackList({ tracks }: TrackListProps) {
+export default function TrackList({ tracks, isLoading = false }: TrackListProps) {
     const currentTrack = useAppSelector(state => state.tracks.currentTrack);
     const isPlayingGlobal = useAppSelector(state => state.tracks.isPlaying);
+
+    if (isLoading) {
+        return (
+            <div className={styles.trackItemList}>
+                <TrackListHeaderSkeleton />
+                {[...Array(8)].map((_, index) => (
+                    <TrackItemSkeleton key={index} />
+                ))}
+            </div>
+        );
+    }
 
     return (
         <div className={styles.trackItemList}>

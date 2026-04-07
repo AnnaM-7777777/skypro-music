@@ -7,17 +7,23 @@ import styles from '@/app/music/main/page.module.css';
 interface PageLayoutProps {
     tracks: TrackType[];
     title?: string;
-    children?: React.ReactNode; // если в будущем понадобятся дополнительные блоки
+    isLoading?: boolean;
+    children?: React.ReactNode;
 }
 
-export default function PageLayout({ tracks, title, children }: PageLayoutProps) {
+export default function PageLayout({
+    tracks,
+    title,
+    isLoading = false,
+    children,
+}: PageLayoutProps) {
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>
                 <main className={styles.main}>
                     <Navigation />
-                    <CenterBlock tracks={tracks} title={title} />
-                    <Sidebar />
+                    <CenterBlock tracks={tracks} title={title} isLoading={isLoading} />
+                    <Sidebar isLoading={isLoading} />
                     {children}
                 </main>
             </div>

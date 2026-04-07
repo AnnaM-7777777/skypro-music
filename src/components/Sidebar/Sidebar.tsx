@@ -3,8 +3,26 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Sidebar.module.css';
+import '../../../skeleton.css';
 
-export default function Sidebar() {
+interface SidebarProps {
+    isLoading?: boolean;
+}
+
+// Skeleton для плейлистов
+function PlaylistSkeleton() {
+    return (
+        <div className={styles.sidebar__list}>
+            {[...Array(3)].map((_, index) => (
+                <div key={index} className={styles.sidebar__link}>
+                    <div className='skeleton skeleton__playList' />
+                </div>
+            ))}
+        </div>
+    );
+}
+
+export default function Sidebar({ isLoading = false }: SidebarProps) {
     const handleLogout = () => {
         // 1. Удаляем токен (устанавливаем max-age=0)
         document.cookie = 'token=; path=/; max-age=0; SameSite=Lax';
@@ -13,6 +31,24 @@ export default function Sidebar() {
         // 2. Перенаправляем на страницу входа
         window.location.href = '/auth/signin';
     };
+
+    if (isLoading) {
+        return (
+            <div className={styles.sidebar}>
+                <div className={styles.sidebar__personal}>
+                    <div className={styles.sidebar__icon} style={{ cursor: 'default' }}>
+                        <svg>
+                            <use xlinkHref='/img/icon/sprite.svg#logout'></use>
+                        </svg>
+                    </div>
+                </div>
+
+                <div className={styles.sidebar__block}>
+                    <PlaylistSkeleton />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.sidebar}>

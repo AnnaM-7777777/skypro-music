@@ -10,9 +10,71 @@ import { TrackType } from '@/sharedTypes/sharedTypes';
 import classNames from 'classnames';
 import { useEffect, useRef, useState } from 'react';
 import styles from './Bar.module.css';
+import '../../../skeleton.css';
 
 interface BarProps {
     tracks: TrackType[];
+}
+
+// Skeleton для плеера
+function BarSkeleton() {
+    return (
+        <div className={styles.bar}>
+            <div className={styles.bar__progress}>
+                <div className='skeleton skeleton__line' style={{ height: '4px', width: '100%' }} />
+            </div>
+
+            <div className={styles.bar__block}>
+                <div className={styles.bar__btn}>
+                    <div className={styles.btn__prev}>
+                        <svg className={styles.btn__prevSvg}>
+                            <use href='/img/icon/sprite.svg#icon-prev' />
+                        </svg>
+                    </div>
+
+                    <div className={classNames(styles.btn__play, styles.btn)}>
+                        <svg className={styles.btn__playSvg}>
+                            <use href='/img/icon/sprite.svg#icon-play' />
+                        </svg>
+                    </div>
+
+                    <div className={styles.btn__next}>
+                        <svg className={styles.btn__nextSvg}>
+                            <use href='/img/icon/sprite.svg#icon-next' />
+                        </svg>
+                    </div>
+                </div>
+
+                {/* Skeleton для информации о треке */}
+                <div className={styles.bar__trackPlay}>
+                    <div className={styles.trackPlay__image}>
+                        <div
+                            className='skeleton skeleton__square'
+                            style={{ width: '48px', height: '48px' }}
+                        />
+                    </div>
+                    <div className={styles.trackPlay__info}>
+                        <div className='skeleton skeleton__line skeleton__line--md skeleton__line--medium' />
+                        <div className='skeleton skeleton__line skeleton__line--sm skeleton__line--short' />
+                    </div>
+                </div>
+
+                <div className={styles.bar__volume}>
+                    <div className={styles.volume__content}>
+                        <svg className={styles.volume__svg}>
+                            <use xlinkHref='/img/icon/sprite.svg#icon-volume' />
+                        </svg>
+                        <div className={styles.volume__progress}>
+                            <div
+                                className='skeleton skeleton__line'
+                                style={{ width: '100px', height: '4px' }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default function Bar({ tracks }: BarProps) {
@@ -231,9 +293,15 @@ export default function Bar({ tracks }: BarProps) {
         console.error('Audio error:', e);
     };
 
-    if (!currentTrackItem || !audioSrc) return null;
+    if (!currentTrackItem || !audioSrc) {
+        // Показываем skeleton когда трек загружается
+        if (isLoading) {
+            return <BarSkeleton />;
+        }
+        return null;
+    }
 
-    // Индексы считаем из tracks, а не data (исправление "красного кружка")
+    // Индексы считаем из tracks, а не data
     const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
     const isFirstTrack = currentIndex === 0;
     const isLastTrack = currentIndex === tracks.length - 1;
