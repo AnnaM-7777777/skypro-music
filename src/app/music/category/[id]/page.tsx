@@ -43,7 +43,7 @@ async function getCategory(id: string, token?: string): Promise<Collection | nul
             return null;
         }
 
-        const trackIds = categoryData.items; // [12, 17, 24, ...]
+        const trackIds = categoryData.items;
         console.log('Track IDs to fetch:', trackIds);
 
         // 2. Загружаем каждый трек по ID
@@ -98,7 +98,11 @@ export default async function CategoryPage({ params }: { params: Promise<{ id: s
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
-    if (!token) redirect('/auth/signin');
+    // Проверка до любого запроса
+    if (!token) {
+        redirect('/auth/signin');
+    }
+
     const category = await getCategory(id, token);
     if (!category) notFound();
 

@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import PageLayout from '@/components/PageLayout/PageLayout';
-
 import { getSafeTrackUrl } from '@/utils/testTracks';
 import { data } from '@/app/data';
 import { TrackType } from '@/sharedTypes/sharedTypes';
@@ -67,6 +66,13 @@ async function getTracks(token?: string): Promise<TrackType[]> {
 export default async function MusicMain() {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
+
+    // Если нет токена — редирект сразу, не вызывая API
+    if (!token) {
+        redirect('/auth/signin');
+    }
+
+    // Если токен есть — загружаем данные
     const tracks = await getTracks(token);
 
     return <PageLayout tracks={tracks} />;

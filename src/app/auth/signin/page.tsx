@@ -59,17 +59,23 @@ export default function Signin() {
             const tokenData = await tokenRes.json();
             console.log('Token response:', tokenData);
 
-            // ВАЖНО: используем tokenData.access, а не tokenData.token
+            // Используем tokenData.access, а не tokenData.token
             if (tokenRes.ok && tokenData.access) {
                 // 3. Сохраняем токен в cookie
                 document.cookie = `token=${tokenData.access}; path=/; max-age=604800; SameSite=Lax`;
+
+                // Даем браузеру время записать куки перед редиректом
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 50); // 50мс
+
                 console.log('Token saved to cookie');
                 console.log('Current cookies:', document.cookie);
 
                 // 4. Редирект на главную (используем window.location для надёжности)
                 console.log('Redirecting to /');
                 window.location.href = '/';
-                return; // Важно: выйти из функции после редиректа
+                return; // Выйти из функции после редиректа
             } else {
                 console.error('Invalid token response:', tokenData);
                 throw new Error('Не удалось получить токен');

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Sidebar.module.css';
 import '../../../skeleton.css';
+import IconLogout from '@/components/IconLogout/IconLogout';
 
 interface SidebarProps {
     isLoading?: boolean;
@@ -55,16 +56,7 @@ export default function Sidebar({ isLoading = false }: SidebarProps) {
             <div className={styles.sidebar__personal}>
                 {/* <p className={styles.sidebar__personalName}>Sergey.Ivanov</p> */}
 
-                <div
-                    className={styles.sidebar__icon}
-                    onClick={handleLogout}
-                    style={{ cursor: 'pointer' }}
-                    title='Выйти'
-                >
-                    <svg>
-                        <use xlinkHref='/img/icon/sprite.svg#logout'></use>
-                    </svg>
-                </div>
+                <IconLogout onClick={handleLogout} />
             </div>
 
             <div className={styles.sidebar__block}>

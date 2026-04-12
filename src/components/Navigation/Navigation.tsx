@@ -64,8 +64,18 @@ export default function Navigation() {
                         </Link>
                     </li>
 
+                    {/* Кнопка выхода */}
                     <li className={styles.menu__item}>
-                        <Link href='/signup' className={styles.menu__link} onClick={closeMenu}>
+                        <Link
+                            href='/auth/signin'
+                            className={styles.menu__link}
+                            onClick={e => {
+                                e.preventDefault();
+                                closeMenu();
+                                document.cookie = 'token=; path=/; max-age=0; SameSite=Lax';
+                                window.location.href = '/auth/signin';
+                            }}
+                        >
                             Выйти
                         </Link>
                     </li>

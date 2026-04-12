@@ -74,6 +74,12 @@ export default function SignUp() {
             if (tokenRes.ok && tokenData.access) {
                 // 3. Сохраняем токен в cookie
                 document.cookie = `token=${tokenData.access}; path=/; max-age=604800; SameSite=Lax`;
+
+                // Даем браузеру время записать куку перед редиректом
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 50); // 50мс
+
                 console.log('Token saved to cookie');
                 console.log('Current cookies:', document.cookie);
 
@@ -82,7 +88,7 @@ export default function SignUp() {
 
                 // Используем window.location как более надёжный вариант
                 window.location.href = '/';
-                return; // Важно: выйти из функции после редиректа
+                return; // Выйти из функции после редиректа
             } else {
                 throw new Error('Не удалось получить токен: ' + JSON.stringify(tokenData));
             }
@@ -90,7 +96,7 @@ export default function SignUp() {
             console.error('Error:', err);
             setError(err.message || 'Произошла ошибка при регистрации');
         } finally {
-            console.log('🔚 Finally block');
+            console.log('Finally block');
             setLoading(false);
         }
     };
