@@ -1,11 +1,22 @@
+'use client';
+
 import Navigation from '@/components/Navigation/Navigation';
 import Search from '@/components/Search/Search';
 import IconLogout from '@/components/IconLogout/IconLogout';
-import styles from '@/app/music/main/page.module.css';
+import styles from './not-found.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function NotFound() {
+    const handleLogout = () => {
+        // 1. Удаляем токен
+        document.cookie = 'token=; path=/; max-age=0; SameSite=Lax';
+        console.log('Token cleared');
+
+        // 2. Перенаправляем на страницу входа
+        window.location.href = '/auth/signin';
+    };
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>
@@ -17,6 +28,7 @@ export default function NotFound() {
 
                         <div className={styles.notFoundPage__info}>
                             <h1 className={styles.notFoundPage__h1}>404</h1>
+
                             <div className={styles.notFoundPage__text}>
                                 <h2 className={styles.notFoundPage__h2}>Страница не найдена</h2>
 
@@ -27,17 +39,20 @@ export default function NotFound() {
                                     alt='smile_crying'
                                 />
                             </div>
+
                             <p className={styles.notFoundPage__p}>
-                                Возможно, она была удалена или перенесена на другой адрес
+                                Возможно, она была удалена <br /> или перенесена на другой адрес
                             </p>
-                            <Link className={styles.notFoundPage__btnLink} href={'./music/main'}>
+
+                            <Link className={styles.notFoundPage__btnLink} href={'/music/main'}>
                                 Вернуться на главную
                             </Link>
-                            ;
                         </div>
                     </div>
 
-                    <IconLogout />
+                    <div className={styles.notFoundPageSidebar}>
+                        <IconLogout onClick={handleLogout} />
+                    </div>
                 </main>
             </div>
         </div>
