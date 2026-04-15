@@ -7,90 +7,108 @@ import Image from 'next/image';
 
 const API_URL = 'https://webdev-music-003b5b991590.herokuapp.com';
 
+// Универсальный компонент сообщений
+interface FormMessageProps {
+    type: 'error' | 'success';
+    text: string;
+    shake?: boolean;
+}
+
+function FormMessage({ type, text, shake = false }: FormMessageProps) {
+    if (!text) return null;
+    const baseClass = `${styles.formMessage} ${styles[`formMessage--${type}`]}`;
+    const shakeClass = shake && type === 'error' ? styles.shake : '';
+    return (
+        <div className={`${baseClass} ${shakeClass}`}>
+            <span>{type === 'error' ? '⚠️' : '✅'}</span>
+            <span>{text}</span>
+        </div>
+    );
+}
+
 export default function Signin() {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
+    const [validationError, setValidationError] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setError('');
+        setValidationError('');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Signin form submitted');
+        setError('');
+        setValidationError('');
+
+        // Валидация
+        if (!formData.email.trim()) {
+            setValidationError('Введите адрес электронной почты');
+            return;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            setValidationError('Неверный формат электронной почты');
+            return;
+        }
+        if (!formData.password) {
+            setValidationError('Введите пароль');
+            return;
+        }
+        if (formData.password.length < 6) {
+            setValidationError('Пароль должен содержать не менее 6 символов');
+            return;
+        }
 
         setLoading(true);
-        setError('');
 
         try {
             // 1. Логин
-            console.log('Sending login request...');
             const loginRes = await fetch(`${API_URL}/user/login/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: formData.email,
-                    password: formData.password,
-                }),
+                body: JSON.stringify({ email: formData.email, password: formData.password }),
             });
-            console.log('Login response status:', loginRes.status);
-
             const loginData = await loginRes.json();
-            console.log('Login response:', loginData);
+            if (!loginRes.ok) throw new Error(loginData.message || 'Ошибка входа');
 
-            if (!loginRes.ok) {
-                throw new Error(loginData.message || 'Ошибка входа');
-            }
-
-            // 2. Получаем токен
-            console.log('Sending token request...');
+            // 2. Токен
             const tokenRes = await fetch(`${API_URL}/user/token/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: formData.email,
-                    password: formData.password,
-                }),
+                body: JSON.stringify({ email: formData.email, password: formData.password }),
             });
-            console.log('Token response status:', tokenRes.status);
-
             const tokenData = await tokenRes.json();
-            console.log('Token response:', tokenData);
 
-            // Используем tokenData.access, а не tokenData.token
             if (tokenRes.ok && tokenData.access) {
-                // 3. Сохраняем токен в cookie
                 document.cookie = `token=${tokenData.access}; path=/; max-age=604800; SameSite=Lax`;
-
-                // Даем браузеру время записать куки перед редиректом
                 setTimeout(() => {
                     window.location.href = '/';
-                }, 50); // 50мс
-
-                console.log('Token saved to cookie');
-                console.log('Current cookies:', document.cookie);
-
-                // 4. Редирект на главную (используем window.location для надёжности)
-                console.log('Redirecting to /');
-                window.location.href = '/';
-                return; // Выйти из функции после редиректа
+                }, 50);
+                return;
             } else {
-                console.error('Invalid token response:', tokenData);
                 throw new Error('Не удалось получить токен');
             }
         } catch (err: any) {
-            console.error('Signin error:', err);
             setError(err.message || 'Произошла ошибка при входе');
         } finally {
-            console.log('Finally block - loading: false');
             setLoading(false);
         }
     };
 
+    // Простая логика сообщений: только ошибки
+    const getMessage = () => {
+        if (validationError) return { type: 'error' as const, text: validationError, shake: true };
+        if (error) return { type: 'error' as const, text: error, shake: false };
+        return null; // ← Успеха больше нет!
+    };
+
+    const messageData = getMessage();
+
     return (
-        <form onSubmit={handleSubmit} className={styles.modal__form}>
+        <form onSubmit={handleSubmit} className={styles.modal__form} noValidate>
             <Link href='/'>
                 <div className={styles.modal__logo}>
                     <Image
@@ -123,9 +141,13 @@ export default function Signin() {
                 required
             />
 
-            <div className={styles.errorContainer}>
-                {error && <span className={styles.error}>{error}</span>}
-            </div>
+            {messageData && (
+                <FormMessage
+                    type={messageData.type}
+                    text={messageData.text}
+                    shake={messageData.shake}
+                />
+            )}
 
             <button className={styles.modal__btnEnter} type='submit' disabled={loading}>
                 {loading ? 'Вход...' : 'Войти'}

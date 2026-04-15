@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './signup.module.css';
@@ -8,36 +9,73 @@ import Image from 'next/image';
 
 const API_URL = 'https://webdev-music-003b5b991590.herokuapp.com';
 
+// Универсальный компонент сообщений
+interface FormMessageProps {
+    type: 'error' | 'success';
+    text: string;
+    shake?: boolean;
+}
+
+function FormMessage({ type, text, shake = false }: FormMessageProps) {
+    if (!text) return null;
+    const baseClass = `${styles.formMessage} ${styles[`formMessage--${type}`]}`;
+    const shakeClass = shake && type === 'error' ? styles.shake : '';
+    return (
+        <div className={`${baseClass} ${shakeClass}`}>
+            <span>{type === 'error' ? '⚠️' : '✅'}</span>
+            <span>{text}</span>
+        </div>
+    );
+}
+
 export default function SignUp() {
     const router = useRouter();
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        username: '',
-    });
+    const [formData, setFormData] = useState({ email: '', password: '', username: '' });
     const [error, setError] = useState('');
+    const [validationError, setValidationError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false); // ← Новое: флаг успеха
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setError('');
+        setValidationError('');
+        setShowSuccess(false); // Скрываем успех при вводе
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Form submitted');
+        setError('');
+        setValidationError('');
+        setShowSuccess(false);
 
+        // Валидация
+        if (!formData.email.trim()) {
+            setValidationError('Введите адрес электронной почты');
+            return;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            setValidationError('Неверный формат электронной почты');
+            return;
+        }
+        if (!formData.username.trim()) {
+            setValidationError('Введите имя пользователя');
+            return;
+        }
+        if (formData.username.length < 3) {
+            setValidationError('Имя пользователя должно содержать не менее 3 символов');
+            return;
+        }
         if (formData.password.length < 6) {
-            setError('Пароль должен быть не менее 6 символов');
+            setValidationError('Пароль должен содержать не менее 6 символов');
             return;
         }
 
         setLoading(true);
-        setError('');
 
         try {
             // 1. Регистрация
-            console.log('Sending signup request...');
             const signupRes = await fetch(`${API_URL}/user/signup/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -47,62 +85,56 @@ export default function SignUp() {
                     username: formData.username,
                 }),
             });
-            console.log('Signup response status:', signupRes.status);
-
             const signupData = await signupRes.json();
-            console.log('Signup response:', signupData);
-
-            if (!signupRes.ok) {
-                throw new Error(signupData.message || 'Ошибка регистрации');
-            }
+            if (!signupRes.ok) throw new Error(signupData.message || 'Ошибка регистрации');
 
             // 2. Получаем токен
-            console.log('Sending token request...');
             const tokenRes = await fetch(`${API_URL}/user/token/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: formData.email,
-                    password: formData.password,
-                }),
+                body: JSON.stringify({ email: formData.email, password: formData.password }),
             });
-            console.log('Token response status:', tokenRes.status);
-
             const tokenData = await tokenRes.json();
-            console.log('Token response:', tokenData);
 
             if (tokenRes.ok && tokenData.access) {
-                // 3. Сохраняем токен в cookie
                 document.cookie = `token=${tokenData.access}; path=/; max-age=604800; SameSite=Lax`;
 
-                // Даем браузеру время записать куку перед редиректом
+                // Показываем успех
+                setShowSuccess(true);
+
+                // Ждём 2 секунды и редиректим на вход
                 setTimeout(() => {
-                    window.location.href = '/';
-                }, 50); // 50мс
+                    window.location.href = '/auth/signin';
+                }, 2000);
 
-                console.log('Token saved to cookie');
-                console.log('Current cookies:', document.cookie);
-
-                // 4. Редирект (БЕЗ router.refresh())
-                console.log('Redirecting to /');
-
-                // Используем window.location как более надёжный вариант
-                window.location.href = '/';
-                return; // Выйти из функции после редиректа
+                return;
             } else {
-                throw new Error('Не удалось получить токен: ' + JSON.stringify(tokenData));
+                throw new Error('Не удалось получить токен');
             }
         } catch (err: any) {
-            console.error('Error:', err);
             setError(err.message || 'Произошла ошибка при регистрации');
         } finally {
-            console.log('Finally block');
             setLoading(false);
         }
     };
 
+    // Простая логика сообщений: только ошибки
+    const getMessage = () => {
+        if (validationError) return { type: 'error' as const, text: validationError, shake: true };
+        if (error) return { type: 'error' as const, text: error, shake: false };
+        if (showSuccess)
+            return {
+                type: 'success' as const,
+                text: 'Регистрация успешна! Теперь войдите в аккаунт.',
+                shake: false,
+            };
+        return null;
+    };
+
+    const messageData = getMessage();
+
     return (
-        <form onSubmit={handleSubmit} className={styles.modal__form}>
+        <form onSubmit={handleSubmit} className={styles.modal__form} noValidate>
             <Link href='/'>
                 <div className={styles.modal__logo}>
                     <Image
@@ -145,12 +177,25 @@ export default function SignUp() {
                 minLength={6}
             />
 
-            <div className={styles.errorContainer}>
-                {error && <span className={styles.error}>{error}</span>}
-            </div>
+            {/* Одно сообщение для всего */}
+            {messageData && (
+                <FormMessage
+                    type={messageData.type}
+                    text={messageData.text}
+                    shake={messageData.shake}
+                />
+            )}
 
-            <button className={styles.modal__btnSignupEnt} type='submit' disabled={loading}>
-                {loading ? 'Регистрация...' : 'Зарегистрироваться'}
+            <button
+                className={styles.modal__btnSignupEnt}
+                type='submit'
+                disabled={loading || showSuccess}
+            >
+                {loading
+                    ? 'Регистрация...'
+                    : showSuccess
+                      ? 'Перенаправление...'
+                      : 'Зарегистрироваться'}
             </button>
         </form>
     );
