@@ -2,6 +2,7 @@
 
 import { IconLike } from '@/components/Icons';
 import ProgressBar from '@/components/Bar/ProgressBar';
+import Toast from '@/components/Toast/Toast';
 import { setCurrentTrack, setPlaying } from '@/store/features/trackSlice';
 import { getTimePanel } from '@/utils/helpers';
 import { useAppDispatch, useAppSelector } from '@/store/store';
@@ -78,6 +79,7 @@ function BarSkeleton() {
 }
 
 export default function Bar({ tracks }: BarProps) {
+    const [showAuthToast, setShowAuthToast] = useState(false);
     const currentTrackItem = useAppSelector(state => state.tracks.currentTrack);
     const isPlayingRedux = useAppSelector(state => state.tracks.isPlaying);
     const dispatch = useAppDispatch();
@@ -232,9 +234,7 @@ export default function Bar({ tracks }: BarProps) {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            // Просто показываем уведомление
-            alert('Чтобы ставить лайки, пожалуйста, авторизуйтесь');
-
+            setShowAuthToast(true);
             return;
         }
 
@@ -454,6 +454,13 @@ export default function Bar({ tracks }: BarProps) {
                     </div>
                 </div>
             </div>
+
+            {showAuthToast && (
+                <Toast
+                    message='Чтобы ставить лайки, пожалуйста, авторизуйтесь'
+                    onClose={() => setShowAuthToast(false)}
+                />
+            )}
         </div>
     );
 }

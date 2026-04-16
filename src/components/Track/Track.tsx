@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import styles from './Track.module.css';
 import { IconLike } from '@/components/Icons';
+import Toast from '@/components/Toast/Toast';
 import '../../../skeleton.css';
 
 interface TrackListProps {
@@ -110,6 +111,7 @@ function TrackItem({
 }) {
     const [isLiked, setIsLiked] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const [showAuthToast, setShowAuthToast] = useState(false);
     const dispatch = useAppDispatch();
 
     // Like — с проверкой авторизации, без редиректа, только уведомление
@@ -119,8 +121,7 @@ function TrackItem({
         const token = localStorage.getItem('token');
 
         if (!token) {
-            // Просто показываем уведомление
-            alert('Чтобы ставить лайки, пожалуйста, авторизуйтесь');
+            setShowAuthToast(true);
             return;
         }
 
@@ -178,6 +179,13 @@ function TrackItem({
                 />
                 <span className={styles.time__text}>{duration}</span>
             </div>
+
+            {showAuthToast && (
+                <Toast
+                    message='Чтобы ставить лайки, пожалуйста, авторизуйтесь'
+                    onClose={() => setShowAuthToast(false)}
+                />
+            )}
         </div>
     );
 }
