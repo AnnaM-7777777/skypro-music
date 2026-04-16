@@ -13,15 +13,6 @@ export default function Error({
     error: Error & { digest?: string };
     reset: () => void;
 }) {
-    const handleLogout = () => {
-        // 1. Удаляем токен
-        document.cookie = 'token=; path=/; max-age=0; SameSite=Lax';
-        console.log('Token cleared');
-
-        // 2. Перенаправляем на страницу входа
-        window.location.href = '/auth/signin';
-    };
-
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>
@@ -52,7 +43,7 @@ export default function Error({
                     </div>
 
                     <div className={styles.errorPageSidebar}>
-                        <IconLogout onClick={handleLogout} />
+                        <IconLogout />
                     </div>
                 </main>
             </div>

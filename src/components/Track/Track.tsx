@@ -112,9 +112,20 @@ function TrackItem({
     const [isHovered, setIsHovered] = useState(false);
     const dispatch = useAppDispatch();
 
+    // Like — с проверкой авторизации, без редиректа, только уведомление
     const toggleLike = (e?: React.MouseEvent) => {
         e?.stopPropagation();
+
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            // Просто показываем уведомление
+            alert('Чтобы ставить лайки, пожалуйста, авторизуйтесь');
+            return;
+        }
+
         setIsLiked(!isLiked);
+        // Здесь будет запрос к API
     };
 
     const onClickTrack = () => {

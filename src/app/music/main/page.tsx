@@ -1,5 +1,6 @@
-import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
+'use client';
+
+import { useEffect, useState } from 'react';
 import PageLayout from '@/components/PageLayout/PageLayout';
 import { getSafeTrackUrl } from '@/utils/testTracks';
 import { data } from '@/app/data';
@@ -7,73 +8,49 @@ import { TrackType } from '@/sharedTypes/sharedTypes';
 
 const API_URL = 'https://webdev-music-003b5b991590.herokuapp.com';
 
-async function getTracks(token?: string): Promise<TrackType[]> {
-    const headers: HeadersInit = { 'Content-Type': 'application/json' };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+export default function MusicMain() {
+    const [tracks, setTracks] = useState<TrackType[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTracks = async () => {
+            try {
+                // Токен добавляем только если есть
+                const token = localStorage.getItem('token');
+                const headers: HeadersInit = { 'Content-Type': 'application/json' };
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const res = await fetch(`${API_URL}/catalog/track/all/`, { headers });
+                if (!res.ok) throw new Error('Failed to fetch');
+
+                const response = await res.json();
+                const tracksData = Array.isArray(response)
+                    ? response
+                    : response.data || response.results || [];
+
+                const processed = tracksData.map((t: TrackType) => ({
+                    ...t,
+                    track_file: getSafeTrackUrl(t.track_file),
+                }));
+
+                setTracks(processed);
+            } catch (err) {
+                console.error('Error:', err);
+                setTracks(data);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTracks();
+    }, []);
+
+    // Показываем скелетон пока грузятся данные
+    if (loading) {
+        return <PageLayout tracks={[]} isLoading={true} />;
     }
-
-    try {
-        const res = await fetch(`${API_URL}/catalog/track/all/`, {
-            method: 'GET',
-            headers,
-            next: { revalidate: 3600 },
-        });
-
-        if (!res.ok) {
-            if (res.status === 401) redirect('/auth/signin');
-            console.error('API error:', res.status);
-            return data;
-        }
-
-        const response = await res.json();
-        console.log('API response type:', typeof response);
-        console.log('API response:', response);
-
-        // Обрабатываем разные форматы ответа
-        let tracks: TrackType[] = [];
-
-        if (Array.isArray(response)) {
-            // Если пришёл сразу массив
-            tracks = response;
-        } else if (response?.results && Array.isArray(response.results)) {
-            // Если пришёл объект { results: [...] }
-            tracks = response.results;
-        } else if (response?.data && Array.isArray(response.data)) {
-            // Если пришёл объект { data: [...] }
-            tracks = response.data;
-        } else if (response?.tracks && Array.isArray(response.tracks)) {
-            // Если пришёл объект { tracks: [...] }
-            tracks = response.tracks;
-        } else {
-            console.warn('Unexpected API response format, using mock data');
-            return data;
-        }
-
-        console.log('Parsed tracks count:', tracks.length);
-
-        // Подменяем ссылки через функцию
-        return tracks.map(track => ({
-            ...track,
-            track_file: getSafeTrackUrl(track.track_file),
-        }));
-    } catch (err) {
-        console.error('Fetch error:', err);
-        return data;
-    }
-}
-
-export default async function MusicMain() {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value;
-
-    // Если нет токена — редирект сразу, не вызывая API
-    if (!token) {
-        redirect('/auth/signin');
-    }
-
-    // Если токен есть — загружаем данные
-    const tracks = await getTracks(token);
 
     return <PageLayout tracks={tracks} />;
 }

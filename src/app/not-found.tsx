@@ -8,15 +8,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function NotFound() {
-    const handleLogout = () => {
-        // 1. Удаляем токен
-        document.cookie = 'token=; path=/; max-age=0; SameSite=Lax';
-        console.log('Token cleared');
-
-        // 2. Перенаправляем на страницу входа
-        window.location.href = '/auth/signin';
-    };
-
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>
@@ -51,7 +42,7 @@ export default function NotFound() {
                     </div>
 
                     <div className={styles.notFoundPageSidebar}>
-                        <IconLogout onClick={handleLogout} />
+                        <IconLogout />
                     </div>
                 </main>
             </div>

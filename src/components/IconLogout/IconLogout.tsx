@@ -1,28 +1,31 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import styles from './IconLogout.module.css';
 
-interface IconLogoutProps {
-    onClick?: () => void;
-}
+export default function IconLogout() {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-export default function IconLogout({ onClick }: IconLogoutProps) {
+    // Проверяем токен при загрузке компонента
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setIsAuthenticated(!!token);
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        window.location.href = '/auth/signin';
+    };
+
     return (
         <div
             className={styles.sidebar__icon}
             style={{ cursor: 'pointer' }}
-            onClick={onClick}
-            title='Выйти'
-            role='button'
-            tabIndex={0}
-            onKeyDown={e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    onClick?.();
-                }
-            }}
+            onClick={handleLogout}
+            title={isAuthenticated ? 'Выйти' : 'Войти'}
         >
             <svg>
-                <use xlinkHref='/img/icon/sprite.svg#logout'></use>
+                <use xlinkHref='/img/icon/sprite.svg#logout' />
             </svg>
         </div>
     );

@@ -3,7 +3,7 @@
 import { IconLike } from '@/components/Icons';
 import ProgressBar from '@/components/Bar/ProgressBar';
 import { setCurrentTrack, setPlaying } from '@/store/features/trackSlice';
-import { formatDuration, getTimePanel } from '@/utils/helpers';
+import { getTimePanel } from '@/utils/helpers';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { getSafeTrackUrl } from '@/utils/testTracks';
 import { TrackType } from '@/sharedTypes/sharedTypes';
@@ -225,10 +225,22 @@ export default function Bar({ tracks }: BarProps) {
         }
     };
 
-    // Like
+    // Like — с проверкой авторизации, без редиректа, только уведомление
     const toggleLike = (e?: React.MouseEvent) => {
         e?.stopPropagation();
+
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            // Просто показываем уведомление
+            alert('Чтобы ставить лайки, пожалуйста, авторизуйтесь');
+
+            return;
+        }
+
+        // Если авторизован — выполняем лайк
         setIsLiked(!isLiked);
+        // Здесь будет запрос к API
     };
 
     // Обновление прогресса

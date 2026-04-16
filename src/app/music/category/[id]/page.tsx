@@ -14,12 +14,10 @@ interface Collection {
 }
 
 async function getCategory(id: string, token?: string): Promise<Collection | null> {
-    if (!token) return null;
-
-    const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-    };
+    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
 
     try {
         // 1. Получаем подборку (список ID треков)
@@ -43,7 +41,7 @@ async function getCategory(id: string, token?: string): Promise<Collection | nul
             return null;
         }
 
-        const trackIds = categoryData.items;
+        const trackIds = categoryData.items; // [12, 17, 24, ...]
         console.log('Track IDs to fetch:', trackIds);
 
         // 2. Загружаем каждый трек по ID
@@ -97,11 +95,6 @@ export default async function CategoryPage({ params }: { params: Promise<{ id: s
     const { id } = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
-
-    // Проверка до любого запроса
-    if (!token) {
-        redirect('/auth/signin');
-    }
 
     const category = await getCategory(id, token);
     if (!category) notFound();

@@ -24,15 +24,6 @@ function PlaylistSkeleton() {
 }
 
 export default function Sidebar({ isLoading = false }: SidebarProps) {
-    const handleLogout = () => {
-        // 1. Удаляем токен (устанавливаем max-age=0)
-        document.cookie = 'token=; path=/; max-age=0; SameSite=Lax';
-        console.log(' Token cleared');
-
-        // 2. Перенаправляем на страницу входа
-        window.location.href = '/auth/signin';
-    };
-
     if (isLoading) {
         return (
             <div className={styles.sidebar}>
@@ -56,7 +47,7 @@ export default function Sidebar({ isLoading = false }: SidebarProps) {
             <div className={styles.sidebar__personal}>
                 {/* <p className={styles.sidebar__personalName}>Sergey.Ivanov</p> */}
 
-                <IconLogout onClick={handleLogout} />
+                <IconLogout />
             </div>
 
             <div className={styles.sidebar__block}>

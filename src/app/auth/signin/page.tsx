@@ -1,5 +1,7 @@
 'use client';
+
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './signin.module.css';
 import classNames from 'classnames';
 import Link from 'next/link';
@@ -7,7 +9,6 @@ import Image from 'next/image';
 
 const API_URL = 'https://webdev-music-003b5b991590.herokuapp.com';
 
-// Универсальный компонент сообщений
 interface FormMessageProps {
     type: 'error' | 'success';
     text: string;
@@ -27,6 +28,7 @@ function FormMessage({ type, text, shake = false }: FormMessageProps) {
 }
 
 export default function Signin() {
+    const router = useRouter();
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [validationError, setValidationError] = useState('');
@@ -65,7 +67,6 @@ export default function Signin() {
         setLoading(true);
 
         try {
-            // 1. Логин
             const loginRes = await fetch(`${API_URL}/user/login/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -74,7 +75,6 @@ export default function Signin() {
             const loginData = await loginRes.json();
             if (!loginRes.ok) throw new Error(loginData.message || 'Ошибка входа');
 
-            // 2. Токен
             const tokenRes = await fetch(`${API_URL}/user/token/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -83,10 +83,10 @@ export default function Signin() {
             const tokenData = await tokenRes.json();
 
             if (tokenRes.ok && tokenData.access) {
-                document.cookie = `token=${tokenData.access}; path=/; max-age=604800; SameSite=Lax`;
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 50);
+                // Сохраняем в localStorage
+                localStorage.setItem('token', tokenData.access);
+                // Клиентский редирект
+                router.push('/music/main');
                 return;
             } else {
                 throw new Error('Не удалось получить токен');
@@ -98,11 +98,10 @@ export default function Signin() {
         }
     };
 
-    // Простая логика сообщений: только ошибки
     const getMessage = () => {
         if (validationError) return { type: 'error' as const, text: validationError, shake: true };
         if (error) return { type: 'error' as const, text: error, shake: false };
-        return null; // ← Успеха больше нет!
+        return null;
     };
 
     const messageData = getMessage();

@@ -9,7 +9,6 @@ import Image from 'next/image';
 
 const API_URL = 'https://webdev-music-003b5b991590.herokuapp.com';
 
-// Универсальный компонент сообщений
 interface FormMessageProps {
     type: 'error' | 'success';
     text: string;
@@ -34,13 +33,13 @@ export default function SignUp() {
     const [error, setError] = useState('');
     const [validationError, setValidationError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false); // ← Новое: флаг успеха
+    const [showSuccess, setShowSuccess] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setError('');
         setValidationError('');
-        setShowSuccess(false); // Скрываем успех при вводе
+        setShowSuccess(false);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -75,7 +74,6 @@ export default function SignUp() {
         setLoading(true);
 
         try {
-            // 1. Регистрация
             const signupRes = await fetch(`${API_URL}/user/signup/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -88,7 +86,6 @@ export default function SignUp() {
             const signupData = await signupRes.json();
             if (!signupRes.ok) throw new Error(signupData.message || 'Ошибка регистрации');
 
-            // 2. Получаем токен
             const tokenRes = await fetch(`${API_URL}/user/token/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -97,16 +94,11 @@ export default function SignUp() {
             const tokenData = await tokenRes.json();
 
             if (tokenRes.ok && tokenData.access) {
-                document.cookie = `token=${tokenData.access}; path=/; max-age=604800; SameSite=Lax`;
-
-                // Показываем успех
+                localStorage.setItem('token', tokenData.access);
                 setShowSuccess(true);
-
-                // Ждём 2 секунды и редиректим на вход
                 setTimeout(() => {
-                    window.location.href = '/auth/signin';
+                    router.push('/auth/signin');
                 }, 2000);
-
                 return;
             } else {
                 throw new Error('Не удалось получить токен');
@@ -118,7 +110,6 @@ export default function SignUp() {
         }
     };
 
-    // Простая логика сообщений: только ошибки
     const getMessage = () => {
         if (validationError) return { type: 'error' as const, text: validationError, shake: true };
         if (error) return { type: 'error' as const, text: error, shake: false };
@@ -177,7 +168,6 @@ export default function SignUp() {
                 minLength={6}
             />
 
-            {/* Одно сообщение для всего */}
             {messageData && (
                 <FormMessage
                     type={messageData.type}
