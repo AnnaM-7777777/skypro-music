@@ -23,4 +23,17 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 # 3. Блок. TypeScript:
 
+# 4. Блок. Redux Toolkit:
 
+# 5. Асинхронность в Redux:
+
+1. Создать искусственную ошибку для теста и верстки:
+   throw new Error('Тестовая ошибка для error.tsx');
+
+2. Проверка кнопки "Повторить"
+   В src/app/music/main/page.tsx поставить временный флаг для теста:
+   const TEST_MODE = true; // ← true - ошибка, false - снова загрузка страницы
+   В самом компоненте MusicMain:
+   if (TEST_MODE) {
+   throw new Error('Тестовая ошибка для error.tsx');
+   }

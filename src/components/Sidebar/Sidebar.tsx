@@ -1,22 +1,58 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Sidebar.module.css';
+import '../../../skeleton.css';
+import IconLogout from '@/components/IconLogout/IconLogout';
 
-export default function Sidebar() {
+interface SidebarProps {
+    isLoading?: boolean;
+}
+
+// Skeleton для плейлистов
+function PlaylistSkeleton() {
+    return (
+        <div className={styles.sidebar__list}>
+            {[...Array(3)].map((_, index) => (
+                <div key={index} className={styles.sidebar__link}>
+                    <div className='skeleton skeleton__playList' />
+                </div>
+            ))}
+        </div>
+    );
+}
+
+export default function Sidebar({ isLoading = false }: SidebarProps) {
+    if (isLoading) {
+        return (
+            <div className={styles.sidebar}>
+                <div className={styles.sidebar__personal}>
+                    <div className={styles.sidebar__icon} style={{ cursor: 'default' }}>
+                        <svg>
+                            <use xlinkHref='/img/icon/sprite.svg#logout'></use>
+                        </svg>
+                    </div>
+                </div>
+
+                <div className={styles.sidebar__block}>
+                    <PlaylistSkeleton />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.sidebar}>
             <div className={styles.sidebar__personal}>
                 {/* <p className={styles.sidebar__personalName}>Sergey.Ivanov</p> */}
-                <div className={styles.sidebar__icon}>
-                    <svg>
-                        <use xlinkHref='/img/icon/sprite.svg#logout'></use>
-                    </svg>
-                </div>
+
+                <IconLogout />
             </div>
 
             <div className={styles.sidebar__block}>
                 <div className={styles.sidebar__list}>
-                    <Link className={styles.sidebar__link} href='#'>
+                    <Link className={styles.sidebar__link} href='/music/category/2'>
                         <Image
                             src='/img/playlist01.png'
                             alt="day's playlist"
@@ -27,7 +63,7 @@ export default function Sidebar() {
                         />
                     </Link>
 
-                    <Link className={styles.sidebar__link} href='#'>
+                    <Link className={styles.sidebar__link} href='/music/category/3'>
                         <Image
                             src='/img/playlist02.png'
                             alt="day's playlist"
@@ -38,7 +74,7 @@ export default function Sidebar() {
                         />
                     </Link>
 
-                    <Link className={styles.sidebar__link} href='#'>
+                    <Link className={styles.sidebar__link} href='/music/category/4'>
                         <Image
                             src='/img/playlist03.png'
                             alt="day's playlist"

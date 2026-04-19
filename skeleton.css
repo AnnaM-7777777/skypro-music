@@ -1,0 +1,101 @@
+/* Skeleton анимация */
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Для светлой темы */
+:global(.item__lightTheme) .skeleton {
+    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+}
+
+/* Общие для всего Skeleton */
+.skeleton {
+    display: block;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.06) 25%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0.06) 75%
+    );
+
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+/* Skeleton иконка трека в списке треков и в Bar */
+.skeleton__square {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+/* Skeleton линии */
+.skeleton__line {
+    display: block;
+    height: 12px;
+    width: 100%;
+    min-width: 20px;
+}
+
+.skeleton__line--sm {
+    height: 12px;
+}
+
+.skeleton__line--md {
+    height: 14px;
+}
+
+.skeleton__line--lg {
+    height: 16px;
+}
+
+.skeleton__line--short {
+    width: 60%;
+}
+
+.skeleton__line--medium {
+    width: 80%;
+}
+
+/* Skeleton для трека в списке в TrackList */
+.skeleton__trackItem {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 100px;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.skeleton__trackItem__name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 340px;
+}
+
+.skeleton__trackItem__author,
+.skeleton__trackItem__album,
+.skeleton__trackItem__time {
+    display: flex;
+    align-items: center;
+}
+
+/* Skeleton для SideBar */
+.skeleton__playList {
+    width: 250px;
+    height: 150px;
+}
+
+/* Skeleton для плеера Bar */
+.skeleton__bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+}

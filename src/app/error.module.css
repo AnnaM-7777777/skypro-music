@@ -1,0 +1,88 @@
+.wrapper {
+    width: 100%;
+    min-height: 100vh;
+    color: #fff;
+    background-color: rgba(24, 24, 24, 1);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.main {
+    min-height: 100vh;
+    display: flex;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.errorPage {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: center;
+    padding-top: 23px;
+    min-height: 99vh;
+}
+
+.errorPage__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
+.errorPage__h2 {
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 38px;
+    letter-spacing: -0.8%;
+    color: rgba(255, 255, 255, 1);
+    margin: 12px 0 10px 0;
+}
+
+.errorPage__p {
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.3%;
+    color: rgba(78, 78, 78, 1);
+}
+
+.errorPage__btnRetry {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 178px;
+    height: 52px;
+    opacity: 1;
+    border-radius: 6px;
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.3%;
+    background: rgba(88, 14, 162, 1);
+    color: rgba(255, 255, 255, 1);
+    margin-top: 36px;
+    border: none;
+    cursor: pointer;
+}
+
+.errorPage__btnRetry:hover {
+    background: rgba(63, 0, 125, 1);
+}
+
+.errorPageSidebar {
+    display: flex;
+    justify-content: flex-end;
+    width: 333px;
+    padding-right: 90px;
+    padding-top: 36px;
+}

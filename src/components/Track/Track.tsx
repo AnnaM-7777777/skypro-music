@@ -1,7 +1,5 @@
 'use client';
 
-import { data } from '@/app/data';
-import { IconLike } from '@/components/Icons';
 import { TrackType } from '@/sharedTypes/sharedTypes';
 import { setCurrentTrack } from '@/store/features/trackSlice';
 import { useAppDispatch, useAppSelector } from '@/store/store';
@@ -10,8 +8,90 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import { useState } from 'react';
 import styles from './Track.module.css';
+import { IconLike } from '@/components/Icons';
+import Toast from '@/components/Toast/Toast';
+import '../../../skeleton.css';
 
-// Внутренний компонент TrackItem: одна строка трека (рендерится в map)
+interface TrackListProps {
+    tracks: TrackType[];
+    isLoading?: boolean;
+}
+
+// Skeleton для одной строки трека
+function TrackItemSkeleton() {
+    return (
+        <div className={styles.trackItem}>
+            <div className={styles.trackItem__name}>
+                <div className={styles.name__image}>
+                    <div className='skeleton skeleton__square' />
+                </div>
+
+                <div className={styles.name__text}>
+                    <div
+                        className='skeleton skeleton__line skeleton__line--sm'
+                        style={{ width: '70%' }}
+                    />
+                </div>
+            </div>
+
+            <div className={styles.trackItem__author}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '70%' }}
+                />
+            </div>
+
+            <div className={styles.trackItem__album}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '60%' }}
+                />
+            </div>
+
+            {/* Альбом, лайк и время - ОДНОЙ полосой */}
+            <div className={styles.trackItem__time}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '100%' }}
+                />
+            </div>
+        </div>
+    );
+}
+
+// Skeleton для заголовка
+function TrackListHeaderSkeleton() {
+    return (
+        <div className={styles.trackItemList__title}>
+            <div className={`${styles.title__col} ${styles.col01}`}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '70px' }}
+                />
+            </div>
+            <div className={`${styles.title__col} ${styles.col02}`}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '140px' }}
+                />
+            </div>
+            <div className={`${styles.title__col} ${styles.col03}`}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '60px' }}
+                />
+            </div>
+            <div className={`${styles.title__col} ${styles.col04}`}>
+                <div
+                    className='skeleton skeleton__line skeleton__line--sm'
+                    style={{ width: '30px' }}
+                />
+            </div>
+        </div>
+    );
+}
+
+// Внутренний компонент одной строки трека
 function TrackItem({
     title,
     author,
@@ -31,11 +111,22 @@ function TrackItem({
 }) {
     const [isLiked, setIsLiked] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const [showAuthToast, setShowAuthToast] = useState(false);
     const dispatch = useAppDispatch();
 
+    // Like — с проверкой авторизации, без редиректа, только уведомление
     const toggleLike = (e?: React.MouseEvent) => {
         e?.stopPropagation();
+
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            setShowAuthToast(true);
+            return;
+        }
+
         setIsLiked(!isLiked);
+        // Здесь будет запрос к API
     };
 
     const onClickTrack = () => {
@@ -54,14 +145,12 @@ function TrackItem({
                             )}
                         />
                     )}
-
                     <svg className={styles.name__svg}>
                         <use href='/img/icon/sprite.svg#icon-note'></use>
                     </svg>
                 </div>
-
                 <div className={styles.name__text}>
-                    <Link className={styles.name__link} href=''>
+                    <Link className={styles.name__link} href='#'>
                         {title}
                     </Link>
                 </div>
@@ -90,18 +179,35 @@ function TrackItem({
                 />
                 <span className={styles.time__text}>{duration}</span>
             </div>
+
+            {showAuthToast && (
+                <Toast
+                    message='Чтобы ставить лайки, пожалуйста, авторизуйтесь'
+                    onClose={() => setShowAuthToast(false)}
+                />
+            )}
         </div>
     );
 }
 
-// Основной компонент TrackList: список всех треков с заголовком
-export default function TrackList() {
+// Основной компонент списка
+export default function TrackList({ tracks, isLoading = false }: TrackListProps) {
     const currentTrack = useAppSelector(state => state.tracks.currentTrack);
     const isPlayingGlobal = useAppSelector(state => state.tracks.isPlaying);
 
+    if (isLoading) {
+        return (
+            <div className={styles.trackItemList}>
+                <TrackListHeaderSkeleton />
+                {[...Array(8)].map((_, index) => (
+                    <TrackItemSkeleton key={index} />
+                ))}
+            </div>
+        );
+    }
+
     return (
         <div className={styles.trackItemList}>
-            {/* Заголовок таблицы */}
             <div className={styles.trackItemList__title}>
                 <div className={`${styles.title__col} ${styles.col01}`}>Трек</div>
                 <div className={`${styles.title__col} ${styles.col02}`}>Исполнитель</div>
@@ -113,8 +219,7 @@ export default function TrackList() {
                 </div>
             </div>
 
-            {/* Список треков */}
-            {data.map(track => (
+            {tracks.map(track => (
                 <TrackItem
                     key={track._id}
                     track={track}

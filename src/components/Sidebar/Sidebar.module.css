@@ -15,19 +15,6 @@
     justify-content: flex-end;
 }
 
-.sidebar__icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.sidebar__icon svg {
-    width: 100%;
-    height: 100%;
-}
-
 .sidebar__block {
     height: 100%;
     padding-bottom: 64px;
@@ -40,7 +27,8 @@
     flex-direction: column;
     -webkit-box-pack: start;
     -ms-flex-pack: start;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    margin-top: 300px;
 }
 
 .sidebar__list {

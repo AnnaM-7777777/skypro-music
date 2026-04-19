@@ -2,16 +2,36 @@ import Filter from '@/components/Filter/Filter';
 import Search from '@/components/Search/Search';
 import TrackList from '@/components/Track/Track';
 import styles from './CenterBlock.module.css';
+import { TrackType } from '@/sharedTypes/sharedTypes';
+import Bar from '@/components/Bar/Bar';
 
-export default function CenterBlock() {
+interface CenterBlockProps {
+    tracks: TrackType[];
+    title?: string;
+    isLoading?: boolean;
+}
+
+export default function CenterBlock({
+    tracks,
+    title = 'Треки',
+    isLoading = false,
+}: CenterBlockProps) {
+    const allGenres = tracks.flatMap(t => t.genre || []);
+    const genres = [...new Set(allGenres)];
+    const artists = [...new Set(tracks.map(t => t.author))];
+
     return (
-        <div className={styles.centerblock}>
-            <Search />
+        <>
+            <div className={styles.centerblock}>
+                <Search />
 
-            <h2 className={styles.centerblock__h2}>Треки</h2>
+                <h2 className={styles.centerblock__h2}>{title}</h2>
 
-            <Filter />
-            <TrackList />
-        </div>
+                <Filter genres={genres} artists={artists} />
+                <TrackList tracks={tracks} isLoading={isLoading} />
+            </div>
+
+            <Bar tracks={tracks} />
+        </>
     );
 }

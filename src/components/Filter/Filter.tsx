@@ -1,23 +1,28 @@
 'use client';
 
-import { data } from '@/app/data';
 import { useEffect, useRef, useState } from 'react';
 import FilterItem from '../FilterItem/FilterItem';
 import styles from './Filter.module.css';
 
 type FilterType = 'author' | 'year' | 'genre' | null;
 
-export default function Filter() {
+// 1. Добавили интерфейс пропсов
+interface FilterProps {
+    genres: string[];
+    artists: string[];
+}
+
+// 2. Принимаем пропсы и убираем импорт mock-данных
+export default function Filter({ genres, artists }: FilterProps) {
     const [activeFilter, setActiveFilter] = useState<FilterType>(null);
     const filterRef = useRef<HTMLDivElement>(null);
 
-    // Уникальные значения из данных
-    const uniqueAuthors = [...new Set(data.map(track => track.author))].sort();
-    const uniqueYears = [...new Set(data.map(track => track.release_date?.slice(0, 4)))]
-        .filter(Boolean)
-        .sort()
-        .reverse();
-    const uniqueGenres = [...new Set(data.flatMap(track => track.genre))].sort();
+    // 3. Используем данные из пропсов (сортировка для удобства)
+    const uniqueGenres = [...genres].sort();
+    const uniqueAuthors = [...artists].sort();
+
+    // Годы можно оставить из моков или тоже передавать пропсом, если нужно
+    const uniqueYears: string[] = [];
 
     // Закрытие при клике вне
     useEffect(() => {
@@ -55,7 +60,7 @@ export default function Filter() {
                 )}
             </div>
 
-            {/* Год */}
+            {/* Год (пока пустой или можно вернуть моковые данные) */}
             <div className={styles.filter__wrapper}>
                 <button
                     className={`${styles.filter__button} ${activeFilter === 'year' ? styles.active : ''}`}
@@ -63,7 +68,7 @@ export default function Filter() {
                 >
                     году выпуска
                 </button>
-                {activeFilter === 'year' && (
+                {activeFilter === 'year' && uniqueYears.length > 0 && (
                     <FilterItem items={uniqueYears} onSelect={handleSelect} />
                 )}
             </div>

@@ -39,8 +39,12 @@
     padding: 0 20px;
 }
 
-.filter__button:hover,
+.filter__button:hover {
+    color: rgba(217, 182, 255, 1);
+    border: 1px solid rgba(217, 182, 255, 1);
+}
+
 .active {
-    color: rgba(182, 114, 255, 1);
-    border: 1px solid rgba(154, 72, 241, 1);
+    color: rgba(173, 97, 255, 1);
+    border: 1px solid rgba(173, 97, 255, 1);
 }
