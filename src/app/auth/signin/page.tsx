@@ -67,6 +67,7 @@ export default function Signin() {
         setLoading(true);
 
         try {
+            // 1. Логин
             const loginRes = await fetch(`${API_URL}/user/login/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -75,6 +76,7 @@ export default function Signin() {
             const loginData = await loginRes.json();
             if (!loginRes.ok) throw new Error(loginData.message || 'Ошибка входа');
 
+            // 2. Получаем токен
             const tokenRes = await fetch(`${API_URL}/user/token/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -83,8 +85,19 @@ export default function Signin() {
             const tokenData = await tokenRes.json();
 
             if (tokenRes.ok && tokenData.access) {
-                // Сохраняем в localStorage
+                // Сохраняем токен
                 localStorage.setItem('token', tokenData.access);
+
+                // Сохраняем имя пользователя:
+                // Если API вернул username в loginData
+                if (loginData?.username) {
+                    localStorage.setItem('username', loginData.username);
+                }
+                // Если нет — используем email
+                else if (formData.email) {
+                    localStorage.setItem('username', formData.email);
+                }
+
                 // Клиентский редирект
                 router.push('/music/main');
                 return;
