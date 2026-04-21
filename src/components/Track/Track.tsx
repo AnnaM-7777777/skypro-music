@@ -2,6 +2,7 @@
 
 import { TrackType } from '@/sharedTypes/sharedTypes';
 import { setCurrentTrack } from '@/store/features/trackSlice';
+import { toggleFavorite, selectIsFavorite } from '@/store/features/favoritesSlice';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { formatDuration } from '@/utils/helpers';
 import classNames from 'classnames';
@@ -11,6 +12,8 @@ import styles from './Track.module.css';
 import { IconLike } from '@/components/Icons';
 import Toast from '@/components/Toast/Toast';
 import '../../../skeleton.css';
+
+const API_URL = 'https://webdev-music-003b5b991590.herokuapp.com';
 
 interface TrackListProps {
     tracks: TrackType[];
@@ -48,7 +51,6 @@ function TrackItemSkeleton() {
                 />
             </div>
 
-            {/* Альбом, лайк и время - ОДНОЙ полосой */}
             <div className={styles.trackItem__time}>
                 <div
                     className='skeleton skeleton__line skeleton__line--sm'
@@ -109,13 +111,15 @@ function TrackItem({
     isCurrent?: boolean;
     isPlaying?: boolean;
 }) {
-    const [isLiked, setIsLiked] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [showAuthToast, setShowAuthToast] = useState(false);
     const dispatch = useAppDispatch();
 
-    // Like — с проверкой авторизации, без редиректа, только уведомление
-    const toggleLike = (e?: React.MouseEvent) => {
+    // isLiked берётся из Redux (вместо useState)
+    const isLiked = useAppSelector(state => selectIsFavorite(state, track._id));
+
+    // Like — с проверкой авторизации
+    const toggleLike = async (e?: React.MouseEvent) => {
         e?.stopPropagation();
 
         const token = localStorage.getItem('token');
@@ -125,8 +129,28 @@ function TrackItem({
             return;
         }
 
-        setIsLiked(!isLiked);
-        // Здесь будет запрос к API
+        // Оптимистичное обновление UI через Redux
+        dispatch(toggleFavorite(track));
+
+        // Запрос к бэкенду
+        /* try {
+            const method = isLiked ? 'DELETE' : 'POST';
+            const response = await fetch(`${API_URL}/users/me/favorites/${track._id}/`, {
+                method,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                // Откат, если запрос не удался
+                dispatch(toggleFavorite(track));
+                throw new Error('Failed to update favorites');
+            }
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
+        } */
     };
 
     const onClickTrack = () => {

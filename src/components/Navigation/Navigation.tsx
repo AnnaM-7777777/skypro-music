@@ -101,7 +101,11 @@ export default function Navigation() {
                     </li>
 
                     <li className={styles.menu__item}>
-                        <Link href='/playlist' className={styles.menu__link} onClick={closeMenu}>
+                        <Link
+                            href='/music/playlist'
+                            className={styles.menu__link}
+                            onClick={closeMenu}
+                        >
                             Мой плейлист
                         </Link>
                     </li>

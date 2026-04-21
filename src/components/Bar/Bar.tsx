@@ -4,6 +4,7 @@ import { IconLike } from '@/components/Icons';
 import ProgressBar from '@/components/Bar/ProgressBar';
 import Toast from '@/components/Toast/Toast';
 import { setCurrentTrack, setPlaying } from '@/store/features/trackSlice';
+import { toggleFavorite, selectIsFavorite } from '@/store/features/favoritesSlice';
 import { getTimePanel } from '@/utils/helpers';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { getSafeTrackUrl } from '@/utils/testTracks';
@@ -12,6 +13,8 @@ import classNames from 'classnames';
 import { useEffect, useRef, useState } from 'react';
 import styles from './Bar.module.css';
 import '../../../skeleton.css';
+
+const API_URL = 'https://webdev-music-003b5b991590.herokuapp.com';
 
 interface BarProps {
     tracks: TrackType[];
@@ -86,7 +89,6 @@ export default function Bar({ tracks }: BarProps) {
     const audioRef = useRef<HTMLAudioElement>(null);
 
     const [isPlaying, setIsPlaying] = useState(false);
-    const [isLiked, setIsLiked] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -94,6 +96,11 @@ export default function Bar({ tracks }: BarProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [isRepeat, setIsRepeat] = useState(false);
     const [isShuffle, setIsShuffle] = useState(false);
+
+    // isLiked берётся из Redux
+    const isLiked = useAppSelector(state =>
+        currentTrackItem ? selectIsFavorite(state, currentTrackItem._id) : false
+    );
 
     const audioSrc = getSafeTrackUrl(currentTrackItem?.track_file);
 
@@ -201,7 +208,7 @@ export default function Bar({ tracks }: BarProps) {
         return () => {
             audio.pause();
         };
-    }, [audioSrc, currentTrackItem?._id]); // Зависимость по _id, а не по ссылке
+    }, [audioSrc, currentTrackItem?._id, dispatch]);
 
     // Инициализация градиента громкости
     useEffect(() => {
@@ -211,7 +218,7 @@ export default function Bar({ tracks }: BarProps) {
         if (progressLine) {
             progressLine.style.setProperty('--volume-percent', `${volume * 100}%`);
         }
-    }, []);
+    }, [volume]);
 
     // Play/Pause
     const togglePlay = () => {
@@ -227,9 +234,11 @@ export default function Bar({ tracks }: BarProps) {
         }
     };
 
-    // Like — с проверкой авторизации, без редиректа, только уведомление
-    const toggleLike = (e?: React.MouseEvent) => {
+    // Like — с проверкой авторизации
+    const toggleLike = async (e?: React.MouseEvent) => {
         e?.stopPropagation();
+
+        if (!currentTrackItem) return;
 
         const token = localStorage.getItem('token');
 
@@ -238,9 +247,28 @@ export default function Bar({ tracks }: BarProps) {
             return;
         }
 
-        // Если авторизован — выполняем лайк
-        setIsLiked(!isLiked);
-        // Здесь будет запрос к API
+        // Оптимистичное обновление UI через Redux
+        dispatch(toggleFavorite(currentTrackItem));
+
+        // Запрос к бэкенду
+        /* try {
+            const method = isLiked ? 'DELETE' : 'POST';
+            const response = await fetch(`${API_URL}/users/me/favorites/${currentTrackItem._id}/`, {
+                method,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                // Откат, если запрос не удался
+                dispatch(toggleFavorite(currentTrackItem));
+                throw new Error('Failed to update favorites');
+            }
+        } catch (error) {
+            console.error('Error toggling favorite in Bar:', error);
+        } */
     };
 
     // Обновление прогресса
@@ -313,7 +341,7 @@ export default function Bar({ tracks }: BarProps) {
         return null;
     }
 
-    // Индексы считаем из tracks, а не data
+    // Индексы считаем из tracks, а не из data
     const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
     const isFirstTrack = currentIndex === 0;
     const isLastTrack = currentIndex === tracks.length - 1;
@@ -335,7 +363,6 @@ export default function Bar({ tracks }: BarProps) {
                 <audio
                     ref={audioRef}
                     src={audioSrc || undefined}
-                    // Ключ по ID трека (не по ссылке!)
                     key={currentTrackItem?._id ?? 'no-track'}
                     preload='auto'
                     onPlay={handlePlay}
