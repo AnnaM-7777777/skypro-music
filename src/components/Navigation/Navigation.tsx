@@ -100,15 +100,17 @@ export default function Navigation() {
                         </Link>
                     </li>
 
-                    <li className={styles.menu__item}>
-                        <Link
-                            href='/music/playlist'
-                            className={styles.menu__link}
-                            onClick={closeMenu}
-                        >
-                            Мой плейлист
-                        </Link>
-                    </li>
+                    {isAuthenticated && (
+                        <li className={styles.menu__item}>
+                            <Link
+                                href='/music/playlist'
+                                className={styles.menu__link}
+                                onClick={closeMenu}
+                            >
+                                Мой плейлист
+                            </Link>
+                        </li>
+                    )}
 
                     <li className={styles.menu__item}>
                         <Link

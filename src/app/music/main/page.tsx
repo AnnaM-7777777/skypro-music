@@ -13,7 +13,13 @@ export default function MusicMain() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isMounted = true; // Флаг монтирования
+
         const fetchTracks = async () => {
+            // Микро-задержка перед запросом (даём время на синхронизацию токена)
+            await new Promise(resolve => setTimeout(resolve, 100));
+            if (!isMounted) return; // Если размонтировали — не продолжаем
+
             try {
                 // Токен добавляем только если есть
                 const token = localStorage.getItem('token');
@@ -35,17 +41,22 @@ export default function MusicMain() {
                     track_file: getSafeTrackUrl(t.track_file),
                 }));
 
-                setTracks(processed);
+                if (isMounted) setTracks(processed);
             } catch (err) {
                 console.error('Error:', err);
-                setTracks(data);
+                if (isMounted) setTracks(data);
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         };
 
         fetchTracks();
-    }, []);
+
+        // Cleanup: сбрасываем флаг при размонтировании
+        return () => {
+            isMounted = false;
+        };
+    }, []); // Пустой массив зависимостей = запуск только при монтировании
 
     // Показываем скелетон пока грузятся данные
     if (loading) {
