@@ -73,5 +73,14 @@ export default function PlaylistPage() {
         loadFavorites();
     }, [dispatch, router]);
 
+    // Синхронная проверка авторизации (только на клиенте) — предотвращает "мигание"
+    const isClient = typeof window !== 'undefined';
+    const hasToken = isClient ? !!localStorage.getItem('token') : false;
+
+    if (!hasToken && isClient) {
+        router.replace('/auth/signin');
+        return <PageLayout tracks={[]} title='Мой плейлист' isLoading={true} />;
+    }
+
     return <PageLayout tracks={favoriteTracks} title='Мой плейлист' isLoading={isLoading} />;
 }
