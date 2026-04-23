@@ -99,5 +99,5 @@ export default async function CategoryPage({ params }: { params: Promise<{ id: s
     const category = await getCategory(id, token);
     if (!category) notFound();
 
-    return <PageLayout tracks={category.items} title={category.name} />;
+    return <PageLayout tracks={category.items} title={category.name} showEmptyState={false} />;
 }

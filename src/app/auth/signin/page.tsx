@@ -87,8 +87,13 @@ export default function Signin() {
             const tokenData = await tokenRes.json();
 
             if (tokenRes.ok && tokenData.access) {
-                // Сохраняем токен и имя пользователя
+                // Сохраняем access-токен
                 localStorage.setItem('token', tokenData.access);
+
+                // Сохраняем refresh-токен (если бэкенд его возвращает)
+                if (tokenData.refresh) {
+                    localStorage.setItem('refresh_token', tokenData.refresh);
+                }
 
                 if (loginData?.username) {
                     localStorage.setItem('username', loginData.username);
@@ -140,6 +145,7 @@ export default function Signin() {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                autoComplete='username'
             />
             <input
                 className={classNames(styles.modal__input)}
@@ -149,6 +155,7 @@ export default function Signin() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                autoComplete='current-password'
             />
 
             {messageData && (

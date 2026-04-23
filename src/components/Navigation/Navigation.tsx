@@ -1,71 +1,70 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import styles from './Navigation.module.css';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useAppDispatch } from '@/store/store';
+import { setFavorites } from '@/store/features/favoritesSlice';
 
 export default function Navigation() {
+    const router = useRouter();
+    const dispatch = useAppDispatch();
+
     const [isDarkTheme, setIsDarkTheme] = useState(true);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [mounted, setMounted] = useState(false);
 
-    // Функция проверки авторизации
     const checkAuth = () => {
         const token = localStorage.getItem('token');
-        const hasToken = !!token;
-        setIsAuthenticated(hasToken);
+        setIsAuthenticated(!!token);
     };
 
     useEffect(() => {
         setMounted(true);
         checkAuth();
-
-        // Изменения в localStorage
-        const handleStorageChange = () => {
-            checkAuth();
-        };
-
+        const handleStorageChange = () => checkAuth();
         window.addEventListener('storage', handleStorageChange);
         return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
 
-    // Проверяем при каждом открытии меню
     useEffect(() => {
-        if (isMenuOpen) {
-            checkAuth();
-        }
+        if (isMenuOpen) checkAuth();
     }, [isMenuOpen]);
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            setIsDarkTheme(savedTheme === 'dark');
-        }
+        if (savedTheme) setIsDarkTheme(savedTheme === 'dark');
     }, []);
 
-    const toggleTheme = () => {
+    const toggleTheme = useCallback(() => {
         const newTheme = !isDarkTheme;
         setIsDarkTheme(newTheme);
         localStorage.setItem('theme', newTheme ? 'dark' : 'light');
         document.documentElement.classList.toggle('item__lightTheme', !newTheme);
-    };
+    }, [isDarkTheme]);
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const closeMenu = () => setIsMenuOpen(false);
+    const closeMenu = useCallback(() => setIsMenuOpen(false), []);
 
-    const handleAuth = (e: React.MouseEvent) => {
-        e.preventDefault();
-        closeMenu();
+    const handleAuth = useCallback(
+        (e: React.MouseEvent) => {
+            e.preventDefault();
+            closeMenu();
 
-        if (isAuthenticated) {
-            localStorage.removeItem('token');
-            setIsAuthenticated(false);
-        }
-
-        window.location.href = '/auth/signin';
-    };
+            if (isAuthenticated) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('favorites');
+                localStorage.removeItem('username');
+                setIsAuthenticated(false);
+                dispatch(setFavorites({ trackIds: [], tracks: [] }));
+            }
+            router.push('/auth/signin');
+        },
+        [isAuthenticated, dispatch, router, closeMenu]
+    );
 
     if (!mounted) {
         return (

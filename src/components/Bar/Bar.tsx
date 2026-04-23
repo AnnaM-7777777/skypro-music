@@ -10,8 +10,9 @@ import { useAppDispatch, useAppSelector } from '@/store/store';
 import { getSafeTrackUrl } from '@/utils/testTracks';
 import { TrackType } from '@/sharedTypes/sharedTypes';
 import classNames from 'classnames';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import styles from './Bar.module.css';
+import { withReauth } from '@/utils/withReauth';
 import '../../../skeleton.css';
 
 const API_URL = 'https://webdev-music-003b5b991590.herokuapp.com';
@@ -20,14 +21,12 @@ interface BarProps {
     tracks: TrackType[];
 }
 
-// Skeleton для плеера
 function BarSkeleton() {
     return (
         <div className={styles.bar}>
             <div className={styles.bar__progress}>
                 <div className='skeleton skeleton__line' style={{ height: '4px', width: '100%' }} />
             </div>
-
             <div className={styles.bar__block}>
                 <div className={styles.bar__btn}>
                     <div className={styles.btn__prev}>
@@ -35,21 +34,17 @@ function BarSkeleton() {
                             <use href='/img/icon/sprite.svg#icon-prev' />
                         </svg>
                     </div>
-
                     <div className={classNames(styles.btn__play, styles.btn)}>
                         <svg className={styles.btn__playSvg}>
                             <use href='/img/icon/sprite.svg#icon-play' />
                         </svg>
                     </div>
-
                     <div className={styles.btn__next}>
                         <svg className={styles.btn__nextSvg}>
                             <use href='/img/icon/sprite.svg#icon-next' />
                         </svg>
                     </div>
                 </div>
-
-                {/* Skeleton для информации о треке */}
                 <div className={styles.bar__trackPlay}>
                     <div className={styles.trackPlay__image}>
                         <div
@@ -62,7 +57,6 @@ function BarSkeleton() {
                         <div className='skeleton skeleton__line skeleton__line--sm skeleton__line--short' />
                     </div>
                 </div>
-
                 <div className={styles.bar__volume}>
                     <div className={styles.volume__content}>
                         <svg className={styles.volume__svg}>
@@ -83,6 +77,7 @@ function BarSkeleton() {
 
 export default function Bar({ tracks }: BarProps) {
     const [showAuthToast, setShowAuthToast] = useState(false);
+    const [showApiErrorToast, setShowApiErrorToast] = useState(false);
     const currentTrackItem = useAppSelector(state => state.tracks.currentTrack);
     const isPlayingRedux = useAppSelector(state => state.tracks.isPlaying);
     const dispatch = useAppDispatch();
@@ -97,25 +92,30 @@ export default function Bar({ tracks }: BarProps) {
     const [isRepeat, setIsRepeat] = useState(false);
     const [isShuffle, setIsShuffle] = useState(false);
 
-    // isLiked берётся из Redux
     const isLiked = useAppSelector(state =>
         currentTrackItem ? selectIsFavorite(state, currentTrackItem._id) : false
     );
 
-    const audioSrc = getSafeTrackUrl(currentTrackItem?.track_file);
+    // useMemo: кэшируем результат вычисления URL
+    const audioSrc = useMemo(
+        () => (currentTrackItem ? getSafeTrackUrl(currentTrackItem.track_file) : null),
+        [currentTrackItem?.track_file]
+    );
 
-    // Получение случайного трека ИЗ ПЕРЕДАННОГО МАССИВА (не data)
-    const getRandomTrack = (excludeId?: number): TrackType | undefined => {
-        const availableTracks = tracks.filter(t => t._id !== excludeId);
-        if (availableTracks.length === 0) return undefined;
-        const randomIndex = Math.floor(Math.random() * availableTracks.length);
-        return availableTracks[randomIndex];
-    };
+    // useCallback: кэшируем функцию получения случайного трека
+    const getRandomTrack = useCallback(
+        (excludeId?: number): TrackType | undefined => {
+            const availableTracks = tracks.filter(t => t._id !== excludeId);
+            if (availableTracks.length === 0) return undefined;
+            const randomIndex = Math.floor(Math.random() * availableTracks.length);
+            return availableTracks[randomIndex];
+        },
+        [tracks]
+    );
 
-    // Переключение на следующий трек (используем tracks, а не data)
-    const handleNext = () => {
+    // useCallback: кэшируем обработчики навигации
+    const handleNext = useCallback(() => {
         if (!currentTrackItem || tracks.length === 0) return;
-
         if (isShuffle) {
             const randomTrack = getRandomTrack(currentTrackItem._id);
             if (randomTrack) {
@@ -124,22 +124,18 @@ export default function Bar({ tracks }: BarProps) {
             }
             return;
         }
-
         const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
         const isLastTrack = currentIndex === tracks.length - 1;
         const nextIndex = isLastTrack ? 0 : currentIndex + 1;
         const nextTrack = tracks[nextIndex];
-
         if (nextTrack) {
             dispatch(setCurrentTrack(nextTrack));
             dispatch(setPlaying(true));
         }
-    };
+    }, [currentTrackItem, tracks, isShuffle, dispatch, getRandomTrack]);
 
-    // Переключение на предыдущий трек
-    const handlePrev = () => {
+    const handlePrev = useCallback(() => {
         if (!currentTrackItem || tracks.length === 0) return;
-
         if (isShuffle) {
             const randomTrack = getRandomTrack(currentTrackItem._id);
             if (randomTrack) {
@@ -148,46 +144,48 @@ export default function Bar({ tracks }: BarProps) {
             }
             return;
         }
-
         const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
         const isFirstTrack = currentIndex === 0;
         const prevIndex = isFirstTrack ? tracks.length - 1 : currentIndex - 1;
         const prevTrack = tracks[prevIndex];
-
         if (prevTrack) {
             dispatch(setCurrentTrack(prevTrack));
             dispatch(setPlaying(true));
         }
-    };
+    }, [currentTrackItem, tracks, isShuffle, dispatch, getRandomTrack]);
 
-    // Синхронизация локального состояния с Redux
+    // useMemo: кэшируем вычисление индексов
+    const trackIndices = useMemo(() => {
+        if (!currentTrackItem) return { currentIndex: -1, isFirstTrack: true, isLastTrack: true };
+        const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
+        return {
+            currentIndex,
+            isFirstTrack: currentIndex === 0,
+            isLastTrack: currentIndex === tracks.length - 1,
+        };
+    }, [tracks, currentTrackItem]);
+
     useEffect(() => {
         setIsPlaying(isPlayingRedux);
     }, [isPlayingRedux]);
 
-    // Применение громкости
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.volume = volume;
         }
     }, [volume]);
 
-    // Загрузка трека + остановка старого перед загрузкой нового
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio || !audioSrc) return;
-
-        // Останавливаем и сбрасываем старое аудио перед загрузкой нового
         audio.pause();
         audio.currentTime = 0;
-
         setIsLoading(true);
         setCurrentTime(0);
         setDuration(0);
         audio.src = audioSrc;
         audio.preload = 'auto';
         audio.load();
-
         if (isPlayingRedux) {
             const onCanPlay = () => {
                 setIsLoading(false);
@@ -203,14 +201,11 @@ export default function Bar({ tracks }: BarProps) {
         } else {
             setIsLoading(false);
         }
-
-        // Cleanup: останавливаем аудио при размонтировании
         return () => {
             audio.pause();
         };
-    }, [audioSrc, currentTrackItem?._id, dispatch]);
+    }, [audioSrc, currentTrackItem?._id, dispatch, isPlayingRedux]);
 
-    // Инициализация градиента громкости
     useEffect(() => {
         const progressLine = document.querySelector(
             `.${styles.volume__progressLine}`
@@ -220,8 +215,8 @@ export default function Bar({ tracks }: BarProps) {
         }
     }, [volume]);
 
-    // Play/Pause
-    const togglePlay = () => {
+    // useCallback: кэшируем обработчики плеера
+    const togglePlay = useCallback(() => {
         if (!audioRef.current) return;
         if (isPlaying) {
             audioRef.current.pause();
@@ -232,56 +227,52 @@ export default function Bar({ tracks }: BarProps) {
                 }
             });
         }
-    };
+    }, [isPlaying]);
 
-    // Like — с проверкой авторизации
-    const toggleLike = async (e?: React.MouseEvent) => {
-        e?.stopPropagation();
-
-        if (!currentTrackItem) return;
-
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-            setShowAuthToast(true);
-            return;
-        }
-
-        // Оптимистичное обновление UI через Redux
-        dispatch(toggleFavorite(currentTrackItem));
-
-        // Запрос к бэкенду
-        /* try {
-            const method = isLiked ? 'DELETE' : 'POST';
-            const response = await fetch(`${API_URL}/users/me/favorites/${currentTrackItem._id}/`, {
-                method,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                // Откат, если запрос не удался
-                dispatch(toggleFavorite(currentTrackItem));
-                throw new Error('Failed to update favorites');
+    const toggleLike = useCallback(
+        async (e?: React.MouseEvent) => {
+            e?.stopPropagation();
+            if (!currentTrackItem) return;
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setShowAuthToast(true);
+                return;
             }
+
+            dispatch(toggleFavorite(currentTrackItem));
+
+            /* try {
+            const method = isLiked ? 'DELETE' : 'POST';
+            await withReauth(async (accessToken: string) => {
+                const response = await fetch(`${API_URL}/users/me/favorites/${currentTrackItem._id}/`, {
+                    method,
+                    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+                });
+                if (!response.ok) {
+                    const error: any = new Error('Failed to update favorites');
+                    error.status = response.status;
+                    throw error;
+                }
+                return response;
+            });
         } catch (error) {
             console.error('Error toggling favorite in Bar:', error);
+            dispatch(toggleFavorite(currentTrackItem));
+            setShowApiErrorToast(true);
         } */
-    };
+        },
+        [dispatch, currentTrackItem, isLiked]
+    );
 
-    // Обновление прогресса
-    const handleTimeUpdate = () => {
+    const handleTimeUpdate = useCallback(() => {
         if (audioRef.current) {
             setCurrentTime(audioRef.current.currentTime);
             setDuration(audioRef.current.duration || 0);
         }
-    };
+    }, []);
 
-    // Громкость
     const volumeRef = useRef<HTMLInputElement>(null);
-    const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleVolumeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const newVolume = parseFloat(e.target.value);
         setVolume(newVolume);
         if (audioRef.current) {
@@ -290,30 +281,27 @@ export default function Bar({ tracks }: BarProps) {
         if (volumeRef.current) {
             volumeRef.current.style.setProperty('--volume-percent', `${newVolume * 100}%`);
         }
-    };
+    }, []);
 
-    // Перемотка
-    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const newTime = parseFloat(e.target.value);
         setCurrentTime(newTime);
         if (audioRef.current) {
             audioRef.current.currentTime = newTime;
         }
-    };
+    }, []);
 
-    // Обработчики событий аудио
-    const handlePlay = () => {
+    const handlePlay = useCallback(() => {
         setIsPlaying(true);
         dispatch(setPlaying(true));
-    };
+    }, [dispatch]);
 
-    const handlePause = () => {
+    const handlePause = useCallback(() => {
         setIsPlaying(false);
         dispatch(setPlaying(false));
-    };
+    }, [dispatch]);
 
-    // Завершение трека: Repeat или переход к следующему
-    const handleEnded = () => {
+    const handleEnded = useCallback(() => {
         if (isRepeat) {
             if (audioRef.current) {
                 audioRef.current.currentTime = 0;
@@ -327,24 +315,19 @@ export default function Bar({ tracks }: BarProps) {
         } else {
             handleNext();
         }
-    };
+    }, [isRepeat, dispatch, handleNext]);
 
-    const handleError = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
+    const handleError = useCallback((e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
         console.error('Audio error:', e);
-    };
+    }, []);
+
+    const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+    const handleMouseLeave = useCallback(() => setIsHovered(false), []);
 
     if (!currentTrackItem || !audioSrc) {
-        // Показываем skeleton когда трек загружается
-        if (isLoading) {
-            return <BarSkeleton />;
-        }
+        if (isLoading) return <BarSkeleton />;
         return null;
     }
-
-    // Индексы считаем из tracks, а не из data
-    const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
-    const isFirstTrack = currentIndex === 0;
-    const isLastTrack = currentIndex === tracks.length - 1;
 
     return (
         <div className={styles.bar}>
@@ -354,11 +337,9 @@ export default function Bar({ tracks }: BarProps) {
                         <span className={styles.progress__loadingText}>Загрузка трека...</span>
                     </div>
                 )}
-
                 <div className={styles.progress__time}>{getTimePanel(currentTime, duration)}</div>
                 <ProgressBar max={duration} value={currentTime} step={0.1} onChange={handleSeek} />
             </div>
-
             <div className={styles.bar__block}>
                 <audio
                     ref={audioRef}
@@ -371,23 +352,20 @@ export default function Bar({ tracks }: BarProps) {
                     onTimeUpdate={handleTimeUpdate}
                     onError={handleError}
                 />
-
                 <div className={styles.bar__btn}>
-                    {/* Prev */}
                     <div
-                        className={`${styles.btn__prev} ${isFirstTrack && !isShuffle ? styles.btn__disabled : ''}`}
+                        className={`${styles.btn__prev} ${trackIndices.isFirstTrack && !isShuffle ? styles.btn__disabled : ''}`}
                         onClick={handlePrev}
                         style={{
-                            cursor: isFirstTrack && !isShuffle ? 'not-allowed' : 'pointer',
-                            opacity: isFirstTrack && !isShuffle ? 0.3 : 1,
+                            cursor:
+                                trackIndices.isFirstTrack && !isShuffle ? 'not-allowed' : 'pointer',
+                            opacity: trackIndices.isFirstTrack && !isShuffle ? 0.3 : 1,
                         }}
                     >
                         <svg className={styles.btn__prevSvg}>
                             <use href='/img/icon/sprite.svg#icon-prev' />
                         </svg>
                     </div>
-
-                    {/* Play/Pause */}
                     <div className={classNames(styles.btn__play, styles.btn)} onClick={togglePlay}>
                         <svg className={styles.btn__playSvg}>
                             <use
@@ -395,22 +373,19 @@ export default function Bar({ tracks }: BarProps) {
                             />
                         </svg>
                     </div>
-
-                    {/* Next */}
                     <div
-                        className={`${styles.btn__next} ${isLastTrack && !isShuffle ? styles.btn__disabled : ''}`}
+                        className={`${styles.btn__next} ${trackIndices.isLastTrack && !isShuffle ? styles.btn__disabled : ''}`}
                         onClick={handleNext}
                         style={{
-                            cursor: isLastTrack && !isShuffle ? 'not-allowed' : 'pointer',
-                            opacity: isLastTrack && !isShuffle ? 0.3 : 1,
+                            cursor:
+                                trackIndices.isLastTrack && !isShuffle ? 'not-allowed' : 'pointer',
+                            opacity: trackIndices.isLastTrack && !isShuffle ? 0.3 : 1,
                         }}
                     >
                         <svg className={styles.btn__nextSvg}>
                             <use href='/img/icon/sprite.svg#icon-next' />
                         </svg>
                     </div>
-
-                    {/* Repeat */}
                     <div
                         className={classNames(styles.btn__repeat, styles.btnIcon, {
                             [styles.btn__active]: isRepeat,
@@ -422,8 +397,6 @@ export default function Bar({ tracks }: BarProps) {
                             <use href='/img/icon/sprite.svg#icon-repeat' />
                         </svg>
                     </div>
-
-                    {/* Shuffle */}
                     <div
                         className={classNames(styles.btn__shuffle, styles.btnIcon, {
                             [styles.btn__active]: isShuffle,
@@ -436,8 +409,6 @@ export default function Bar({ tracks }: BarProps) {
                         </svg>
                     </div>
                 </div>
-
-                {/* Блок с информацией о треке */}
                 <div className={styles.bar__trackPlay}>
                     <div className={styles.trackPlay__image}>
                         <svg className={styles.trackPlay__svg}>
@@ -450,17 +421,17 @@ export default function Bar({ tracks }: BarProps) {
                     </div>
                     <div className={styles.trackPlay__like}>
                         <IconLike
-                            className={styles.trackPlay__iconLike}
+                            className={classNames(styles.trackPlay__iconLike, {
+                                [styles['liked-animation']]: isLiked,
+                            })}
                             isFilled={isLiked}
                             isHovered={isHovered}
                             onClick={toggleLike}
-                            onMouseEnter={() => setIsHovered(true)}
-                            onMouseLeave={() => setIsHovered(false)}
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
                         />
                     </div>
                 </div>
-
-                {/* Громкость */}
                 <div className={styles.bar__volume}>
                     <div className={styles.volume__content}>
                         <svg className={styles.volume__svg}>
@@ -481,11 +452,16 @@ export default function Bar({ tracks }: BarProps) {
                     </div>
                 </div>
             </div>
-
             {showAuthToast && (
                 <Toast
                     message='Чтобы ставить лайки, пожалуйста, авторизуйтесь'
                     onClose={() => setShowAuthToast(false)}
+                />
+            )}
+            {showApiErrorToast && (
+                <Toast
+                    message='Не удалось обновить лайк. Попробуйте позже.'
+                    onClose={() => setShowApiErrorToast(false)}
                 />
             )}
         </div>

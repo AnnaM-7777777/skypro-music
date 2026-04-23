@@ -183,3 +183,20 @@
 .time__text {
     width: 30px;
 }
+
+/* Пульсация при добавлении/снятии лайка */
+@keyframes likePulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.time__svg.liked-animation {
+    animation: likePulse 0.3s ease-in-out;
+}

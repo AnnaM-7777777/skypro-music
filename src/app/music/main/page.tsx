@@ -13,15 +13,10 @@ export default function MusicMain() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        let isMounted = true; // Флаг монтирования
+        let isActive = true;
 
         const fetchTracks = async () => {
-            // Микро-задержка перед запросом (даём время на синхронизацию токена)
-            await new Promise(resolve => setTimeout(resolve, 100));
-            if (!isMounted) return; // Если размонтировали — не продолжаем
-
             try {
-                // Токен добавляем только если есть
                 const token = localStorage.getItem('token');
                 const headers: HeadersInit = { 'Content-Type': 'application/json' };
                 if (token) {
@@ -29,7 +24,10 @@ export default function MusicMain() {
                 }
 
                 const res = await fetch(`${API_URL}/catalog/track/all/`, { headers });
-                if (!res.ok) throw new Error('Failed to fetch');
+
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
 
                 const response = await res.json();
                 const tracksData = Array.isArray(response)
@@ -41,27 +39,29 @@ export default function MusicMain() {
                     track_file: getSafeTrackUrl(t.track_file),
                 }));
 
-                if (isMounted) setTracks(processed);
+                if (isActive) {
+                    setTracks(processed);
+                    setLoading(false);
+                }
             } catch (err) {
-                console.error('Error:', err);
-                if (isMounted) setTracks(data);
-            } finally {
-                if (isMounted) setLoading(false);
+                console.error('Error loading tracks:', err);
+                if (isActive) {
+                    setTracks(data);
+                    setLoading(false);
+                }
             }
         };
 
         fetchTracks();
 
-        // Cleanup: сбрасываем флаг при размонтировании
         return () => {
-            isMounted = false;
+            isActive = false;
         };
-    }, []); // Пустой массив зависимостей = запуск только при монтировании
+    }, []);
 
-    // Показываем скелетон пока грузятся данные
     if (loading) {
         return <PageLayout tracks={[]} isLoading={true} />;
     }
 
-    return <PageLayout tracks={tracks} />;
+    return <PageLayout tracks={tracks} showEmptyState={false} />;
 }
