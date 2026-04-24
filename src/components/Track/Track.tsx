@@ -124,25 +124,34 @@ function TrackItem({
 
             dispatch(toggleFavorite(track));
 
-            /* try {
-            const method = isLiked ? 'DELETE' : 'POST';
-            await withReauth(async (accessToken: string) => {
-                const response = await fetch(`${API_URL}/users/me/favorites/${track._id}/`, {
-                    method,
-                    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+            // Запрос к бэкенду
+            try {
+                const method = isLiked ? 'DELETE' : 'POST';
+
+                await withReauth(async (accessToken: string) => {
+                    const response = await fetch(
+                        `${API_URL}/catalog/track/${track._id}/favorite/`,
+                        {
+                            method,
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`,
+                                'Content-Type': 'application/json',
+                            },
+                        }
+                    );
+
+                    if (!response.ok) {
+                        const error: any = new Error('Failed to update favorites');
+                        error.status = response.status;
+                        throw error;
+                    }
+                    return response;
                 });
-                if (!response.ok) {
-                    const error: any = new Error('Failed to update favorites');
-                    error.status = response.status;
-                    throw error;
-                }
-                return response;
-            });
-        } catch (error) {
-            console.error('Error toggling favorite:', error);
-            dispatch(toggleFavorite(track));
-            setShowApiErrorToast(true);
-        } */
+            } catch (error) {
+                console.error('Error toggling favorite:', error);
+                dispatch(toggleFavorite(track));
+                setShowApiErrorToast(true);
+            }
         },
         [dispatch, track, isLiked]
     ); // Зависимости

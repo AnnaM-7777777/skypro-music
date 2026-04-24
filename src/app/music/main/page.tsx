@@ -25,9 +25,7 @@ export default function MusicMain() {
 
                 const res = await fetch(`${API_URL}/catalog/track/all/`, { headers });
 
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
                 const response = await res.json();
                 const tracksData = Array.isArray(response)
@@ -41,12 +39,17 @@ export default function MusicMain() {
 
                 if (isActive) {
                     setTracks(processed);
-                    setLoading(false);
+                    console.log('🟢 Данные с СЕРВЕРА (треков:', processed.length, ')');
                 }
             } catch (err) {
-                console.error('Error loading tracks:', err);
+                console.warn('API unavailable, using fallback data:', err);
+                // Фоллбэк на тестовые данные
                 if (isActive) {
                     setTracks(data);
+                    console.log('🟡 Данные из ФОЛЛБЭКА (треков:', data.length, ')');
+                }
+            } finally {
+                if (isActive) {
                     setLoading(false);
                 }
             }
@@ -63,5 +66,5 @@ export default function MusicMain() {
         return <PageLayout tracks={[]} isLoading={true} />;
     }
 
-    return <PageLayout tracks={tracks} showEmptyState={false} />;
+    return <PageLayout tracks={tracks} />;
 }

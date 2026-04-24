@@ -28,40 +28,54 @@ export default function PlaylistPage() {
             dispatch(setLoading(true));
 
             try {
-                // Запрос к бэкенду — закомментирован, пока эндпоинт не готов
-                /*
-            const data = await withReauth(async (accessToken: string) => {
-                const response = await fetch(`${API_URL}/users/me/favorites/`, {
-                    method: 'GET',
-                    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-                });
-                if (!response.ok) {
-                    const error: any = new Error(`Error: ${response.status}`);
-                    error.status = response.status;
-                    throw error;
-                }
-                return response.json();
-            });
-            const tracks: TrackType[] = data.data || data.tracks || data || [];
-            const safeTracks = tracks.map((track: TrackType) => ({
-                ...track, track_file: getSafeTrackUrl(track.track_file),
-            }));
-            dispatch(setFavorites({ trackIds: safeTracks.map(t => t._id), tracks: safeTracks }));
-            */
+                // Запрос к бэкенду
+                const data = await withReauth(async (accessToken: string) => {
+                    const response = await fetch(`${API_URL}/catalog/track/favorite/all/`, {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
 
-                // Временное решение: читаем избранное из localStorage
-                const saved = localStorage.getItem('favorites');
-                if (saved) {
-                    const savedTracks: TrackType[] = JSON.parse(saved);
-                    dispatch(
-                        setFavorites({
-                            trackIds: savedTracks.map(t => t._id),
-                            tracks: savedTracks,
-                        })
-                    );
-                }
+                    if (!response.ok) {
+                        const error: any = new Error(`Error: ${response.status}`);
+                        error.status = response.status;
+                        throw error;
+                    }
+                    return response.json();
+                });
+
+                // Обработка ответа с сервера
+                const tracks: TrackType[] = data.data || data.tracks || data || [];
+                const safeTracks = tracks.map((track: TrackType) => ({
+                    ...track,
+                    track_file: getSafeTrackUrl(track.track_file),
+                }));
+
+                dispatch(
+                    setFavorites({
+                        trackIds: safeTracks.map(t => t._id),
+                        tracks: safeTracks,
+                    })
+                );
             } catch (err) {
                 console.error('Failed to load favorites:', err);
+                // Фоллбэк: если сервер упал, пробуем localStorage
+                const saved = localStorage.getItem('favorites');
+                if (saved) {
+                    try {
+                        const savedTracks: TrackType[] = JSON.parse(saved);
+                        dispatch(
+                            setFavorites({
+                                trackIds: savedTracks.map(t => t._id),
+                                tracks: savedTracks,
+                            })
+                        );
+                    } catch (e) {
+                        console.error('localStorage parse error:', e);
+                    }
+                }
             } finally {
                 dispatch(setLoading(false));
             }
@@ -79,5 +93,12 @@ export default function PlaylistPage() {
     }
 
     // Если треков нет — передаём пустой массив, CenterBlock покажет пустое состояние
-    return <PageLayout tracks={favoriteTracks} title='Мой плейлист' isLoading={isLoading} />;
+    return (
+        <PageLayout
+            tracks={favoriteTracks}
+            title='Мой плейлист'
+            isLoading={isLoading}
+            showEmptyState={true}
+        />
+    );
 }

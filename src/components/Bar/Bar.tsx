@@ -239,27 +239,36 @@ export default function Bar({ tracks }: BarProps) {
                 return;
             }
 
+            // Оптимистичное обновление через Redux
             dispatch(toggleFavorite(currentTrackItem));
 
-            /* try {
-            const method = isLiked ? 'DELETE' : 'POST';
-            await withReauth(async (accessToken: string) => {
-                const response = await fetch(`${API_URL}/users/me/favorites/${currentTrackItem._id}/`, {
-                    method,
-                    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+            // Запрос к бэкенду
+            try {
+                const method = isLiked ? 'DELETE' : 'POST';
+                await withReauth(async (accessToken: string) => {
+                    const response = await fetch(
+                        `${API_URL}/catalog/track/${currentTrackItem._id}/favorite/`,
+                        {
+                            method,
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`,
+                                'Content-Type': 'application/json',
+                            },
+                        }
+                    );
+                    if (!response.ok) {
+                        const error: any = new Error('Failed to update favorites');
+                        error.status = response.status;
+                        throw error;
+                    }
+                    return response;
                 });
-                if (!response.ok) {
-                    const error: any = new Error('Failed to update favorites');
-                    error.status = response.status;
-                    throw error;
-                }
-                return response;
-            });
-        } catch (error) {
-            console.error('Error toggling favorite in Bar:', error);
-            dispatch(toggleFavorite(currentTrackItem));
-            setShowApiErrorToast(true);
-        } */
+            } catch (error) {
+                console.error('Error toggling favorite in Bar:', error);
+                // Откат изменения в Redux при ошибке
+                dispatch(toggleFavorite(currentTrackItem));
+                setShowApiErrorToast(true);
+            }
         },
         [dispatch, currentTrackItem, isLiked]
     );
