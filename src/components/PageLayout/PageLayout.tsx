@@ -8,6 +8,7 @@ interface PageLayoutProps {
     tracks: TrackType[];
     title?: string;
     isLoading?: boolean;
+    showEmptyState?: boolean;
     children?: React.ReactNode;
 }
 
@@ -15,6 +16,7 @@ export default function PageLayout({
     tracks,
     title,
     isLoading = false,
+    showEmptyState = true, // По умолчанию показываем (для обратной совместимости)
     children,
 }: PageLayoutProps) {
     return (
@@ -22,7 +24,12 @@ export default function PageLayout({
             <div className={styles.container}>
                 <main className={styles.main}>
                     <Navigation />
-                    <CenterBlock tracks={tracks} title={title} isLoading={isLoading} />
+                    <CenterBlock
+                        tracks={tracks}
+                        title={title}
+                        isLoading={isLoading}
+                        showEmptyState={showEmptyState}
+                    />
                     <Sidebar isLoading={isLoading} />
                     {children}
                 </main>

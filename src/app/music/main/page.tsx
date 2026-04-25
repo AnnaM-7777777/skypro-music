@@ -13,9 +13,10 @@ export default function MusicMain() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isActive = true;
+
         const fetchTracks = async () => {
             try {
-                // Токен добавляем только если есть
                 const token = localStorage.getItem('token');
                 const headers: HeadersInit = { 'Content-Type': 'application/json' };
                 if (token) {
@@ -23,7 +24,8 @@ export default function MusicMain() {
                 }
 
                 const res = await fetch(`${API_URL}/catalog/track/all/`, { headers });
-                if (!res.ok) throw new Error('Failed to fetch');
+
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
                 const response = await res.json();
                 const tracksData = Array.isArray(response)
@@ -35,19 +37,31 @@ export default function MusicMain() {
                     track_file: getSafeTrackUrl(t.track_file),
                 }));
 
-                setTracks(processed);
+                if (isActive) {
+                    setTracks(processed);
+                    console.log('🟢 Данные с СЕРВЕРА (треков:', processed.length, ')');
+                }
             } catch (err) {
-                console.error('Error:', err);
-                setTracks(data);
+                console.warn('API unavailable, using fallback data:', err);
+                // Фоллбэк на тестовые данные
+                if (isActive) {
+                    setTracks(data);
+                    console.log('🟡 Данные из ФОЛЛБЭКА (треков:', data.length, ')');
+                }
             } finally {
-                setLoading(false);
+                if (isActive) {
+                    setLoading(false);
+                }
             }
         };
 
         fetchTracks();
+
+        return () => {
+            isActive = false;
+        };
     }, []);
 
-    // Показываем скелетон пока грузятся данные
     if (loading) {
         return <PageLayout tracks={[]} isLoading={true} />;
     }

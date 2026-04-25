@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Sidebar.module.css';
@@ -24,6 +25,16 @@ function PlaylistSkeleton() {
 }
 
 export default function Sidebar({ isLoading = false }: SidebarProps) {
+    const [username, setUsername] = useState<string>(''); // Состояние для имени пользователя
+
+    // Эффект для чтения имени из localStorage при загрузке
+    useEffect(() => {
+        const storedUsername = localStorage.getItem('username');
+        if (storedUsername) {
+            setUsername(storedUsername);
+        }
+    }, []);
+
     if (isLoading) {
         return (
             <div className={styles.sidebar}>
@@ -34,8 +45,7 @@ export default function Sidebar({ isLoading = false }: SidebarProps) {
                         </svg>
                     </div>
                 </div>
-
-                <div className={styles.sidebar__block}>
+                <div className={styles.sidebar__block} style={{ marginTop: '240px' }}>
                     <PlaylistSkeleton />
                 </div>
             </div>
@@ -45,7 +55,7 @@ export default function Sidebar({ isLoading = false }: SidebarProps) {
     return (
         <div className={styles.sidebar}>
             <div className={styles.sidebar__personal}>
-                {/* <p className={styles.sidebar__personalName}>Sergey.Ivanov</p> */}
+                <p className={styles.sidebar__personalName}>{username || 'Гость'}</p>
 
                 <IconLogout />
             </div>

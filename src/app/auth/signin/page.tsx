@@ -67,25 +67,41 @@ export default function Signin() {
         setLoading(true);
 
         try {
+            // Логин
             const loginRes = await fetch(`${API_URL}/user/login/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: formData.email, password: formData.password }),
             });
+
             const loginData = await loginRes.json();
             if (!loginRes.ok) throw new Error(loginData.message || 'Ошибка входа');
 
+            // Получаем токен
             const tokenRes = await fetch(`${API_URL}/user/token/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: formData.email, password: formData.password }),
             });
+
             const tokenData = await tokenRes.json();
 
             if (tokenRes.ok && tokenData.access) {
-                // Сохраняем в localStorage
+                // Сохраняем access-токен
                 localStorage.setItem('token', tokenData.access);
-                // Клиентский редирект
+
+                // Сохраняем refresh-токен (если бэкенд его возвращает)
+                if (tokenData.refresh) {
+                    localStorage.setItem('refresh_token', tokenData.refresh);
+                }
+
+                if (loginData?.username) {
+                    localStorage.setItem('username', loginData.username);
+                } else if (formData.email) {
+                    localStorage.setItem('username', formData.email);
+                }
+
+                // Только редирект
                 router.push('/music/main');
                 return;
             } else {
@@ -129,6 +145,7 @@ export default function Signin() {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                autoComplete='username'
             />
             <input
                 className={classNames(styles.modal__input)}
@@ -138,6 +155,7 @@ export default function Signin() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                autoComplete='current-password'
             />
 
             {messageData && (

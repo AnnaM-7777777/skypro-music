@@ -13,6 +13,14 @@
     -webkit-box-pack: end;
     -ms-flex-pack: end;
     justify-content: flex-end;
+    gap: 20px;
+}
+
+.sidebar__personalName {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
 }
 
 .sidebar__block {
@@ -28,7 +36,11 @@
     -webkit-box-pack: start;
     -ms-flex-pack: start;
     justify-content: flex-start;
-    margin-top: 300px;
+    margin-top: 240px !important;
+}
+
+.sidebar__block .sidebar__list {
+    margin-top: 0; /* Сбрасываем лишние отступы */
 }
 
 .sidebar__list {
