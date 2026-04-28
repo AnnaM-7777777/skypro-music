@@ -163,7 +163,6 @@
 .trackItem__time {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
     gap: 18px;
     font-family: 'Montserrat';
     font-weight: 400;
@@ -171,6 +170,7 @@
     line-height: 24px;
     color: rgba(78, 78, 78, 1);
     overflow: hidden;
+    justify-self: end;
 }
 
 .time__svg {

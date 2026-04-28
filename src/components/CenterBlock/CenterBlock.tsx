@@ -16,18 +16,20 @@ export default function CenterBlock({
     tracks,
     title = 'Треки',
     isLoading = false,
-    showEmptyState = true, // По умолчанию показываем, но можно отключить
+    showEmptyState = true,
 }: CenterBlockProps) {
     const allGenres = tracks.flatMap(t => t.genre || []);
     const genres = [...new Set(allGenres)];
     const artists = [...new Set(tracks.map(t => t.author))];
+
+    // Данные для сортировки (пока не передаём, но считаем на будущее)
+    // const years = [...new Set(tracks.map(t => t.release_date?.slice(0, 4))...)]
 
     if (!isLoading && tracks.length === 0 && showEmptyState) {
         return (
             <>
                 <div className={styles.centerblock}>
                     <Search />
-
                     <h2 className={styles.centerblock__h2}>{title}</h2>
 
                     <Filter genres={[]} artists={[]} />
@@ -50,13 +52,11 @@ export default function CenterBlock({
         <>
             <div className={styles.centerblock}>
                 <Search />
-
                 <h2 className={styles.centerblock__h2}>{title}</h2>
 
                 <Filter genres={genres} artists={artists} />
                 <TrackList tracks={tracks} isLoading={isLoading} />
             </div>
-
             <Bar tracks={tracks} />
         </>
     );
