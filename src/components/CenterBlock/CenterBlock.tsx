@@ -120,7 +120,7 @@ export default function CenterBlock({
                         isFilterActive={isFilterActive}
                     />
                     <div className={styles.centerBlock__empty}>
-                        <p className={styles.empty__title}>Ничего не найдено</p>
+                        <p className={styles.empty__title}>Нет подходящих треков</p>
                         <p className={styles.empty__text}>
                             Попробуй изменить параметры поиска или фильтров
                         </p>
