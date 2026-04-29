@@ -5,15 +5,21 @@ import { useEffect, useRef, useState } from 'react';
 import FilterItem from '../FilterItem/FilterItem';
 import styles from './Filter.module.css';
 
+type SortType = 'По умолчанию' | 'Сначала новые' | 'Сначала старые';
+
+const YEAR_SORT_OPTIONS = ['Сначала новые', 'Сначала старые', 'По умолчанию'] as const;
+
 interface FilterProps {
     genres: string[];
     authors: string[];
-    onAuthorSelect: (author: string | null) => void;
-    onGenreSelect: (genre: string | null) => void;
-    onSortSelect: (sort: 'По умолчанию' | 'Сначала новые' | 'Сначала старые') => void;
+    onAuthorSelect: (author: string) => void;
+    onGenreSelect: (genre: string) => void;
+    onSortSelect: (sort: SortType) => void;
+    // Принимаем массивы (plural)
+    selectedAuthors: string[];
+    selectedGenres: string[];
+    sortType: SortType;
 }
-
-const YEAR_SORT_OPTIONS = ['Сначала новые', 'Сначала старые', 'По умолчанию'] as const;
 
 export default function Filter({
     genres,
@@ -21,6 +27,9 @@ export default function Filter({
     onAuthorSelect,
     onGenreSelect,
     onSortSelect,
+    selectedAuthors,
+    selectedGenres,
+    sortType,
 }: FilterProps) {
     const [activeFilter, setActiveFilter] = useState<FilterType>(null);
     const filterRef = useRef<HTMLDivElement>(null);
@@ -38,11 +47,10 @@ export default function Filter({
     const uniqueAuthors = [...authors].sort();
     const uniqueGenres = [...genres].sort();
 
-    // Универсальный обработчик выбора
     const handleSelect = (nameFilter: FilterType, value: string) => {
         if (nameFilter === 'author') onAuthorSelect(value);
         if (nameFilter === 'genre') onGenreSelect(value);
-        if (nameFilter === 'year') onSortSelect(value as any);
+        if (nameFilter === 'year') onSortSelect(value as SortType);
     };
 
     return (
@@ -56,6 +64,7 @@ export default function Filter({
                 activeFilter={activeFilter}
                 onChangeActiveFilter={setActiveFilter}
                 onSelect={val => handleSelect('author', val)}
+                selectedValues={selectedAuthors}
             />
 
             <FilterItem
@@ -65,6 +74,7 @@ export default function Filter({
                 activeFilter={activeFilter}
                 onChangeActiveFilter={setActiveFilter}
                 onSelect={val => handleSelect('year', val)}
+                selectedValue={sortType}
             />
 
             <FilterItem
@@ -74,6 +84,7 @@ export default function Filter({
                 activeFilter={activeFilter}
                 onChangeActiveFilter={setActiveFilter}
                 onSelect={val => handleSelect('genre', val)}
+                selectedValues={selectedGenres}
             />
         </div>
     );

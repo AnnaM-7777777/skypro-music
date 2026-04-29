@@ -24,19 +24,38 @@ export default function CenterBlock({
     showEmptyState = true,
 }: CenterBlockProps) {
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedAuthor, setSelectedAuthor] = useState<string | null>(null);
-    const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+    // Массивы для мультивыбора
+    const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
+    const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [sortType, setSortType] = useState<SortType>('По умолчанию');
 
+    // Данные для фильтров
     const allGenres = tracks.flatMap(t => t.genre || []);
-    const genres = [...new Set(allGenres)].sort();
-    const authors = [...new Set(tracks.map(t => t.author))].sort();
+    const uniqueGenres = [...new Set(allGenres)].sort();
+    const uniqueAuthors = [...new Set(tracks.map(t => t.author))].sort();
+
+    // Обработчики с логикой тоггла (добавить/удалить)
+    const handleGenreSelect = (genre: string) => {
+        setSelectedGenres(prev =>
+            prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre]
+        );
+    };
+
+    const handleAuthorSelect = (author: string) => {
+        setSelectedAuthors(prev =>
+            prev.includes(author) ? prev.filter(a => a !== author) : [...prev, author]
+        );
+    };
+
+    const handleSortSelect = (sort: SortType) => {
+        setSortType(prev => (prev === sort ? 'По умолчанию' : sort));
+    };
 
     // Комбинированная логика: Поиск → Фильтр → Сортировка
     const filteredTracks = useMemo(() => {
         let result = [...tracks];
 
-        // Поиск по названию или исполнителю
+        // Поиск
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase();
             result = result.filter(
@@ -44,17 +63,17 @@ export default function CenterBlock({
             );
         }
 
-        // Фильтрация по исполнителю
-        if (selectedAuthor) {
-            result = result.filter(t => t.author === selectedAuthor);
+        // Фильтр по авторам (если выбраны)
+        if (selectedAuthors.length > 0) {
+            result = result.filter(t => selectedAuthors.includes(t.author));
         }
 
-        // Фильтрация по жанру
-        if (selectedGenre) {
-            result = result.filter(t => t.genre?.includes(selectedGenre));
+        // Фильтр по жанрам (если выбраны)
+        if (selectedGenres.length > 0) {
+            result = result.filter(t => t.genre?.some(g => selectedGenres.includes(g)));
         }
 
-        // Сортировка по году
+        // Сортировка
         if (sortType !== 'По умолчанию') {
             result.sort((a, b) => {
                 const yearA = parseInt(a.release_date?.slice(0, 4) || '0');
@@ -64,7 +83,7 @@ export default function CenterBlock({
         }
 
         return result;
-    }, [tracks, searchQuery, selectedAuthor, selectedGenre, sortType]);
+    }, [tracks, searchQuery, selectedAuthors, selectedGenres, sortType]);
 
     // Пустое состояние
     if (!isLoading && filteredTracks.length === 0 && showEmptyState) {
@@ -74,11 +93,14 @@ export default function CenterBlock({
                     <Search onSearch={setSearchQuery} />
                     <h2 className={styles.centerblock__h2}>{title}</h2>
                     <Filter
-                        genres={genres}
-                        authors={authors}
-                        onAuthorSelect={setSelectedAuthor}
-                        onGenreSelect={setSelectedGenre}
-                        onSortSelect={setSortType}
+                        genres={uniqueGenres}
+                        authors={uniqueAuthors}
+                        onAuthorSelect={handleAuthorSelect}
+                        onGenreSelect={handleGenreSelect}
+                        onSortSelect={handleSortSelect}
+                        selectedAuthors={selectedAuthors}
+                        selectedGenres={selectedGenres}
+                        sortType={sortType}
                     />
                     <div className={styles.centerBlock__empty}>
                         <p className={styles.empty__title}>Ничего не найдено</p>
@@ -99,11 +121,14 @@ export default function CenterBlock({
                 <Search onSearch={setSearchQuery} />
                 <h2 className={styles.centerblock__h2}>{title}</h2>
                 <Filter
-                    genres={genres}
-                    authors={authors}
-                    onAuthorSelect={setSelectedAuthor}
-                    onGenreSelect={setSelectedGenre}
-                    onSortSelect={setSortType}
+                    genres={uniqueGenres}
+                    authors={uniqueAuthors}
+                    onAuthorSelect={handleAuthorSelect}
+                    onGenreSelect={handleGenreSelect}
+                    onSortSelect={handleSortSelect}
+                    selectedAuthors={selectedAuthors}
+                    selectedGenres={selectedGenres}
+                    sortType={sortType}
                 />
                 <TrackList tracks={filteredTracks} isLoading={isLoading} />
             </div>

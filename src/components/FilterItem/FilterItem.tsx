@@ -11,6 +11,9 @@ interface FilterItemProps {
     activeFilter: FilterType;
     onChangeActiveFilter: (name: FilterType) => void;
     onSelect: (value: string) => void;
+    // Два варианта: массив для мультивыбора или одно значение для сортировки
+    selectedValues?: string[];
+    selectedValue?: string;
 }
 
 export default function FilterItem({
@@ -20,6 +23,8 @@ export default function FilterItem({
     activeFilter,
     onChangeActiveFilter,
     onSelect,
+    selectedValues,
+    selectedValue,
 }: FilterItemProps) {
     const itemRef = useRef<HTMLDivElement>(null);
 
@@ -27,34 +32,56 @@ export default function FilterItem({
         onChangeActiveFilter(activeFilter === nameFilter ? null : nameFilter);
     };
 
-    const handleSelect = (value: string) => {
+    const handleItemClick = (value: string) => {
         onSelect(value);
-        onChangeActiveFilter(null);
     };
 
-    const isActive = activeFilter === nameFilter;
+    const isActiveMenu = activeFilter === nameFilter;
+
+    // Кнопка активна, если меню открыто ИЛИ если что-то выбрано
+    const isButtonActive =
+        isActiveMenu ||
+        (selectedValues && selectedValues.length > 0) ||
+        (selectedValue && selectedValue !== 'По умолчанию');
 
     return (
         <div className={styles.filter__item} ref={itemRef}>
             <button
-                className={`${styles.filter__button} ${isActive ? styles.active : ''}`}
+                className={`${styles.filter__button} ${isButtonActive ? styles.active : ''}`}
                 onClick={handleClick}
             >
                 {titleFilter}
+                {/* Показываем количество выбранных */}
+                {selectedValues && selectedValues.length > 0 && !isActiveMenu && (
+                    <span className={styles.filter__count}> ({selectedValues.length})</span>
+                )}
             </button>
 
-            {isActive && list.length > 0 && (
+            {isActiveMenu && list.length > 0 && (
                 <div className={styles.filter__dropdown}>
+                    {/* Счётчик внутри открытого меню */}
+                    {selectedValues && selectedValues.length > 0 && (
+                        <div className={styles.dropdown__summary}>
+                            Выбрано: <strong>{selectedValues.length}</strong>
+                        </div>
+                    )}
+
                     <ul className={styles.dropdown__list}>
-                        {list.map(item => (
-                            <li
-                                key={item}
-                                className={styles.dropdown__item}
-                                onClick={() => handleSelect(item)}
-                            >
-                                {item}
-                            </li>
-                        ))}
+                        {list.map(item => {
+                            const isSelectedItem = selectedValues
+                                ? selectedValues.includes(item)
+                                : selectedValue === item;
+
+                            return (
+                                <li
+                                    key={item}
+                                    className={`${styles.dropdown__item} ${isSelectedItem ? styles.selected : ''}`}
+                                    onClick={() => handleItemClick(item)}
+                                >
+                                    {item}
+                                </li>
+                            );
+                        })}
                     </ul>
                 </div>
             )}

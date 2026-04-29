@@ -41,6 +41,13 @@
     box-sizing: border-box;
 }
 
+/* Счетчик выбранного в выпадающем списке, когда список закрыт */
+.filter__count {
+    font-size: 14px;
+    color: rgba(182, 114, 255, 1);
+    margin-left: 10px;
+}
+
 .dropdown__list {
     display: flex;
     flex-direction: column;
@@ -115,4 +122,22 @@
 .dropdown__item:active {
     color: rgba(182, 114, 255, 1);
     text-decoration: underline solid rgba(182, 114, 255, 1) 0%;
+}
+
+.dropdown__item.selected {
+    color: rgba(182, 114, 255, 1);
+}
+
+/* Счетчик выбранного в выпадающем списке, когда список открыт */
+.dropdown__summary {
+    padding: 10px 16px;
+    margin-bottom: 28px;
+    font-size: 14px;
+    color: rgba(182, 114, 255, 1);
+    background-color: rgba(24, 24, 24, 1);
+}
+
+.dropdown__summary strong {
+    font-weight: 500;
+    margin-left: 7px;
 }
