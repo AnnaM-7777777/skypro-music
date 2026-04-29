@@ -1,30 +1,30 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { FilterType } from '@/utils/filter';
+import { useEffect, useRef, useState } from 'react';
 import FilterItem from '../FilterItem/FilterItem';
 import styles from './Filter.module.css';
-import { FilterType } from '@/utils/filter';
 
-// 1. Добавили интерфейс пропсов
 interface FilterProps {
     genres: string[];
-    artists: string[];
+    authors: string[];
+    onAuthorSelect: (author: string | null) => void;
+    onGenreSelect: (genre: string | null) => void;
+    onSortSelect: (sort: 'По умолчанию' | 'Сначала новые' | 'Сначала старые') => void;
 }
 
-// Выносим опции сортировки в константу
 const YEAR_SORT_OPTIONS = ['Сначала новые', 'Сначала старые', 'По умолчанию'] as const;
 
-// 2. Принимаем пропсы и убираем импорт mock-данных
-export default function Filter({ genres, artists }: FilterProps) {
+export default function Filter({
+    genres,
+    authors,
+    onAuthorSelect,
+    onGenreSelect,
+    onSortSelect,
+}: FilterProps) {
     const [activeFilter, setActiveFilter] = useState<FilterType>(null);
     const filterRef = useRef<HTMLDivElement>(null);
 
-    // 3. Используем данные из пропсов для сортировки
-    const uniqueAuthors = [...artists].sort();
-    const uniqueYears = [...YEAR_SORT_OPTIONS];
-    const uniqueGenres = [...genres].sort();
-
-    // Закрытие при клике вне всего фильтра
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
@@ -34,6 +34,16 @@ export default function Filter({ genres, artists }: FilterProps) {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    const uniqueAuthors = [...authors].sort();
+    const uniqueGenres = [...genres].sort();
+
+    // Универсальный обработчик выбора
+    const handleSelect = (nameFilter: FilterType, value: string) => {
+        if (nameFilter === 'author') onAuthorSelect(value);
+        if (nameFilter === 'genre') onGenreSelect(value);
+        if (nameFilter === 'year') onSortSelect(value as any);
+    };
 
     return (
         <div className={styles.centerblock__filter} ref={filterRef}>
@@ -45,14 +55,16 @@ export default function Filter({ genres, artists }: FilterProps) {
                 nameFilter='author'
                 activeFilter={activeFilter}
                 onChangeActiveFilter={setActiveFilter}
+                onSelect={val => handleSelect('author', val)}
             />
 
             <FilterItem
                 titleFilter='году выпуска'
-                list={uniqueYears}
+                list={[...YEAR_SORT_OPTIONS]}
                 nameFilter='year'
                 activeFilter={activeFilter}
                 onChangeActiveFilter={setActiveFilter}
+                onSelect={val => handleSelect('year', val)}
             />
 
             <FilterItem
@@ -61,6 +73,7 @@ export default function Filter({ genres, artists }: FilterProps) {
                 nameFilter='genre'
                 activeFilter={activeFilter}
                 onChangeActiveFilter={setActiveFilter}
+                onSelect={val => handleSelect('genre', val)}
             />
         </div>
     );

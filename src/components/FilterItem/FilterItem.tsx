@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import styles from './FilterItem.module.css';
 import { FilterType } from '@/utils/filter';
 
@@ -10,6 +10,7 @@ interface FilterItemProps {
     nameFilter: FilterType;
     activeFilter: FilterType;
     onChangeActiveFilter: (name: FilterType) => void;
+    onSelect: (value: string) => void;
 }
 
 export default function FilterItem({
@@ -18,6 +19,7 @@ export default function FilterItem({
     nameFilter,
     activeFilter,
     onChangeActiveFilter,
+    onSelect,
 }: FilterItemProps) {
     const itemRef = useRef<HTMLDivElement>(null);
 
@@ -26,7 +28,7 @@ export default function FilterItem({
     };
 
     const handleSelect = (value: string) => {
-        console.log(`Выбрано: ${value}`);
+        onSelect(value);
         onChangeActiveFilter(null);
     };
 
