@@ -21,7 +21,10 @@
     position: relative;
 }
 
-.filter__button {
+/* Кнопка фильтра — filter__button */
+/* Кнопка сброса — filter__reset (появляется только когда есть активные фильтры) */
+.filter__button,
+.filter__reset {
     display: flex;
     align-items: center;
     height: 39px;
@@ -39,7 +42,8 @@
     padding: 0 20px;
 }
 
-.filter__button:hover {
+.filter__button:hover,
+.filter__reset:hover {
     color: rgba(217, 182, 255, 1);
     border: 1px solid rgba(217, 182, 255, 1);
 }

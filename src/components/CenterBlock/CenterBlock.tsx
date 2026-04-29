@@ -85,6 +85,21 @@ export default function CenterBlock({
         return result;
     }, [tracks, searchQuery, selectedAuthors, selectedGenres, sortType]);
 
+    // Объявляем функцию сброса
+    const handleReset = () => {
+        setSearchQuery('');
+        setSelectedAuthors([]);
+        setSelectedGenres([]);
+        setSortType('По умолчанию');
+    };
+
+    // Объявляем условие показа кнопки
+    const isFilterActive =
+        searchQuery !== '' ||
+        selectedAuthors.length > 0 ||
+        selectedGenres.length > 0 ||
+        sortType !== 'По умолчанию';
+
     // Пустое состояние
     if (!isLoading && filteredTracks.length === 0 && showEmptyState) {
         return (
@@ -101,6 +116,8 @@ export default function CenterBlock({
                         selectedAuthors={selectedAuthors}
                         selectedGenres={selectedGenres}
                         sortType={sortType}
+                        onReset={handleReset}
+                        isFilterActive={isFilterActive}
                     />
                     <div className={styles.centerBlock__empty}>
                         <p className={styles.empty__title}>Ничего не найдено</p>
@@ -129,6 +146,8 @@ export default function CenterBlock({
                     selectedAuthors={selectedAuthors}
                     selectedGenres={selectedGenres}
                     sortType={sortType}
+                    onReset={handleReset}
+                    isFilterActive={isFilterActive}
                 />
                 <TrackList tracks={filteredTracks} isLoading={isLoading} />
             </div>

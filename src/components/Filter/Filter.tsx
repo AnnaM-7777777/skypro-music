@@ -19,6 +19,8 @@ interface FilterProps {
     selectedAuthors: string[];
     selectedGenres: string[];
     sortType: SortType;
+    onReset?: () => void; // Функция сброса
+    isFilterActive?: boolean; // Показывать ли кнопку
 }
 
 export default function Filter({
@@ -30,6 +32,8 @@ export default function Filter({
     selectedAuthors,
     selectedGenres,
     sortType,
+    onReset,
+    isFilterActive,
 }: FilterProps) {
     const [activeFilter, setActiveFilter] = useState<FilterType>(null);
     const filterRef = useRef<HTMLDivElement>(null);
@@ -86,6 +90,18 @@ export default function Filter({
                 onSelect={val => handleSelect('genre', val)}
                 selectedValues={selectedGenres}
             />
+
+            {/* Кнопка сброса (появляется только когда есть активные фильтры) */}
+            {isFilterActive && onReset && (
+                <button
+                    className={styles.filter__reset}
+                    onClick={onReset}
+                    title='Сбросить все фильтры и сортировку'
+                    type='button'
+                >
+                    ↺ Сбросить
+                </button>
+            )}
         </div>
     );
 }
