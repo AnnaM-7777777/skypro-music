@@ -16,6 +16,7 @@ const trackSlice = createSlice({
     name: 'tracks',
     initialState,
     reducers: {
+        // Управление текущим треком в плеере
         setCurrentTrack: (state, action: PayloadAction<TrackType>) => {
             state.currentTrack = {
                 ...action.payload,
@@ -23,6 +24,7 @@ const trackSlice = createSlice({
             };
             state.isPlaying = true;
         },
+        // Управление кнопкой Play/Pause
         setPlaying: (state, action: PayloadAction<boolean>) => {
             state.isPlaying = action.payload;
         },

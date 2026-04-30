@@ -1,30 +1,43 @@
 'use client';
 
+import { FilterType } from '@/utils/filter';
 import { useEffect, useRef, useState } from 'react';
 import FilterItem from '../FilterItem/FilterItem';
 import styles from './Filter.module.css';
 
-type FilterType = 'author' | 'year' | 'genre' | null;
+type SortType = 'По умолчанию' | 'Сначала новые' | 'Сначала старые';
 
-// 1. Добавили интерфейс пропсов
+const YEAR_SORT_OPTIONS = ['Сначала новые', 'Сначала старые', 'По умолчанию'] as const;
+
 interface FilterProps {
     genres: string[];
-    artists: string[];
+    authors: string[];
+    onAuthorSelect: (author: string) => void;
+    onGenreSelect: (genre: string) => void;
+    onSortSelect: (sort: SortType) => void;
+    // Принимаем массивы (plural)
+    selectedAuthors: string[];
+    selectedGenres: string[];
+    sortType: SortType;
+    onReset?: () => void; // Функция сброса
+    isFilterActive?: boolean; // Показывать ли кнопку
 }
 
-// 2. Принимаем пропсы и убираем импорт mock-данных
-export default function Filter({ genres, artists }: FilterProps) {
+export default function Filter({
+    genres,
+    authors,
+    onAuthorSelect,
+    onGenreSelect,
+    onSortSelect,
+    selectedAuthors,
+    selectedGenres,
+    sortType,
+    onReset,
+    isFilterActive,
+}: FilterProps) {
     const [activeFilter, setActiveFilter] = useState<FilterType>(null);
     const filterRef = useRef<HTMLDivElement>(null);
 
-    // 3. Используем данные из пропсов (сортировка для удобства)
-    const uniqueGenres = [...genres].sort();
-    const uniqueAuthors = [...artists].sort();
-
-    // Годы можно оставить из моков или тоже передавать пропсом, если нужно
-    const uniqueYears: string[] = [];
-
-    // Закрытие при клике вне
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
@@ -35,56 +48,60 @@ export default function Filter({ genres, artists }: FilterProps) {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const toggleFilter = (type: FilterType) => {
-        setActiveFilter(prev => (prev === type ? null : type));
-    };
+    const uniqueAuthors = [...authors].sort();
+    const uniqueGenres = [...genres].sort();
 
-    const handleSelect = () => {
-        setActiveFilter(null);
+    const handleSelect = (nameFilter: FilterType, value: string) => {
+        if (nameFilter === 'author') onAuthorSelect(value);
+        if (nameFilter === 'genre') onGenreSelect(value);
+        if (nameFilter === 'year') onSortSelect(value as SortType);
     };
 
     return (
         <div className={styles.centerblock__filter} ref={filterRef}>
             <div className={styles.filter__title}>Искать по:</div>
 
-            {/* Исполнитель */}
-            <div className={styles.filter__wrapper}>
-                <button
-                    className={`${styles.filter__button} ${activeFilter === 'author' ? styles.active : ''}`}
-                    onClick={() => toggleFilter('author')}
-                >
-                    исполнителю
-                </button>
-                {activeFilter === 'author' && (
-                    <FilterItem items={uniqueAuthors} onSelect={handleSelect} />
-                )}
-            </div>
+            <FilterItem
+                titleFilter='исполнителю'
+                list={uniqueAuthors}
+                nameFilter='author'
+                activeFilter={activeFilter}
+                onChangeActiveFilter={setActiveFilter}
+                onSelect={val => handleSelect('author', val)}
+                selectedValues={selectedAuthors}
+            />
 
-            {/* Год (пока пустой или можно вернуть моковые данные) */}
-            <div className={styles.filter__wrapper}>
-                <button
-                    className={`${styles.filter__button} ${activeFilter === 'year' ? styles.active : ''}`}
-                    onClick={() => toggleFilter('year')}
-                >
-                    году выпуска
-                </button>
-                {activeFilter === 'year' && uniqueYears.length > 0 && (
-                    <FilterItem items={uniqueYears} onSelect={handleSelect} />
-                )}
-            </div>
+            <FilterItem
+                titleFilter='году выпуска'
+                list={[...YEAR_SORT_OPTIONS]}
+                nameFilter='year'
+                activeFilter={activeFilter}
+                onChangeActiveFilter={setActiveFilter}
+                onSelect={val => handleSelect('year', val)}
+                selectedValue={sortType}
+            />
 
-            {/* Жанр */}
-            <div className={styles.filter__wrapper}>
+            <FilterItem
+                titleFilter='жанру'
+                list={uniqueGenres}
+                nameFilter='genre'
+                activeFilter={activeFilter}
+                onChangeActiveFilter={setActiveFilter}
+                onSelect={val => handleSelect('genre', val)}
+                selectedValues={selectedGenres}
+            />
+
+            {/* Кнопка сброса (появляется только когда есть активные фильтры) */}
+            {isFilterActive && onReset && (
                 <button
-                    className={`${styles.filter__button} ${activeFilter === 'genre' ? styles.active : ''}`}
-                    onClick={() => toggleFilter('genre')}
+                    className={styles.filter__reset}
+                    onClick={onReset}
+                    title='Сбросить все фильтры и сортировку'
+                    type='button'
                 >
-                    жанру
+                    ↺ Сбросить
                 </button>
-                {activeFilter === 'genre' && (
-                    <FilterItem items={uniqueGenres} onSelect={handleSelect} />
-                )}
-            </div>
+            )}
         </div>
     );
 }

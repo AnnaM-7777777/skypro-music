@@ -1,0 +1,1 @@
+export type FilterType = 'author' | 'year' | 'genre' | null;
