@@ -2,34 +2,6 @@
     position: relative;
 }
 
-.filter__button {
-    display: flex;
-    align-items: center;
-    height: 39px;
-    font-family: 'Montserrat';
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 18px;
-    letter-spacing: 0.1%;
-    color: var(--btn-text-primary);
-    border: 1px solid var(--border-primary);
-    border-radius: 60px;
-    background-color: transparent;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    padding: 0 20px;
-}
-
-.filter__button:hover {
-    color: var(--btn-text-primary-hover);
-    border: 1px solid var(--border-primary-hover);
-}
-
-.active {
-    color: var(--btn-text-primary-active);
-    border: 1px solid var(--border-primary-active);
-}
-
 .filter__dropdown {
     position: absolute;
     top: calc(100% + 12px);
@@ -133,7 +105,7 @@
     padding: 10px 16px;
     margin-bottom: 28px;
     font-size: 14px;
-    color: rgba(255, 255, 255, 1);
+    color: var(--text-primary);
     background-color: var(--bg-primary);
 }
 

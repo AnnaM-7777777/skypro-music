@@ -1,10 +1,8 @@
 :root {
-    /* Тёмная тема (по умолчанию) 🌙 */
     /* Фон */
     --bg-primary: rgb(24, 24, 24); /* Основной фон страницы */
     --bg-secondary: rgba(49, 49, 49, 1); /* Фон скелетона, выпадающих списков и иконки трека */
     --bg-hover: rgba(49, 49, 49, 0.5); /* Фон hover при наведении на трек */
-    /* --bg-modalEnter: rgba(0, 0, 0, 0.85); */ /* Фон за модальным окном */
     --bg-burgerMenu: rgba(28, 28, 28, 1); /* Фон меню-бургера */
     --bg-burgerMenu-btnLine: rgba(211, 211, 211, 1); /* Фон кнопки меню-бургера(3 линии) */
 
@@ -30,7 +28,7 @@
     /* Тени */
     --shadow-bar: rgba(24, 24, 24, 1); /* Тень прогресс бара */
     --shadow-toast: rgba(0, 0, 0, 0.4); /* Тень всплывающего уведомления */
-    --shadow-modalForm: rgba(24, 24, 24, 1); /* Тень модального окна входа/регистрации */
+    --shadow-modalForm: none; /* Тень модального окна входа/регистрации */
 }
 
 [data-theme='light'] {
@@ -65,33 +63,23 @@
     /* Тени */
     --shadow-bar: rgba(208, 206, 206, 1); /* Тень прогресс бара */
     --shadow-toast: rgba(255, 255, 255, 0.4); /* Тень всплывающего уведомления */
-    --shadow-modalForm: rgb(231, 25, 25); /* Тень модального окна входа/регистрации */
-}
-
-/* Применяем переменные к базовым элементам */
-body {
-    background-color: var(--bg-primary);
-    transition:
-        background-color 0.3s ease,
-        color 0.3s ease;
-    font-family: 'Montserrat';
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    --shadow-modalForm: rgb(177, 177, 177, 1); /* Тень модального окна входа/регистрации */
 }
 
 html {
     scrollbar-width: none;
     -ms-overflow-style: none;
+    overflow-x: hidden;
 }
 
 ::-webkit-scrollbar {
     display: none;
 }
 
-html,
 body {
-    max-width: 100vw;
-    overflow-x: hidden;
+    font-family: 'Montserrat', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -120,4 +108,33 @@ svg * {
 a {
     color: inherit;
     text-decoration: none;
+}
+
+/* Утилитарные классы для кнопок фильтров */
+.btn-filter {
+    display: flex;
+    align-items: center;
+    height: 39px;
+    font-family: 'Montserrat';
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18px;
+    letter-spacing: 0.1%;
+    color: var(--btn-text-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 60px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0 20px;
+}
+
+.btn-filter:hover {
+    color: var(--btn-text-primary-hover);
+    border: 1px solid var(--border-primary-hover);
+}
+
+.btn-filter.active {
+    color: var(--btn-text-primary-active);
+    border: 1px solid var(--border-primary-active);
 }

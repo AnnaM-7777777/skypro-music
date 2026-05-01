@@ -1,4 +1,4 @@
-/* Общие свойства для обеих кнопок signup/signin */
+/* Общие свойства для обеих кнопок signin/signup */
 .modal__logo {
     width: 140px;
     height: 21px;
@@ -86,6 +86,7 @@
     width: 366px;
     background-color: rgba(255, 255, 255, 1);
     border-radius: 12px;
+    box-shadow: 0 0 20px var(--shadow-modalForm);
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -159,7 +160,7 @@
     }
 }
 
-/* Кнопка "Зарегистрироваться" */
+/* Кнопка "Зарегистрироваться" в signup */
 .modal__btnSignup {
     width: 278px;
     height: 52px;

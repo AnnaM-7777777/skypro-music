@@ -54,7 +54,7 @@
         font-size: 18px;
         line-height: 20px;
         letter-spacing: 0.1%;
-        color: rgb(255, 255, 255, 1);
+        color: var(--text-primary);
         margin-right: 56px;
         white-space: nowrap;
     }
@@ -66,7 +66,7 @@
     font-size: 14px;
     line-height: 16px;
     letter-spacing: 0.1%;
-    color: rgb(255, 255, 255, 1);
+    color: var(--text-primary);
     margin-right: 56px;
 }
 
@@ -170,7 +170,7 @@
 }
 
 .trackPlay__title {
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 600;
     font-size: 14px;
     white-space: nowrap;
@@ -179,7 +179,7 @@
 }
 
 .trackPlay__author {
-    color: #aaa;
+    color: var(--text-primary);
     font-size: 12px;
 }
 
@@ -226,7 +226,15 @@
 .volume__svg {
     width: 13px;
     height: 18px;
-    fill: transparent;
+    fill: currentColor;
+    stroke: currentColor;
+    color: var(--text-primary);
+    opacity: 1;
+}
+
+.volume__svg use {
+    fill: currentColor;
+    stroke: currentColor;
 }
 
 .volume__progress {
@@ -248,7 +256,7 @@
     height: 2px;
     background: linear-gradient(
         to right,
-        rgba(255, 255, 255, 1) var(--volume-percent, 0%),
+        var(--text-primary) var(--volume-percent, 0%),
         rgba(121, 121, 121, 1) var(--volume-percent, 0%)
     );
 }

@@ -47,7 +47,7 @@ export default function FilterItem({
     return (
         <div className={styles.filter__item} ref={itemRef}>
             <button
-                className={`${styles.filter__button} ${isButtonActive ? styles.active : ''}`}
+                className={`btn-filter ${styles.filter__button} ${isButtonActive ? 'active' : ''}`}
                 onClick={handleClick}
             >
                 {titleFilter}

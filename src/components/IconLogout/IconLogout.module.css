@@ -9,4 +9,9 @@
 .sidebar__icon svg {
     width: 100%;
     height: 100%;
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-linecap: currentColor;
+    color: var(--text-primary);
+    background-color: transparent;
 }

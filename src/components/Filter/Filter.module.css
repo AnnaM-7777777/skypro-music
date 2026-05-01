@@ -20,35 +20,3 @@
 .filter__wrapper {
     position: relative;
 }
-
-/* Кнопка фильтра — filter__button */
-/* Кнопка сброса — filter__reset (появляется только когда есть активные фильтры) */
-.filter__button,
-.filter__reset {
-    display: flex;
-    align-items: center;
-    height: 39px;
-    font-family: 'Montserrat';
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 18px;
-    letter-spacing: 0.1%;
-    color: var(--btn-text-primary);
-    border: 1px solid var(--border-primary);
-    border-radius: 60px;
-    background-color: transparent;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    padding: 0 20px;
-}
-
-.filter__button:hover,
-.filter__reset:hover {
-    color: var(--btn-text-primary-hover);
-    border: 1px solid var(--border-primary-hover);
-}
-
-.active {
-    color: var(--btn-text-primary-active);
-    border: 1px solid var(--border-primary-active);
-}
