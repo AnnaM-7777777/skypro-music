@@ -1,8 +1,8 @@
 .wrapper {
     width: 100%;
     min-height: 100vh;
-    color: #fff;
-    background-color: rgba(24, 24, 24, 1);
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
 }
 
 .container {
@@ -43,7 +43,7 @@
     font-size: 32px;
     line-height: 38px;
     letter-spacing: -0.8%;
-    color: rgba(255, 255, 255, 1);
+    color: var(--text-primary);
     margin: 12px 0 10px 0;
 }
 
@@ -52,7 +52,7 @@
     font-size: 18px;
     line-height: 24px;
     letter-spacing: -0.3%;
-    color: rgba(78, 78, 78, 1);
+    color: var(--text-secondary);
 }
 
 .errorPage__btnRetry {
@@ -68,7 +68,7 @@
     font-size: 18px;
     line-height: 24px;
     letter-spacing: -0.3%;
-    background: rgba(88, 14, 162, 1);
+    background-color: rgba(88, 14, 162, 1);
     color: rgba(255, 255, 255, 1);
     margin-top: 36px;
     border: none;
@@ -76,7 +76,7 @@
 }
 
 .errorPage__btnRetry:hover {
-    background: rgba(63, 0, 125, 1);
+    background-color: rgba(63, 0, 125, 1);
 }
 
 .errorPageSidebar {

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import styles from './signup.module.css';
 import classNames from 'classnames';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import styles from '../signin-signup.module.css';
 
 const API_URL = 'https://webdev-music-003b5b991590.herokuapp.com';
 
@@ -132,7 +132,7 @@ export default function SignUp() {
                         width={140}
                         height={21}
                         className={styles.headerLogoImage}
-                        src='/img/logo_modal.png'
+                        src='/img/logo-dark.png'
                         alt='logo'
                         priority
                     />
@@ -177,7 +177,7 @@ export default function SignUp() {
             )}
 
             <button
-                className={styles.modal__btnSignupEnt}
+                className={styles.modal__btnEnter}
                 type='submit'
                 disabled={loading || showSuccess}
             >

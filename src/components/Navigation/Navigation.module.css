@@ -34,7 +34,7 @@
 .burger__line {
     width: 100%;
     height: 1px;
-    background-color: rgba(211, 211, 211, 1);
+    background-color: var(--bg-burgerMenu-btnLine);
     transition: all 0.3s ease;
 }
 
@@ -51,7 +51,7 @@
     opacity: 1;
     padding-top: 145px;
     padding-left: 36px;
-    background-color: rgba(28, 28, 28, 1);
+    background-color: var(--bg-burgerMenu);
     position: relative;
     z-index: 1000;
     left: 0;
@@ -67,7 +67,7 @@
 }
 
 .menu__link {
-    color: #ffffff;
+    color: var(--text-primary);
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
@@ -76,7 +76,7 @@
 /* Кнопка темы */
 .item__btnToggleTheme {
     background: none;
-    border: 2px solid rgba(211, 211, 211, 1);
+    border: 2px solid var(--bg-burgerMenu-btnLine);
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -88,23 +88,6 @@
 }
 
 .item__iconTheme {
-    color: rgb(255, 255, 255, 1);
+    color: var(--text-primary);
     transition: color 0.3s ease;
-}
-
-/* Для светлой темы */
-.item__lightTheme .item__btnToggleTheme {
-    border-color: rgba(78, 78, 78, 1);
-}
-
-.item__lightTheme .item__iconTheme {
-    color: rgba(78, 78, 78, 1);
-}
-
-.item__lightTheme .burger__line {
-    background-color: rgba(0, 0, 0, 1);
-}
-
-.item__lightTheme .menu__link {
-    color: rgba(78, 78, 78, 1);
 }

@@ -1,3 +1,4 @@
+/* Общие свойства для обеих кнопок signup/signin */
 .modal__logo {
     width: 140px;
     height: 21px;
@@ -38,13 +39,16 @@
     color: rgba(208, 206, 206, 1);
 }
 
+.login {
+    margin-bottom: 30px;
+}
+
 .modal__btnEnter {
     width: 278px;
     height: 52px;
     background-color: rgba(88, 14, 162, 1);
     border-radius: 6px;
     margin-top: 30px;
-    margin-bottom: 20px;
     border: none;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -55,7 +59,7 @@
     -webkit-box-pack: center;
     -ms-flex-pack: center;
     justify-content: center;
-    color: #ffffff;
+    color: rgba(255, 255, 255, 1);
     font-family: 'Montserrat';
     font-style: normal;
     font-weight: 400;
@@ -73,45 +77,7 @@
     background-color: rgba(39, 26, 88, 1);
 }
 
-.modal__btnSignup {
-    width: 278px;
-    height: 52px;
-    background-color: transparent;
-    border: 1px solid rgba(208, 206, 206, 1);
-    border-radius: 6px;
-    font-family: 'Montserrat';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 18px;
-    line-height: 24px;
-    letter-spacing: -0.05px;
-    color: #000000;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-.modal__btnSignup:hover {
-    background-color: rgba(244, 245, 246, 1);
-}
-
-.modal__btnSignup:active {
-    background-color: rgba(217, 217, 217, 1);
-}
-
-.login {
-    margin-bottom: 30px;
-}
-
-.modal__btnEnter:disabled,
-.modal__btnSignupEnt:disabled {
+.modal__btnEnter:disabled {
     opacity: 0.7;
     cursor: not-allowed;
 }
@@ -153,7 +119,7 @@
 
 /* Типы сообщений */
 .formMessage--error {
-    background: #ffebee;
+    background: rgb(255, 235, 238);
     color: #c62828;
     border: 1px solid #ef9a9a;
 }
@@ -191,4 +157,39 @@
     75% {
         transform: translateX(5px);
     }
+}
+
+/* Кнопка "Зарегистрироваться" */
+.modal__btnSignup {
+    width: 278px;
+    height: 52px;
+    background-color: transparent;
+    border: 1px solid rgba(208, 206, 206, 1);
+    border-radius: 6px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.05px;
+    color: rgba(0, 0, 0, 1);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.modal__btnSignup:hover {
+    background-color: rgba(244, 245, 246, 1);
+}
+
+.modal__btnSignup:active {
+    background-color: rgba(217, 217, 217, 1);
 }

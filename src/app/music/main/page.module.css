@@ -1,5 +1,5 @@
 .wrapper {
-    background-color: rgba(24, 24, 24, 1);
+    background-color: var(--bg-primary);
     padding-right: 90px;
 }
 

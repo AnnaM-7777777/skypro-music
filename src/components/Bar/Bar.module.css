@@ -31,7 +31,7 @@
     align-items: flex-end;
     gap: 10px;
     flex-grow: 1;
-    box-shadow: 0 0 20px rgba(24, 24, 24, 1);
+    box-shadow: 0 0 20px var(--shadow-bar);
     flex-wrap: wrap;
     height: 100%;
     justify-content: flex-end;
@@ -76,7 +76,7 @@
     align-items: center;
     width: 100%;
     height: 78px;
-    background-color: rgba(24, 24, 24, 1);
+    background-color: var(--bg-primary);
     margin: 0 36px;
 }
 
@@ -153,8 +153,8 @@
     align-items: center;
     width: 51px;
     height: 51px;
-    background-color: rgba(49, 49, 49, 1);
-    border: 1px solid rgba(78, 78, 78, 1);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
 }
 
 .trackPlay__svg {
@@ -240,7 +240,7 @@
     appearance: none;
     outline: none;
     cursor: pointer;
-    background: transparent;
+    background-color: transparent;
 }
 
 /* Видимая полоска громкости - slider track */
@@ -258,8 +258,8 @@
     appearance: none;
     width: 12px;
     height: 12px;
-    background: rgba(26, 26, 26, 1);
-    border: 2px solid rgba(255, 255, 255, 1);
+    background-color: var(--bg-primary);
+    border: 2px solid var(--border-primary);
     border-radius: 50%;
     margin-top: -5px;
     cursor: pointer;
@@ -285,8 +285,7 @@
 .volume__progressLine::-moz-range-thumb {
     width: 12px;
     height: 12px;
-    background: rgba(24, 24, 24, 1);
-    border: 2px solid rgba(255, 255, 255, 1);
+    background-color: var(--bg-primary);
     border-radius: 50%;
     cursor: pointer;
     border: none; /* убрать дефолтный бордер Firefox */

@@ -11,8 +11,8 @@
     font-size: 16px;
     line-height: 18px;
     letter-spacing: 0.1%;
-    color: rgba(255, 255, 255, 1);
-    border: 1px solid rgba(255, 255, 255, 1);
+    color: var(--btn-text-primary);
+    border: 1px solid var(--border-primary);
     border-radius: 60px;
     background-color: transparent;
     cursor: pointer;
@@ -21,13 +21,13 @@
 }
 
 .filter__button:hover {
-    color: rgba(217, 182, 255, 1);
-    border: 1px solid rgba(217, 182, 255, 1);
+    color: var(--btn-text-primary-hover);
+    border: 1px solid var(--border-primary-hover);
 }
 
 .active {
-    color: rgba(173, 97, 255, 1);
-    border: 1px solid rgba(173, 97, 255, 1);
+    color: var(--btn-text-primary-active);
+    border: 1px solid var(--border-primary-active);
 }
 
 .filter__dropdown {
@@ -36,7 +36,7 @@
     left: 0;
     border-radius: 12px;
     padding: 34px;
-    background-color: rgba(49, 49, 49, 1);
+    background-color: var(--bg-secondary);
     z-index: 101;
     box-sizing: border-box;
 }
@@ -44,7 +44,7 @@
 /* Счетчик выбранного в выпадающем списке, когда список закрыт */
 .filter__count {
     font-size: 14px;
-    color: rgba(182, 114, 255, 1);
+    color: var(--btn-text-primary-active);
     margin-left: 10px;
 }
 
@@ -57,7 +57,7 @@
     width: max-content;
     height: max-content;
     overflow-y: auto;
-    color: rgba(255, 255, 255, 1);
+    color: var(--text-primary);
     padding-right: 18px;
     animation: fadeIn 0.2s ease;
 }
@@ -111,7 +111,7 @@
     font-size: 20px;
     line-height: 24px;
     letter-spacing: 0%;
-    color: rgba(255, 255, 255, 1);
+    color: var(--text-primary);
     cursor: pointer;
     transition:
         background-color 0.2s ease,
@@ -133,8 +133,8 @@
     padding: 10px 16px;
     margin-bottom: 28px;
     font-size: 14px;
-    color: rgba(182, 114, 255, 1);
-    background-color: rgba(24, 24, 24, 1);
+    color: rgba(255, 255, 255, 1);
+    background-color: var(--bg-primary);
 }
 
 .dropdown__summary strong {

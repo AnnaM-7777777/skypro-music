@@ -9,7 +9,7 @@
     appearance: none;
     outline: none;
     cursor: pointer;
-    background: transparent;
+    background-color: transparent;
     height: 4px;
 }
 

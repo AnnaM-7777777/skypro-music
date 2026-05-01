@@ -1,10 +1,82 @@
 :root {
-    --background: #181818;
-    --foreground: #ffffff;
-    --primary: #00ff88;
-    --secondary: #2a2a2a;
-    --border: #333333;
-    --text-muted: #999999;
+    /* Тёмная тема (по умолчанию) 🌙 */
+    /* Фон */
+    --bg-primary: rgb(24, 24, 24); /* Основной фон страницы */
+    --bg-secondary: rgba(49, 49, 49, 1); /* Фон скелетона, выпадающих списков и иконки трека */
+    --bg-hover: rgba(49, 49, 49, 0.5); /* Фон hover при наведении на трек */
+    /* --bg-modalEnter: rgba(0, 0, 0, 0.85); */ /* Фон за модальным окном */
+    --bg-burgerMenu: rgba(28, 28, 28, 1); /* Фон меню-бургера */
+    --bg-burgerMenu-btnLine: rgba(211, 211, 211, 1); /* Фон кнопки меню-бургера(3 линии) */
+
+    /* Текст */
+    --text-primary: rgba(255, 255, 255, 1); /* Основной текст */
+    --text-secondary: rgba(78, 78, 78, 1); /* Второстепенный серый текст */
+
+    /* Кнопки, ссылки */
+    --btn-bg-primary: rgba(255, 255, 255, 1); /* Кнопка-svg входа/выхода и смены темы */
+
+    /* Текст в кнопках, ссылках */
+    --btn-text-primary: rgba(255, 255, 255, 1); /* Текст в кнопке фильтра */
+    --btn-text-primary-hover: rgba(217, 182, 255, 1); /* Текст в кнопке фильтра при hover */
+    --btn-text-primary-active: rgba(173, 97, 255, 1); /* Текст в кнопке фильтра при active */
+
+    /* Границы */
+    --border-primary: rgba(255, 255, 255, 1); /* border фильтра, slider  */
+    --border-primary-hover: rgba(217, 182, 255, 1); /* border фильтра при hover */
+    --border-primary-active: rgba(173, 97, 255, 1); /* border фильтра при active */
+    --border-secondary: rgba(78, 78, 78, 1); /* border иконок трека и неактивного лайка */
+    --border-search: rgba(78, 78, 78, 1); /* border поиска(нижний)*/
+
+    /* Тени */
+    --shadow-bar: rgba(24, 24, 24, 1); /* Тень прогресс бара */
+    --shadow-toast: rgba(0, 0, 0, 0.4); /* Тень всплывающего уведомления */
+    --shadow-modalForm: rgba(24, 24, 24, 1); /* Тень модального окна входа/регистрации */
+}
+
+[data-theme='light'] {
+    /* Светлая тема ☀️ */
+    /* Фон */
+    --bg-primary: rgba(255, 255, 255, 1); /* Основной фон страницы */
+    --bg-secondary: rgba(177, 177, 177, 1); /* Фон скелетона, выпадающих списков и иконки трека */
+    --bg-hover: rgba(177, 177, 177, 0.5); /* Фон hover при наведении на трек */
+    --bg-modalEnter: rgba(255, 255, 255, 0.85); /* Фон за модальным окном */
+    --bg-burgerMenu: rgba(246, 245, 243, 1); /* Фон меню-бургера */
+    --bg-burgerMenu-btnLine: rgba(0, 0, 0, 1); /* Фон кнопки меню-бургера (3 линии) */
+
+    /* Текст */
+    --text-primary: rgba(0, 0, 0, 1); /* Основной текст */
+    --text-secondary: rgba(177, 177, 177, 1); /* Второстепенный серый текст */
+
+    /* Кнопки, ссылки */
+    --btn-bg-primary: rgba(0, 0, 0, 1); /* Кнопка-svg входа/выхода и смены темы */
+
+    /* Текст в кнопках, ссылках */
+    --btn-text-primary: rgba(0, 0, 0, 1); /* Текст в кнопке фильтра */
+    --btn-text-primary-hover: rgba(173, 97, 255, 1); /* Текст в кнопке фильтра при hover */
+    --btn-text-primary-active: rgba(88, 14, 162, 1); /* Текст в кнопке фильтра при active */
+
+    /* Границы */
+    --border-primary: rgba(0, 0, 0, 1); /* border фильтра, slider */
+    --border-primary-hover: rgba(173, 97, 255, 1); /* border фильтра при hover */
+    --border-primary-active: rgba(88, 14, 162, 1); /* border фильтра при active */
+    --border-secondary: rgba(177, 177, 177, 1); /* border иконок трека и неактивного лайка */
+    --border-search: rgba(217, 217, 217, 1); /* border поиска(нижний) */
+
+    /* Тени */
+    --shadow-bar: rgba(208, 206, 206, 1); /* Тень прогресс бара */
+    --shadow-toast: rgba(255, 255, 255, 0.4); /* Тень всплывающего уведомления */
+    --shadow-modalForm: rgb(231, 25, 25); /* Тень модального окна входа/регистрации */
+}
+
+/* Применяем переменные к базовым элементам */
+body {
+    background-color: var(--bg-primary);
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+    font-family: 'Montserrat';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 html {
@@ -22,18 +94,27 @@ body {
     overflow-x: hidden;
 }
 
-body {
-    color: var(--foreground);
-    background: var(--background);
-    font-family: 'Montserrat';
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
 * {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+}
+
+/* Плавное переключение для всех элементов с цветами */
+*,
+*::before,
+*::after {
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        color 0.3s ease;
+}
+
+/* Исключаем иконки и изображения из перехода (чтобы не мерцали) */
+img,
+svg,
+svg * {
+    transition: none;
 }
 
 a {

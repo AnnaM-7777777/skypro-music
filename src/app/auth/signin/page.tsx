@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './signin.module.css';
+import styles from '../signin-signup.module.css';
 import classNames from 'classnames';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -130,7 +130,7 @@ export default function Signin() {
                         width={140}
                         height={21}
                         className={styles.headerLogoImage}
-                        src='/img/logo_modal.png'
+                        src='/img/logo-dark.png'
                         alt='logo'
                         priority
                     />

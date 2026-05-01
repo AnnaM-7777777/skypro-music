@@ -10,7 +10,7 @@
     font-size: 60px;
     line-height: 64px;
     letter-spacing: -1.3%;
-    color: rgba(255, 255, 255, 1);
+    color: var(--text-primary);
     margin: 51px 0 45px 0;
 }
 
@@ -42,6 +42,6 @@
 }
 
 .empty__heart {
-    color: rgb(182, 114, 255);
+    background-color: rgba(182, 114, 255, 1);
     margin: 0 4px;
 }
