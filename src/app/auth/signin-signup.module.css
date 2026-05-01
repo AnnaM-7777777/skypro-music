@@ -15,6 +15,10 @@
     outline: none;
     padding: 8px 1px;
     margin-bottom: 30px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
 }
 
 .modal__input::placeholder {

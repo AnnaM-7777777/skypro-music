@@ -60,7 +60,6 @@ export default function PlaylistPage() {
                     })
                 );
             } catch (err) {
-                console.error('Failed to load favorites:', err);
                 // Фоллбэк: если сервер упал, пробуем localStorage
                 const saved = localStorage.getItem('favorites');
                 if (saved) {
@@ -72,9 +71,7 @@ export default function PlaylistPage() {
                                 tracks: savedTracks,
                             })
                         );
-                    } catch (e) {
-                        console.error('localStorage parse error:', e);
-                    }
+                    } catch (e) {}
                 }
             } finally {
                 dispatch(setLoading(false));

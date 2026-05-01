@@ -264,7 +264,6 @@ export default function Bar({ tracks }: BarProps) {
                     return response;
                 });
             } catch (error) {
-                console.error('Error toggling favorite in Bar:', error);
                 // Откат изменения в Redux при ошибке
                 dispatch(toggleFavorite(currentTrackItem));
                 setShowApiErrorToast(true);
@@ -326,9 +325,7 @@ export default function Bar({ tracks }: BarProps) {
         }
     }, [isRepeat, dispatch, handleNext]);
 
-    const handleError = useCallback((e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
-        console.error('Audio error:', e);
-    }, []);
+    const handleError = useCallback((e: React.SyntheticEvent<HTMLAudioElement, Event>) => {}, []);
 
     const handleMouseEnter = useCallback(() => setIsHovered(true), []);
     const handleMouseLeave = useCallback(() => setIsHovered(false), []);
@@ -349,6 +346,7 @@ export default function Bar({ tracks }: BarProps) {
                 <div className={styles.progress__time}>{getTimePanel(currentTime, duration)}</div>
                 <ProgressBar max={duration} value={currentTime} step={0.1} onChange={handleSeek} />
             </div>
+
             <div className={styles.bar__block}>
                 <audio
                     ref={audioRef}
@@ -461,12 +459,14 @@ export default function Bar({ tracks }: BarProps) {
                     </div>
                 </div>
             </div>
+
             {showAuthToast && (
                 <Toast
                     message='Чтобы ставить лайки, пожалуйста, авторизуйтесь'
                     onClose={() => setShowAuthToast(false)}
                 />
             )}
+
             {showApiErrorToast && (
                 <Toast
                     message='Не удалось обновить лайк. Попробуйте позже.'

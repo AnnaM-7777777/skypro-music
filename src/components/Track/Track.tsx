@@ -148,7 +148,6 @@ function TrackItem({
                     return response;
                 });
             } catch (error) {
-                console.error('Error toggling favorite:', error);
                 dispatch(toggleFavorite(track));
                 setShowApiErrorToast(true);
             }

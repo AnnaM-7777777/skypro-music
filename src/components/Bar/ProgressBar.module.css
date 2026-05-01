@@ -1,6 +1,8 @@
 /* Контейнер прогресс-бара */
 .progress__wrapper {
     width: 100%;
+    box-shadow: 0 0 20px var(--shadow-bar);
+    background-color: var(--bg-primary);
 }
 
 /* Дорожка прогресса */

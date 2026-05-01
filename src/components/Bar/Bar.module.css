@@ -31,7 +31,6 @@
     align-items: flex-end;
     gap: 10px;
     flex-grow: 1;
-    box-shadow: 0 0 20px var(--shadow-bar);
     flex-wrap: wrap;
     height: 100%;
     justify-content: flex-end;
