@@ -4,7 +4,7 @@ import { useState } from 'react';
 import styles from './Search.module.css';
 
 interface SearchProps {
-    onSearch: (query: string) => void;
+    onSearch?: (query: string) => void;
 }
 
 export default function Search({ onSearch }: SearchProps) {
@@ -13,7 +13,7 @@ export default function Search({ onSearch }: SearchProps) {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const query = e.target.value;
         setValue(query);
-        onSearch(query);
+        if (onSearch) onSearch(query);
     };
 
     return (

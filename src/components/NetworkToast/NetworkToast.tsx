@@ -10,7 +10,7 @@ export default function NetworkToast() {
         const handleOffline = () => setMessage('Нет подключения к интернету');
         const handleOnline = () => {
             setMessage('Подключение восстановлено');
-            setTimeout(() => setMessage(null), 3000);
+            setTimeout(() => setMessage(null), 2000);
         };
 
         window.addEventListener('offline', handleOffline);
@@ -24,5 +24,7 @@ export default function NetworkToast() {
 
     if (!message) return null;
 
-    return <Toast message={message} onClose={() => setMessage(null)} />;
+    const icon = message.includes('Нет подключения') ? '🔴' : '🟢';
+
+    return <Toast message={message} icon={icon} onClose={() => setMessage(null)} />;
 }

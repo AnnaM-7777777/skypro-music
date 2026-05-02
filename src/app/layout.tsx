@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import ReduxProvider from '../store/ReduxProvider';
 import NetworkToast from '@/components/NetworkToast/NetworkToast';
-import ApiErrorToast from '@/components/ApiErrorToast/ApiErrorToast';
 
 const montserrat = Montserrat({
     variable: '--font-montserrat',
@@ -29,7 +28,6 @@ export default function RootLayout({
                 <body className={montserrat.variable}>
                     {children}
                     <NetworkToast />
-                    <ApiErrorToast />
                 </body>
             </html>
         </ReduxProvider>

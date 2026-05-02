@@ -76,13 +76,15 @@ function BarSkeleton() {
 }
 
 export default function Bar({ tracks }: BarProps) {
+    const [isLikeLoading, setIsLikeLoading] = useState(false);
     const [showAuthToast, setShowAuthToast] = useState(false);
     const [showApiErrorToast, setShowApiErrorToast] = useState(false);
+    const [showSuccessToast, setShowSuccessToast] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
     const currentTrackItem = useAppSelector(state => state.tracks.currentTrack);
     const isPlayingRedux = useAppSelector(state => state.tracks.isPlaying);
     const dispatch = useAppDispatch();
     const audioRef = useRef<HTMLAudioElement>(null);
-
     const [isPlaying, setIsPlaying] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
@@ -231,20 +233,24 @@ export default function Bar({ tracks }: BarProps) {
 
     const toggleLike = useCallback(
         async (e?: React.MouseEvent) => {
+            if (isLikeLoading) return;
+            setIsLikeLoading(true);
+
             e?.stopPropagation();
             if (!currentTrackItem) return;
+
             const token = localStorage.getItem('token');
             if (!token) {
                 setShowAuthToast(true);
                 return;
             }
 
-            // Оптимистичное обновление через Redux
+            const wasLiked = isLiked;
+
             dispatch(toggleFavorite(currentTrackItem));
 
-            // Запрос к бэкенду
             try {
-                const method = isLiked ? 'DELETE' : 'POST';
+                const method = wasLiked ? 'DELETE' : 'POST';
                 await withReauth(async (accessToken: string) => {
                     const response = await fetch(
                         `${API_URL}/catalog/track/${currentTrackItem._id}/favorite/`,
@@ -256,24 +262,19 @@ export default function Bar({ tracks }: BarProps) {
                             },
                         }
                     );
-                    if (!response.ok) {
-                        const error: any = new Error('Failed to update favorites');
-                        error.status = response.status;
-                        throw error;
-                    }
+                    if (!response.ok) throw new Error('Failed');
                     return response;
                 });
+
+                const msg = wasLiked ? 'Трек удалён из плейлиста' : 'Трек добавлен в плейлист';
+                setSuccessMessage(msg);
+                setShowSuccessToast(true);
             } catch (error) {
-                // Откат изменения в Redux при ошибке
+                // Если ошибка — откатываем Redux
                 dispatch(toggleFavorite(currentTrackItem));
                 setShowApiErrorToast(true);
-
-                window.dispatchEvent(
-                    new CustomEvent('showApiErrorToast', {
-                        detail: { message: 'Сервер временно недоступен. Попробуйте позже.' },
-                    })
-                );
             }
+            setTimeout(() => setIsLikeLoading(false), 200);
         },
         [dispatch, currentTrackItem, isLiked]
     );
@@ -469,6 +470,7 @@ export default function Bar({ tracks }: BarProps) {
             {showAuthToast && (
                 <Toast
                     message='Чтобы ставить лайки, пожалуйста, авторизуйтесь'
+                    icon='⚠️'
                     onClose={() => setShowAuthToast(false)}
                 />
             )}
@@ -476,7 +478,16 @@ export default function Bar({ tracks }: BarProps) {
             {showApiErrorToast && (
                 <Toast
                     message='Не удалось обновить лайк. Попробуйте позже.'
+                    icon='❗'
                     onClose={() => setShowApiErrorToast(false)}
+                />
+            )}
+
+            {showSuccessToast && (
+                <Toast
+                    message={successMessage}
+                    icon={successMessage.includes('удалён') ? '❌' : '✔️'}
+                    onClose={() => setShowSuccessToast(false)}
                 />
             )}
         </div>

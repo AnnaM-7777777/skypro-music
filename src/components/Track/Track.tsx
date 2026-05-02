@@ -105,9 +105,11 @@ function TrackItem({
     isCurrent?: boolean;
     isPlaying?: boolean;
 }) {
+    const [isLikeLoading, setIsLikeLoading] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [showAuthToast, setShowAuthToast] = useState(false);
     const [showSuccessToast, setShowSuccessToast] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
     const [showApiErrorToast, setShowApiErrorToast] = useState(false);
     const dispatch = useAppDispatch();
     const isLiked = useAppSelector(state => selectIsFavorite(state, track._id));
@@ -115,6 +117,9 @@ function TrackItem({
     // useCallback: предотвращает пересоздание функции при каждом рендере
     const toggleLike = useCallback(
         async (e?: React.MouseEvent) => {
+            if (isLikeLoading) return;
+            setIsLikeLoading(true);
+
             e?.stopPropagation();
             const token = localStorage.getItem('token');
 
@@ -123,12 +128,12 @@ function TrackItem({
                 return;
             }
 
+            // 1. Запоминаем ДО
+            const wasLiked = isLiked;
             dispatch(toggleFavorite(track));
 
-            // Запрос к бэкенду
             try {
-                const method = isLiked ? 'DELETE' : 'POST';
-
+                const method = wasLiked ? 'DELETE' : 'POST';
                 await withReauth(async (accessToken: string) => {
                     const response = await fetch(
                         `${API_URL}/catalog/track/${track._id}/favorite/`,
@@ -140,21 +145,23 @@ function TrackItem({
                             },
                         }
                     );
-
-                    if (!response.ok) {
-                        const error: any = new Error('Failed to update favorites');
-                        error.status = response.status;
-                        throw error;
-                    }
+                    if (!response.ok) throw new Error('Failed');
                     return response;
                 });
+
+                // 2. Сообщение на основе wasLiked
+                const msg = wasLiked ? 'Трек удалён из плейлиста' : 'Трек добавлен в плейлист';
+
+                setSuccessMessage(msg);
+                setShowSuccessToast(true);
             } catch (error) {
                 dispatch(toggleFavorite(track));
                 setShowApiErrorToast(true);
             }
+            setTimeout(() => setIsLikeLoading(false), 200);
         },
         [dispatch, track, isLiked]
-    ); // Зависимости
+    );
 
     // useCallback: клик по треку
     const onClickTrack = useCallback(() => {
@@ -210,16 +217,28 @@ function TrackItem({
                 />
                 <span className={styles.time__text}>{duration}</span>
             </div>
+
             {showAuthToast && (
                 <Toast
                     message='Чтобы ставить лайки, пожалуйста, авторизуйтесь'
+                    icon='⚠️'
                     onClose={() => setShowAuthToast(false)}
                 />
             )}
+
             {showApiErrorToast && (
                 <Toast
                     message='Не удалось обновить лайк. Попробуйте позже.'
+                    icon='❗'
                     onClose={() => setShowApiErrorToast(false)}
+                />
+            )}
+
+            {showSuccessToast && (
+                <Toast
+                    message={successMessage}
+                    icon={successMessage.includes('удалён') ? '❌' : '✔️'}
+                    onClose={() => setShowSuccessToast(false)}
                 />
             )}
         </div>

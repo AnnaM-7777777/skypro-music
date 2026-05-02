@@ -1,6 +1,4 @@
-.toast,
-.toast_success,
-.toast_error {
+.toast {
     position: fixed;
     bottom: 100px;
     left: 50%;
@@ -36,6 +34,7 @@
 
 .toast__icon {
     font-size: 16px;
+    margin-bottom: 5px;
 }
 
 .toast__message {

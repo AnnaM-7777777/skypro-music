@@ -6,35 +6,36 @@ import styles from './Toast.module.css';
 interface ToastProps {
     message: string;
     duration?: number;
-    type?: 'error' | 'success';
+    icon?: React.ReactNode;
     onClose: () => void;
 }
 
-export default function Toast({ message, duration = 3000, type = 'error', onClose }: ToastProps) {
+export default function Toast({ message, duration = 2000, icon, onClose }: ToastProps) {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         const showTimer = setTimeout(() => setVisible(true), 10);
-        const hideTimer = setTimeout(() => {
-            setVisible(false);
-            setTimeout(onClose, 300);
-        }, duration);
+        const hideTimer =
+            duration > 0
+                ? setTimeout(() => {
+                      setVisible(false);
+                      setTimeout(onClose, 200);
+                  }, duration)
+                : null;
 
         return () => {
             clearTimeout(showTimer);
-            clearTimeout(hideTimer);
+            if (hideTimer) clearTimeout(hideTimer);
         };
     }, [duration, onClose]);
 
-    // Иконка в зависимости от типа
-    const icon = type === 'error' ? '⚠️' : '✅';
+    // Дефолтная иконка, если не передали свою
+    const displayIcon = icon || 'ℹ️';
 
     return (
-        <div
-            className={`${styles.toast} ${visible ? styles.toastVisible : ''} ${type === 'success' ? styles.toast_success : styles.toast_error}`}
-        >
+        <div className={`${styles.toast} ${visible ? styles.toastVisible : ''}`}>
             <div className={styles.toast__content}>
-                <span className={styles.toast__icon}>{icon}</span>
+                <span className={styles.toast__icon}>{displayIcon}</span>
                 <span className={styles.toast__message}>{message}</span>
             </div>
         </div>
