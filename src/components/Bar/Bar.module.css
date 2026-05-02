@@ -298,18 +298,8 @@
     border: none; /* убрать дефолтный бордер Firefox */
 }
 
-/* Адаптив */
-@media (max-width: 1024px) {
-    .bar__progress {
-        margin: 0 20px;
-        max-width: 400px;
-    }
-}
-
-@media (max-width: 768px) {
-    .bar__progress {
-        display: none;
-    }
+.time__svg.liked-animation {
+    animation: likePulse 0.3s ease-in-out;
 }
 
 /* Пульсация при добавлении/снятии лайка */
@@ -323,8 +313,4 @@
     100% {
         transform: scale(1);
     }
-}
-
-.time__svg.liked-animation {
-    animation: likePulse 0.3s ease-in-out;
 }

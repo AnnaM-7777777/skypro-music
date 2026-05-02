@@ -15,7 +15,6 @@ export default function IconLikeOutline({
     onMouseLeave,
     isHovered = false,
 }: IconLikeOutlineProps) {
-    // Цвета: фиолетовый при ховере, серый в обычном состоянии
     const strokeColor = isHovered ? 'rgba(182, 114, 255, 1)' : 'rgba(78, 78, 78, 1)';
     const fillColor = isHovered ? 'rgba(182, 114, 255, 1)' : 'none';
 

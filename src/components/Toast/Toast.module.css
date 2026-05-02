@@ -1,4 +1,6 @@
-.toast {
+.toast,
+.toast_success,
+.toast_error {
     position: fixed;
     bottom: 100px;
     left: 50%;
@@ -38,13 +40,4 @@
 
 .toast__message {
     line-height: 1.4;
-}
-
-/* Адаптив для мобильных */
-@media (max-width: 768px) {
-    .toast {
-        bottom: 90px;
-        width: calc(100% - 40px);
-        max-width: none;
-    }
 }

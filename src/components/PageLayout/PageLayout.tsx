@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Navigation from '@/components/Navigation/Navigation';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import CenterBlock from '@/components/CenterBlock/CenterBlock';
@@ -10,14 +11,18 @@ interface PageLayoutProps {
     isLoading?: boolean;
     showEmptyState?: boolean;
     children?: React.ReactNode;
+    emptyMessage?: string;
+    emptyDescription?: ReactNode;
 }
 
 export default function PageLayout({
     tracks,
     title,
     isLoading = false,
-    showEmptyState = true, // По умолчанию показываем (для обратной совместимости)
+    showEmptyState = true,
     children,
+    emptyMessage,
+    emptyDescription,
 }: PageLayoutProps) {
     return (
         <div className={styles.wrapper}>
@@ -29,6 +34,8 @@ export default function PageLayout({
                         title={title}
                         isLoading={isLoading}
                         showEmptyState={showEmptyState}
+                        emptyMessage={emptyMessage}
+                        emptyDescription={emptyDescription}
                     />
                     <Sidebar isLoading={isLoading} />
                     {children}

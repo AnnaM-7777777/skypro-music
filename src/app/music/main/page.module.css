@@ -17,3 +17,21 @@
     box-sizing: border-box;
     padding-bottom: 79px;
 }
+
+/* Пустое состояние на странице избранного - сердечко с пульсацией */
+.favoriteClick {
+    display: inline-block;
+    margin: 0 12px;
+    color: rgba(182, 114, 255, 1);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}

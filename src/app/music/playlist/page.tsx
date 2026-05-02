@@ -8,6 +8,7 @@ import { setFavorites, setLoading, selectFavoriteTracks } from '@/store/features
 import { TrackType } from '@/sharedTypes/sharedTypes';
 import { getSafeTrackUrl } from '@/utils/testTracks';
 import { withReauth } from '@/utils/withReauth';
+import styles from '@/app/music/main/page.module.css';
 
 const API_URL = 'https://webdev-music-003b5b991590.herokuapp.com';
 
@@ -96,6 +97,13 @@ export default function PlaylistPage() {
             title='Мой плейлист'
             isLoading={isLoading}
             showEmptyState={true}
+            emptyMessage='В избранном пока пусто'
+            emptyDescription={
+                <>
+                    Нажмите на сердечко<span className={styles.favoriteClick}>❤</span>чтобы добавить
+                    трек
+                </>
+            }
         />
     );
 }

@@ -107,6 +107,7 @@ function TrackItem({
 }) {
     const [isHovered, setIsHovered] = useState(false);
     const [showAuthToast, setShowAuthToast] = useState(false);
+    const [showSuccessToast, setShowSuccessToast] = useState(false);
     const [showApiErrorToast, setShowApiErrorToast] = useState(false);
     const dispatch = useAppDispatch();
     const isLiked = useAppSelector(state => selectIsFavorite(state, track._id));

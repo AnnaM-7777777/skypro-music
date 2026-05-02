@@ -267,6 +267,12 @@ export default function Bar({ tracks }: BarProps) {
                 // Откат изменения в Redux при ошибке
                 dispatch(toggleFavorite(currentTrackItem));
                 setShowApiErrorToast(true);
+
+                window.dispatchEvent(
+                    new CustomEvent('showApiErrorToast', {
+                        detail: { message: 'Сервер временно недоступен. Попробуйте позже.' },
+                    })
+                );
             }
         },
         [dispatch, currentTrackItem, isLiked]
