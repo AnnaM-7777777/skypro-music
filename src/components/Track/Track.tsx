@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/store/store';
 import { formatDuration } from '@/utils/helpers';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import styles from './Track.module.css';
 import { IconLike } from '@/components/Icons';
 import Toast from '@/components/Toast/Toast';
@@ -114,6 +114,11 @@ function TrackItem({
     const dispatch = useAppDispatch();
     const isLiked = useAppSelector(state => selectIsFavorite(state, track._id));
 
+    const isLikedRef = useRef(isLiked);
+    useEffect(() => {
+        isLikedRef.current = isLiked;
+    }, [isLiked]);
+
     // useCallback: кэшируем функцию лайка
     const toggleLike = useCallback(async () => {
         if (isLikeLoading) return;
@@ -126,7 +131,7 @@ function TrackItem({
             return;
         }
         // 1. Запоминаем ДО
-        const wasLiked = isLiked;
+        const wasLiked = isLikedRef.current;
         dispatch(toggleFavorite(track));
 
         try {
@@ -152,7 +157,7 @@ function TrackItem({
         } finally {
             setIsLikeLoading(false);
         }
-    }, [dispatch, track, isLiked, isLikeLoading]);
+    }, [dispatch, track, isLikeLoading]);
 
     // useCallback: клик по треку
     const onClickTrack = useCallback(() => {

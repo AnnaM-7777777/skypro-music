@@ -98,6 +98,11 @@ export default function Bar({ tracks }: BarProps) {
         currentTrackItem ? selectIsFavorite(state, currentTrackItem._id) : false
     );
 
+    const isLikedRef = useRef(isLiked);
+    useEffect(() => {
+        isLikedRef.current = isLiked;
+    }, [isLiked]);
+
     // useMemo: кэшируем результат вычисления URL
     const audioSrc = useMemo(
         () => (currentTrackItem ? getSafeTrackUrl(currentTrackItem.track_file) : null),
@@ -258,7 +263,7 @@ export default function Bar({ tracks }: BarProps) {
             return;
         }
 
-        const wasLiked = isLiked;
+        const wasLiked = isLikedRef.current;
         dispatch(toggleFavorite(currentTrackItem));
 
         try {
@@ -287,7 +292,7 @@ export default function Bar({ tracks }: BarProps) {
         } finally {
             setIsLikeLoading(false);
         }
-    }, [dispatch, currentTrackItem, isLiked, isLikeLoading]);
+    }, [dispatch, currentTrackItem, isLikeLoading]);
 
     const handleTimeUpdate = useCallback(() => {
         if (audioRef.current) {
