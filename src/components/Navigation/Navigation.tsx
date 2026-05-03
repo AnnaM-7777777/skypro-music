@@ -142,7 +142,7 @@ export default function Navigation() {
                         >
                             <svg className={styles.item__iconTheme} width='20' height='20'>
                                 <use
-                                    xlinkHref={`/img/icon/sprite.svg#icon-${isDarkTheme ? 'sun' : 'moon'}`}
+                                    xlinkHref={`/img/icon/sprite.svg#icon-${isDarkTheme ? 'moon' : 'sun'}`}
                                 />
                             </svg>
                         </button>

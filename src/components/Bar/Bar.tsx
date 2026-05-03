@@ -115,48 +115,7 @@ export default function Bar({ tracks }: BarProps) {
         [tracks]
     );
 
-    // useCallback: кэшируем обработчики навигации
-    const handleNext = useCallback(() => {
-        if (!currentTrackItem || tracks.length === 0) return;
-        if (isShuffle) {
-            const randomTrack = getRandomTrack(currentTrackItem._id);
-            if (randomTrack) {
-                dispatch(setCurrentTrack(randomTrack));
-                dispatch(setPlaying(true));
-            }
-            return;
-        }
-        const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
-        const isLastTrack = currentIndex === tracks.length - 1;
-        const nextIndex = isLastTrack ? 0 : currentIndex + 1;
-        const nextTrack = tracks[nextIndex];
-        if (nextTrack) {
-            dispatch(setCurrentTrack(nextTrack));
-            dispatch(setPlaying(true));
-        }
-    }, [currentTrackItem, tracks, isShuffle, dispatch, getRandomTrack]);
-
-    const handlePrev = useCallback(() => {
-        if (!currentTrackItem || tracks.length === 0) return;
-        if (isShuffle) {
-            const randomTrack = getRandomTrack(currentTrackItem._id);
-            if (randomTrack) {
-                dispatch(setCurrentTrack(randomTrack));
-                dispatch(setPlaying(true));
-            }
-            return;
-        }
-        const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
-        const isFirstTrack = currentIndex === 0;
-        const prevIndex = isFirstTrack ? tracks.length - 1 : currentIndex - 1;
-        const prevTrack = tracks[prevIndex];
-        if (prevTrack) {
-            dispatch(setCurrentTrack(prevTrack));
-            dispatch(setPlaying(true));
-        }
-    }, [currentTrackItem, tracks, isShuffle, dispatch, getRandomTrack]);
-
-    // useMemo: кэшируем вычисление индексов
+    // Вычисляем индексы один раз и используем в хендлерах
     const trackIndices = useMemo(() => {
         if (!currentTrackItem) return { currentIndex: -1, isFirstTrack: true, isLastTrack: true };
         const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
@@ -166,6 +125,56 @@ export default function Bar({ tracks }: BarProps) {
             isLastTrack: currentIndex === tracks.length - 1,
         };
     }, [tracks, currentTrackItem]);
+
+    const handleNext = useCallback(() => {
+        if (!currentTrackItem || tracks.length === 0) return;
+
+        // Блокируем, если последний трек и нет перемешивания
+        if (!isShuffle && trackIndices.isLastTrack) return;
+
+        if (isShuffle) {
+            const randomTrack = getRandomTrack(currentTrackItem._id);
+            if (randomTrack) {
+                dispatch(setCurrentTrack(randomTrack));
+                dispatch(setPlaying(true));
+            }
+            return;
+        }
+
+        const nextIndex =
+            trackIndices.currentIndex === tracks.length - 1 ? 0 : trackIndices.currentIndex + 1;
+        const nextTrack = tracks[nextIndex];
+
+        if (nextTrack) {
+            dispatch(setCurrentTrack(nextTrack));
+            dispatch(setPlaying(true));
+        }
+    }, [currentTrackItem, tracks, isShuffle, dispatch, getRandomTrack, trackIndices]);
+
+    const handlePrev = useCallback(() => {
+        if (!currentTrackItem || tracks.length === 0) return;
+
+        // Блокируем, если первый трек и нет перемешивания
+        if (!isShuffle && trackIndices.isFirstTrack) return;
+
+        if (isShuffle) {
+            const randomTrack = getRandomTrack(currentTrackItem._id);
+            if (randomTrack) {
+                dispatch(setCurrentTrack(randomTrack));
+                dispatch(setPlaying(true));
+            }
+            return;
+        }
+
+        const prevIndex =
+            trackIndices.currentIndex === 0 ? tracks.length - 1 : trackIndices.currentIndex - 1;
+        const prevTrack = tracks[prevIndex];
+
+        if (prevTrack) {
+            dispatch(setCurrentTrack(prevTrack));
+            dispatch(setPlaying(true));
+        }
+    }, [currentTrackItem, tracks, isShuffle, dispatch, getRandomTrack, trackIndices]);
 
     useEffect(() => {
         setIsPlaying(isPlayingRedux);
@@ -180,6 +189,9 @@ export default function Bar({ tracks }: BarProps) {
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio || !audioSrc) return;
+
+        const onCanPlayRef = { current: (() => {}) as () => void };
+
         audio.pause();
         audio.currentTime = 0;
         setIsLoading(true);
@@ -188,8 +200,9 @@ export default function Bar({ tracks }: BarProps) {
         audio.src = audioSrc;
         audio.preload = 'auto';
         audio.load();
+
         if (isPlayingRedux) {
-            const onCanPlay = () => {
+            onCanPlayRef.current = () => {
                 setIsLoading(false);
                 audio.play().catch(err => {
                     if (err.name === 'NotAllowedError') {
@@ -197,13 +210,15 @@ export default function Bar({ tracks }: BarProps) {
                         dispatch(setPlaying(false));
                     }
                 });
-                audio.removeEventListener('canplay', onCanPlay);
+                audio.removeEventListener('canplay', onCanPlayRef.current);
             };
-            audio.addEventListener('canplay', onCanPlay);
+            audio.addEventListener('canplay', onCanPlayRef.current);
         } else {
             setIsLoading(false);
         }
+
         return () => {
+            audio.removeEventListener('canplay', onCanPlayRef.current);
             audio.pause();
         };
     }, [audioSrc, currentTrackItem?._id, dispatch, isPlayingRedux]);
@@ -231,53 +246,48 @@ export default function Bar({ tracks }: BarProps) {
         }
     }, [isPlaying]);
 
-    const toggleLike = useCallback(
-        async (e?: React.MouseEvent) => {
-            if (isLikeLoading) return;
-            setIsLikeLoading(true);
+    // useCallback: кэшируем функцию лайка
+    const toggleLike = useCallback(async () => {
+        if (isLikeLoading || !currentTrackItem) return;
+        setIsLikeLoading(true);
 
-            e?.stopPropagation();
-            if (!currentTrackItem) return;
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setShowAuthToast(true);
+            setIsLikeLoading(false);
+            return;
+        }
 
-            const token = localStorage.getItem('token');
-            if (!token) {
-                setShowAuthToast(true);
-                return;
-            }
+        const wasLiked = isLiked;
+        dispatch(toggleFavorite(currentTrackItem));
 
-            const wasLiked = isLiked;
+        try {
+            const method = wasLiked ? 'DELETE' : 'POST';
+            await withReauth(async (accessToken: string) => {
+                const response = await fetch(
+                    `${API_URL}/catalog/track/${currentTrackItem._id}/favorite/`,
+                    {
+                        method,
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response;
+            });
 
+            setSuccessMessage(wasLiked ? 'Трек удалён из плейлиста' : 'Трек добавлен в плейлист');
+            setShowSuccessToast(true);
+        } catch (error) {
             dispatch(toggleFavorite(currentTrackItem));
-
-            try {
-                const method = wasLiked ? 'DELETE' : 'POST';
-                await withReauth(async (accessToken: string) => {
-                    const response = await fetch(
-                        `${API_URL}/catalog/track/${currentTrackItem._id}/favorite/`,
-                        {
-                            method,
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`,
-                                'Content-Type': 'application/json',
-                            },
-                        }
-                    );
-                    if (!response.ok) throw new Error('Failed');
-                    return response;
-                });
-
-                const msg = wasLiked ? 'Трек удалён из плейлиста' : 'Трек добавлен в плейлист';
-                setSuccessMessage(msg);
-                setShowSuccessToast(true);
-            } catch (error) {
-                // Если ошибка — откатываем Redux
-                dispatch(toggleFavorite(currentTrackItem));
-                setShowApiErrorToast(true);
-            }
-            setTimeout(() => setIsLikeLoading(false), 200);
-        },
-        [dispatch, currentTrackItem, isLiked]
-    );
+            setShowApiErrorToast(true);
+            console.error('Like error:', error);
+        } finally {
+            setIsLikeLoading(false);
+        }
+    }, [dispatch, currentTrackItem, isLiked, isLikeLoading]);
 
     const handleTimeUpdate = useCallback(() => {
         if (audioRef.current) {
@@ -298,9 +308,9 @@ export default function Bar({ tracks }: BarProps) {
         }
     }, []);
 
+    // 🔧 Убрали обновление стейта — onTimeUpdate сам синхронизирует
     const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const newTime = parseFloat(e.target.value);
-        setCurrentTime(newTime);
         if (audioRef.current) {
             audioRef.current.currentTime = newTime;
         }
@@ -317,25 +327,34 @@ export default function Bar({ tracks }: BarProps) {
     }, [dispatch]);
 
     const handleEnded = useCallback(() => {
-        if (isRepeat) {
-            if (audioRef.current) {
-                audioRef.current.currentTime = 0;
-                audioRef.current.play().catch(err => {
-                    if (err.name === 'NotAllowedError') {
-                        console.warn('Требуется взаимодействие пользователя');
-                        dispatch(setPlaying(false));
-                    }
-                });
-            }
+        if (isRepeat && audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch(err => {
+                if (err.name === 'NotAllowedError') {
+                    dispatch(setPlaying(false));
+                }
+            });
         } else {
             handleNext();
         }
-    }, [isRepeat, dispatch, handleNext]);
+    }, [isRepeat, handleNext, dispatch]);
 
-    const handleError = useCallback((e: React.SyntheticEvent<HTMLAudioElement, Event>) => {}, []);
+    const handleError = useCallback((e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
+        console.error('Audio error:', e);
+        setIsLoading(false);
+    }, []);
 
     const handleMouseEnter = useCallback(() => setIsHovered(true), []);
     const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+
+    // 🔧 Обёртка для onClick — параметр e? делает сигнатуру совместимой с () => void
+    const handleLikeClick = useCallback(
+        (e?: React.MouseEvent) => {
+            e?.stopPropagation();
+            toggleLike();
+        },
+        [toggleLike]
+    );
 
     if (!currentTrackItem || !audioSrc) {
         if (isLoading) return <BarSkeleton />;
@@ -374,6 +393,8 @@ export default function Bar({ tracks }: BarProps) {
                             cursor:
                                 trackIndices.isFirstTrack && !isShuffle ? 'not-allowed' : 'pointer',
                             opacity: trackIndices.isFirstTrack && !isShuffle ? 0.3 : 1,
+                            pointerEvents:
+                                trackIndices.isFirstTrack && !isShuffle ? 'none' : 'auto',
                         }}
                     >
                         <svg className={styles.btn__prevSvg}>
@@ -394,6 +415,7 @@ export default function Bar({ tracks }: BarProps) {
                             cursor:
                                 trackIndices.isLastTrack && !isShuffle ? 'not-allowed' : 'pointer',
                             opacity: trackIndices.isLastTrack && !isShuffle ? 0.3 : 1,
+                            pointerEvents: trackIndices.isLastTrack && !isShuffle ? 'none' : 'auto',
                         }}
                     >
                         <svg className={styles.btn__nextSvg}>
@@ -440,7 +462,7 @@ export default function Bar({ tracks }: BarProps) {
                             })}
                             isFilled={isLiked}
                             isHovered={isHovered}
-                            onClick={toggleLike}
+                            onClick={handleLikeClick}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
                         />
@@ -474,7 +496,6 @@ export default function Bar({ tracks }: BarProps) {
                     onClose={() => setShowAuthToast(false)}
                 />
             )}
-
             {showApiErrorToast && (
                 <Toast
                     message='Не удалось обновить лайк. Попробуйте позже.'
@@ -482,7 +503,6 @@ export default function Bar({ tracks }: BarProps) {
                     onClose={() => setShowApiErrorToast(false)}
                 />
             )}
-
             {showSuccessToast && (
                 <Toast
                     message={successMessage}

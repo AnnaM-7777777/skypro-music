@@ -114,54 +114,45 @@ function TrackItem({
     const dispatch = useAppDispatch();
     const isLiked = useAppSelector(state => selectIsFavorite(state, track._id));
 
-    // useCallback: предотвращает пересоздание функции при каждом рендере
-    const toggleLike = useCallback(
-        async (e?: React.MouseEvent) => {
-            if (isLikeLoading) return;
-            setIsLikeLoading(true);
+    // useCallback: кэшируем функцию лайка
+    const toggleLike = useCallback(async () => {
+        if (isLikeLoading) return;
+        setIsLikeLoading(true);
+        const token = localStorage.getItem('token');
 
-            e?.stopPropagation();
-            const token = localStorage.getItem('token');
+        if (!token) {
+            setShowAuthToast(true);
+            setIsLikeLoading(false);
+            return;
+        }
+        // 1. Запоминаем ДО
+        const wasLiked = isLiked;
+        dispatch(toggleFavorite(track));
 
-            if (!token) {
-                setShowAuthToast(true);
-                return;
-            }
-
-            // 1. Запоминаем ДО
-            const wasLiked = isLiked;
-            dispatch(toggleFavorite(track));
-
-            try {
-                const method = wasLiked ? 'DELETE' : 'POST';
-                await withReauth(async (accessToken: string) => {
-                    const response = await fetch(
-                        `${API_URL}/catalog/track/${track._id}/favorite/`,
-                        {
-                            method,
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`,
-                                'Content-Type': 'application/json',
-                            },
-                        }
-                    );
-                    if (!response.ok) throw new Error('Failed');
-                    return response;
+        try {
+            const method = wasLiked ? 'DELETE' : 'POST';
+            await withReauth(async (accessToken: string) => {
+                const response = await fetch(`${API_URL}/catalog/track/${track._id}/favorite/`, {
+                    method,
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
                 });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response;
+            });
 
-                // 2. Сообщение на основе wasLiked
-                const msg = wasLiked ? 'Трек удалён из плейлиста' : 'Трек добавлен в плейлист';
-
-                setSuccessMessage(msg);
-                setShowSuccessToast(true);
-            } catch (error) {
-                dispatch(toggleFavorite(track));
-                setShowApiErrorToast(true);
-            }
-            setTimeout(() => setIsLikeLoading(false), 200);
-        },
-        [dispatch, track, isLiked]
-    );
+            setSuccessMessage(wasLiked ? 'Трек удалён из плейлиста' : 'Трек добавлен в плейлист');
+            setShowSuccessToast(true);
+        } catch (error) {
+            dispatch(toggleFavorite(track));
+            setShowApiErrorToast(true);
+            console.error('Like error:', error);
+        } finally {
+            setIsLikeLoading(false);
+        }
+    }, [dispatch, track, isLiked, isLikeLoading]);
 
     // useCallback: клик по треку
     const onClickTrack = useCallback(() => {
@@ -171,6 +162,15 @@ function TrackItem({
     // useCallback: обработчики ховера (опционально, но чисто)
     const handleMouseEnter = useCallback(() => setIsHovered(true), []);
     const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+
+    // 🔧 Обёртка для onClick — параметр e? делает сигнатуру совместимой с () => void
+    const handleLikeClick = useCallback(
+        (e?: React.MouseEvent) => {
+            e?.stopPropagation();
+            toggleLike();
+        },
+        [toggleLike]
+    );
 
     return (
         <div className={styles.trackItem} onClick={onClickTrack}>
@@ -189,18 +189,18 @@ function TrackItem({
                     </svg>
                 </div>
                 <div className={styles.name__text}>
-                    <Link className={styles.name__link} href='#'>
+                    <Link className={styles.name__link} href='#' onClick={e => e.preventDefault()}>
                         {title}
                     </Link>
                 </div>
             </div>
             <div className={styles.trackItem__author}>
-                <Link className={styles.author__link} href='#'>
+                <Link className={styles.author__link} href='#' onClick={e => e.preventDefault()}>
                     {author}
                 </Link>
             </div>
             <div className={styles.trackItem__album}>
-                <Link className={styles.album___link} href='#'>
+                <Link className={styles.album___link} href='#' onClick={e => e.preventDefault()}>
                     {album}
                 </Link>
             </div>
@@ -211,7 +211,7 @@ function TrackItem({
                     })}
                     isFilled={isLiked}
                     isHovered={isHovered}
-                    onClick={toggleLike}
+                    onClick={handleLikeClick}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 />
@@ -225,7 +225,6 @@ function TrackItem({
                     onClose={() => setShowAuthToast(false)}
                 />
             )}
-
             {showApiErrorToast && (
                 <Toast
                     message='Не удалось обновить лайк. Попробуйте позже.'
@@ -233,7 +232,6 @@ function TrackItem({
                     onClose={() => setShowApiErrorToast(false)}
                 />
             )}
-
             {showSuccessToast && (
                 <Toast
                     message={successMessage}
