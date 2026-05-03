@@ -99,7 +99,7 @@ describe('Выпадающий фильтр', () => {
     describe('Счётчик выбранных', () => {
         it('показывает количество выбранных, когда меню закрыто', () => {
             render(<FilterItem {...mockProps} selectedValues={['Рок', 'Поп']} />);
-            expect(screen.getByText('(2)')).toBeInTheDocument();
+            expect(screen.getByText('2')).toBeInTheDocument();
         });
 
         it('скрывает счётчик, когда меню открыто', () => {
@@ -111,8 +111,9 @@ describe('Выпадающий фильтр', () => {
             render(
                 <FilterItem {...mockProps} activeFilter='genre' selectedValues={['Рок', 'Поп']} />
             );
-            expect(screen.getByText('Выбрано:')).toBeInTheDocument();
             expect(screen.getByText('2')).toBeInTheDocument();
+            expect(screen.getByText('Рок')).toBeInTheDocument();
+            expect(screen.getByText('Поп')).toBeInTheDocument();
         });
     });
 });
