@@ -191,42 +191,13 @@ export default function Bar({ tracks }: BarProps) {
         }
     }, [volume]);
 
+    // Простой эффект: сбрасываем состояние при смене трека
     useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio || !audioSrc) return;
-
-        const onCanPlayRef = { current: (() => {}) as () => void };
-
-        audio.pause();
-        audio.currentTime = 0;
+        if (!audioSrc) return;
         setIsLoading(true);
         setCurrentTime(0);
-        setDuration(0);
-        audio.src = audioSrc;
-        audio.preload = 'auto';
-        audio.load();
-
-        if (isPlayingRedux) {
-            onCanPlayRef.current = () => {
-                setIsLoading(false);
-                audio.play().catch(err => {
-                    if (err.name === 'NotAllowedError') {
-                        console.warn('Требуется взаимодействие пользователя');
-                        dispatch(setPlaying(false));
-                    }
-                });
-                audio.removeEventListener('canplay', onCanPlayRef.current);
-            };
-            audio.addEventListener('canplay', onCanPlayRef.current);
-        } else {
-            setIsLoading(false);
-        }
-
-        return () => {
-            audio.removeEventListener('canplay', onCanPlayRef.current);
-            audio.pause();
-        };
-    }, [audioSrc, currentTrackItem?._id, dispatch, isPlayingRedux]);
+        // duration обновится через onLoadedMetadata на <audio>
+    }, [audioSrc]);
 
     useEffect(() => {
         const progressLine = document.querySelector(
@@ -313,7 +284,6 @@ export default function Bar({ tracks }: BarProps) {
         }
     }, []);
 
-    // 🔧 Убрали обновление стейта — onTimeUpdate сам синхронизирует
     const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const newTime = parseFloat(e.target.value);
         if (audioRef.current) {
@@ -331,18 +301,47 @@ export default function Bar({ tracks }: BarProps) {
         dispatch(setPlaying(false));
     }, [dispatch]);
 
+    // Полная логика автопереключения
     const handleEnded = useCallback(() => {
-        if (isRepeat && audioRef.current) {
-            audioRef.current.currentTime = 0;
-            audioRef.current.play().catch(err => {
-                if (err.name === 'NotAllowedError') {
-                    dispatch(setPlaying(false));
-                }
-            });
+        if (!currentTrackItem) return;
+
+        if (isRepeat) {
+            // 🔁 Режим повтора: перезапускаем текущий трек
+            if (audioRef.current) {
+                audioRef.current.currentTime = 0;
+                audioRef.current.play().catch(err => {
+                    if (err.name === 'NotAllowedError') {
+                        console.warn('Требуется взаимодействие пользователя');
+                        dispatch(setPlaying(false));
+                    }
+                });
+            }
+        } else if (isShuffle) {
+            // 🔀 Режим перемешивания: выбираем случайный трек
+            const randomTrack = getRandomTrack(currentTrackItem._id);
+            if (randomTrack) {
+                dispatch(setCurrentTrack(randomTrack));
+                dispatch(setPlaying(true));
+            } else {
+                // Нет других треков — останавливаем
+                dispatch(setPlaying(false));
+            }
         } else {
-            handleNext();
+            // ▶️ Обычный режим
+            if (!trackIndices.isLastTrack) {
+                // Есть следующий трек — включаем его
+                const nextIndex = trackIndices.currentIndex + 1;
+                const nextTrack = tracks[nextIndex];
+                if (nextTrack) {
+                    dispatch(setCurrentTrack(nextTrack));
+                    dispatch(setPlaying(true));
+                }
+            } else {
+                // 🔚 Последний трек — останавливаем воспроизведение
+                dispatch(setPlaying(false));
+            }
         }
-    }, [isRepeat, handleNext, dispatch]);
+    }, [currentTrackItem, tracks, isRepeat, isShuffle, dispatch, getRandomTrack, trackIndices]);
 
     const handleError = useCallback((e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
         console.error('Audio error:', e);
@@ -352,7 +351,6 @@ export default function Bar({ tracks }: BarProps) {
     const handleMouseEnter = useCallback(() => setIsHovered(true), []);
     const handleMouseLeave = useCallback(() => setIsHovered(false), []);
 
-    // 🔧 Обёртка для onClick — параметр e? делает сигнатуру совместимой с () => void
     const handleLikeClick = useCallback(
         (e?: React.MouseEvent) => {
             e?.stopPropagation();
@@ -389,6 +387,30 @@ export default function Bar({ tracks }: BarProps) {
                     onEnded={handleEnded}
                     onTimeUpdate={handleTimeUpdate}
                     onError={handleError}
+                    onLoadedMetadata={e => {
+                        const audio = e.currentTarget;
+                        setDuration(audio.duration || 0);
+                        if (isPlayingRedux && audio.readyState >= 2) {
+                            audio.play().catch(err => {
+                                if (err.name === 'NotAllowedError') {
+                                    console.warn('Требуется взаимодействие пользователя');
+                                    dispatch(setPlaying(false));
+                                }
+                            });
+                        }
+                    }}
+                    onCanPlay={e => {
+                        setIsLoading(false);
+                        const audio = e.currentTarget;
+                        if (isPlayingRedux) {
+                            audio.play().catch(err => {
+                                if (err.name === 'NotAllowedError') {
+                                    console.warn('Требуется взаимодействие пользователя');
+                                    dispatch(setPlaying(false));
+                                }
+                            });
+                        }
+                    }}
                 />
                 <div className={styles.bar__btn}>
                     <div
