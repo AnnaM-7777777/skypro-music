@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import styles from './Toast.module.css';
 
 interface ToastProps {
@@ -13,13 +13,20 @@ interface ToastProps {
 export default function Toast({ message, duration = 2000, icon, onClose }: ToastProps) {
     const [visible, setVisible] = useState(false);
 
+    // Храним onClose в ref — обновляем без перезапуска эффекта
+    const onCloseRef = useRef(onClose);
+    useEffect(() => {
+        onCloseRef.current = onClose;
+    }, [onClose]);
+
     useEffect(() => {
         const showTimer = setTimeout(() => setVisible(true), 10);
         const hideTimer =
             duration > 0
                 ? setTimeout(() => {
                       setVisible(false);
-                      setTimeout(onClose, 200);
+                      // Вызываем актуальный onClose через ref
+                      setTimeout(() => onCloseRef.current(), 200);
                   }, duration)
                 : null;
 
@@ -27,7 +34,8 @@ export default function Toast({ message, duration = 2000, icon, onClose }: Toast
             clearTimeout(showTimer);
             if (hideTimer) clearTimeout(hideTimer);
         };
-    }, [duration, onClose]);
+        // Зависимость только от duration — эффект не перезапускается при изменении onClose
+    }, [duration]);
 
     // Дефолтная иконка, если не передали свою
     const displayIcon = icon || 'ℹ️';
