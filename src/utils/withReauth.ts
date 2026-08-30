@@ -8,7 +8,7 @@ const refreshToken = async (refreshToken: string) => {
         body: JSON.stringify({ refresh: refreshToken }),
     });
     if (!res.ok) throw new Error('Failed to refresh token');
-    return res.json(); // { access: 'new_token', refresh: 'new_refresh' }
+    return res.json();
 };
 
 export const withReauth = async <T>(

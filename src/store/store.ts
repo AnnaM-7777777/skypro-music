@@ -4,12 +4,12 @@ import { trackSliceReducer } from '@/store/features/trackSlice';
 import favoritesReducer from '@/store/features/favoritesSlice';
 
 export const makeStore = () => {
-  return configureStore({
-    reducer: combineReducers({
-      tracks: trackSliceReducer,
-      favorites: favoritesReducer,
-    }),
-  });
+    return configureStore({
+        reducer: combineReducers({
+            tracks: trackSliceReducer,
+            favorites: favoritesReducer,
+        }),
+    });
 };
 
 // Infer the type of makeStore

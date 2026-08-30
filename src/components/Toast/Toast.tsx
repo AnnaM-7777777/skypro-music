@@ -1,37 +1,49 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import styles from './Toast.module.css';
 
 interface ToastProps {
     message: string;
     duration?: number;
+    icon?: React.ReactNode;
     onClose: () => void;
 }
 
-export default function Toast({ message, duration = 3000, onClose }: ToastProps) {
+export default function Toast({ message, duration = 2000, icon, onClose }: ToastProps) {
     const [visible, setVisible] = useState(false);
 
+    // Храним onClose в ref — обновляем без перезапуска эффекта
+    const onCloseRef = useRef(onClose);
     useEffect(() => {
-        // Показываем с небольшой задержкой для анимации
-        const showTimer = setTimeout(() => setVisible(true), 10);
+        onCloseRef.current = onClose;
+    }, [onClose]);
 
-        // Автоматическое закрытие
-        const hideTimer = setTimeout(() => {
-            setVisible(false);
-            setTimeout(onClose, 300); // Ждём завершения анимации
-        }, duration);
+    useEffect(() => {
+        const showTimer = setTimeout(() => setVisible(true), 10);
+        const hideTimer =
+            duration > 0
+                ? setTimeout(() => {
+                      setVisible(false);
+                      // Вызываем актуальный onClose через ref
+                      setTimeout(() => onCloseRef.current(), 200);
+                  }, duration)
+                : null;
 
         return () => {
             clearTimeout(showTimer);
-            clearTimeout(hideTimer);
+            if (hideTimer) clearTimeout(hideTimer);
         };
-    }, [duration, onClose]);
+        // Зависимость только от duration — эффект не перезапускается при изменении onClose
+    }, [duration]);
+
+    // Дефолтная иконка, если не передали свою
+    const displayIcon = icon || 'ℹ️';
 
     return (
         <div className={`${styles.toast} ${visible ? styles.toastVisible : ''}`}>
             <div className={styles.toast__content}>
-                <span className={styles.toast__icon}>⚠️</span>
+                <span className={styles.toast__icon}>{displayIcon}</span>
                 <span className={styles.toast__message}>{message}</span>
             </div>
         </div>

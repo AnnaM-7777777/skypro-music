@@ -94,7 +94,7 @@ export default function Filter({
             {/* Кнопка сброса (появляется только когда есть активные фильтры) */}
             {isFilterActive && onReset && (
                 <button
-                    className={styles.filter__reset}
+                    className={`btn-filter`}
                     onClick={onReset}
                     title='Сбросить все фильтры и сортировку'
                     type='button'

@@ -31,7 +31,6 @@
     align-items: flex-end;
     gap: 10px;
     flex-grow: 1;
-    box-shadow: 0 0 20px rgba(24, 24, 24, 1);
     flex-wrap: wrap;
     height: 100%;
     justify-content: flex-end;
@@ -54,7 +53,7 @@
         font-size: 18px;
         line-height: 20px;
         letter-spacing: 0.1%;
-        color: rgb(255, 255, 255, 1);
+        color: var(--text-primary);
         margin-right: 56px;
         white-space: nowrap;
     }
@@ -66,7 +65,7 @@
     font-size: 14px;
     line-height: 16px;
     letter-spacing: 0.1%;
-    color: rgb(255, 255, 255, 1);
+    color: var(--text-primary);
     margin-right: 56px;
 }
 
@@ -76,7 +75,7 @@
     align-items: center;
     width: 100%;
     height: 78px;
-    background-color: rgba(24, 24, 24, 1);
+    background-color: var(--bg-primary);
     margin: 0 36px;
 }
 
@@ -153,8 +152,8 @@
     align-items: center;
     width: 51px;
     height: 51px;
-    background-color: rgba(49, 49, 49, 1);
-    border: 1px solid rgba(78, 78, 78, 1);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
 }
 
 .trackPlay__svg {
@@ -170,7 +169,7 @@
 }
 
 .trackPlay__title {
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 600;
     font-size: 14px;
     white-space: nowrap;
@@ -179,7 +178,7 @@
 }
 
 .trackPlay__author {
-    color: #aaa;
+    color: var(--text-primary);
     font-size: 12px;
 }
 
@@ -226,7 +225,15 @@
 .volume__svg {
     width: 13px;
     height: 18px;
-    fill: transparent;
+    fill: currentColor;
+    stroke: currentColor;
+    color: var(--text-primary);
+    opacity: 1;
+}
+
+.volume__svg use {
+    fill: currentColor;
+    stroke: currentColor;
 }
 
 .volume__progress {
@@ -240,7 +247,7 @@
     appearance: none;
     outline: none;
     cursor: pointer;
-    background: transparent;
+    background-color: transparent;
 }
 
 /* Видимая полоска громкости - slider track */
@@ -248,7 +255,7 @@
     height: 2px;
     background: linear-gradient(
         to right,
-        rgba(255, 255, 255, 1) var(--volume-percent, 0%),
+        var(--text-primary) var(--volume-percent, 0%),
         rgba(121, 121, 121, 1) var(--volume-percent, 0%)
     );
 }
@@ -258,8 +265,8 @@
     appearance: none;
     width: 12px;
     height: 12px;
-    background: rgba(26, 26, 26, 1);
-    border: 2px solid rgba(255, 255, 255, 1);
+    background-color: var(--bg-primary);
+    border: 2px solid var(--border-primary);
     border-radius: 50%;
     margin-top: -5px;
     cursor: pointer;
@@ -285,25 +292,14 @@
 .volume__progressLine::-moz-range-thumb {
     width: 12px;
     height: 12px;
-    background: rgba(24, 24, 24, 1);
-    border: 2px solid rgba(255, 255, 255, 1);
+    background-color: var(--bg-primary);
     border-radius: 50%;
     cursor: pointer;
     border: none; /* убрать дефолтный бордер Firefox */
 }
 
-/* Адаптив */
-@media (max-width: 1024px) {
-    .bar__progress {
-        margin: 0 20px;
-        max-width: 400px;
-    }
-}
-
-@media (max-width: 768px) {
-    .bar__progress {
-        display: none;
-    }
+.time__svg.liked-animation {
+    animation: likePulse 0.3s ease-in-out;
 }
 
 /* Пульсация при добавлении/снятии лайка */
@@ -317,8 +313,4 @@
     100% {
         transform: scale(1);
     }
-}
-
-.time__svg.liked-animation {
-    animation: likePulse 0.3s ease-in-out;
 }

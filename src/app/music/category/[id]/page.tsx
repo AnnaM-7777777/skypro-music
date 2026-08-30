@@ -37,12 +37,10 @@ async function getCategory(id: string, token?: string): Promise<Collection | nul
         const categoryData = response?.data;
 
         if (!categoryData || !Array.isArray(categoryData.items)) {
-            console.error('No items array in categoryData:', categoryData);
             return null;
         }
 
         const trackIds = categoryData.items; // [12, 17, 24, ...]
-        console.log('Track IDs to fetch:', trackIds);
 
         // 2. Загружаем каждый трек по ID
         const trackPromises = trackIds.map(async (trackId: number) => {
@@ -60,18 +58,12 @@ async function getCategory(id: string, token?: string): Promise<Collection | nul
                 }
                 return null;
             } catch (err) {
-                console.error(`Error fetching track ${trackId}:`, err);
                 return null;
             }
         });
 
         const tracksResults = await Promise.all(trackPromises);
         const validTracks = tracksResults.filter((track): track is TrackType => track !== null);
-
-        console.log('Loaded tracks:', validTracks.length);
-        if (validTracks.length > 0) {
-            console.log('First track:', validTracks[0]);
-        }
 
         // 3. Подменяем ссылки на аудио
         const tracksWithSafeUrls = validTracks.map((track: TrackType) => ({
@@ -86,7 +78,6 @@ async function getCategory(id: string, token?: string): Promise<Collection | nul
             items: tracksWithSafeUrls,
         };
     } catch (err) {
-        console.error('Fetch category error:', err);
         return null;
     }
 }

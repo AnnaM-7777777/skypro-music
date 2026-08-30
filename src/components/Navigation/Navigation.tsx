@@ -22,9 +22,19 @@ export default function Navigation() {
         setIsAuthenticated(!!token);
     };
 
+    // Инициализация: тема + авторизация
     useEffect(() => {
         setMounted(true);
         checkAuth();
+
+        // Загружаем сохранённую тему или системную настройку
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        const initialDark = savedTheme ? savedTheme === 'dark' : !systemPrefersLight;
+
+        setIsDarkTheme(initialDark);
+        document.documentElement.setAttribute('data-theme', initialDark ? 'dark' : 'light');
+
         const handleStorageChange = () => checkAuth();
         window.addEventListener('storage', handleStorageChange);
         return () => window.removeEventListener('storage', handleStorageChange);
@@ -34,16 +44,13 @@ export default function Navigation() {
         if (isMenuOpen) checkAuth();
     }, [isMenuOpen]);
 
-    useEffect(() => {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) setIsDarkTheme(savedTheme === 'dark');
-    }, []);
-
+    // Переключение темы
     const toggleTheme = useCallback(() => {
-        const newTheme = !isDarkTheme;
-        setIsDarkTheme(newTheme);
-        localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-        document.documentElement.classList.toggle('item__lightTheme', !newTheme);
+        const newDark = !isDarkTheme;
+        setIsDarkTheme(newDark);
+        localStorage.setItem('theme', newDark ? 'dark' : 'light');
+        // Применяем data-theme
+        document.documentElement.setAttribute('data-theme', newDark ? 'dark' : 'light');
     }, [isDarkTheme]);
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -66,11 +73,14 @@ export default function Navigation() {
         [isAuthenticated, dispatch, router, closeMenu]
     );
 
+    const logoSrc = isDarkTheme ? '/img/logo-light.png' : '/img/logo-dark.png';
+
+    // SSR-защита: не рендерим интерактив до гидратации
     if (!mounted) {
         return (
             <nav className={styles.nav}>
                 <Link href='/music/main' className={styles.nav__logo}>
-                    <Image width={113} height={17} src='/img/logo.png' alt='logo' />
+                    <Image width={113} height={17} src='/img/logo-light.png' alt='logo' />
                 </Link>
             </nav>
         );
@@ -79,7 +89,7 @@ export default function Navigation() {
     return (
         <nav className={styles.nav}>
             <Link href='/music/main' className={styles.nav__logo}>
-                <Image width={113} height={17} src='/img/logo.png' alt='logo' />
+                <Image width={113} height={17} src={logoSrc} alt='logo' priority />
             </Link>
 
             <div
@@ -121,6 +131,7 @@ export default function Navigation() {
                         </Link>
                     </li>
 
+                    {/* Кнопка переключения темы */}
                     <li className={styles.menu__item}>
                         <button
                             className={styles.item__btnToggleTheme}
@@ -131,7 +142,7 @@ export default function Navigation() {
                         >
                             <svg className={styles.item__iconTheme} width='20' height='20'>
                                 <use
-                                    xlinkHref={`/img/icon/sprite.svg#icon-${isDarkTheme ? 'sun' : 'moon'}`}
+                                    xlinkHref={`/img/icon/sprite.svg#icon-${isDarkTheme ? 'moon' : 'sun'}`}
                                 />
                             </svg>
                         </button>

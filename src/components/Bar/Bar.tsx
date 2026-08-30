@@ -76,13 +76,15 @@ function BarSkeleton() {
 }
 
 export default function Bar({ tracks }: BarProps) {
+    const [isLikeLoading, setIsLikeLoading] = useState(false);
     const [showAuthToast, setShowAuthToast] = useState(false);
     const [showApiErrorToast, setShowApiErrorToast] = useState(false);
+    const [showSuccessToast, setShowSuccessToast] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
     const currentTrackItem = useAppSelector(state => state.tracks.currentTrack);
     const isPlayingRedux = useAppSelector(state => state.tracks.isPlaying);
     const dispatch = useAppDispatch();
     const audioRef = useRef<HTMLAudioElement>(null);
-
     const [isPlaying, setIsPlaying] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
@@ -95,6 +97,11 @@ export default function Bar({ tracks }: BarProps) {
     const isLiked = useAppSelector(state =>
         currentTrackItem ? selectIsFavorite(state, currentTrackItem._id) : false
     );
+
+    const isLikedRef = useRef(isLiked);
+    useEffect(() => {
+        isLikedRef.current = isLiked;
+    }, [isLiked]);
 
     // useMemo: кэшируем результат вычисления URL
     const audioSrc = useMemo(
@@ -113,48 +120,7 @@ export default function Bar({ tracks }: BarProps) {
         [tracks]
     );
 
-    // useCallback: кэшируем обработчики навигации
-    const handleNext = useCallback(() => {
-        if (!currentTrackItem || tracks.length === 0) return;
-        if (isShuffle) {
-            const randomTrack = getRandomTrack(currentTrackItem._id);
-            if (randomTrack) {
-                dispatch(setCurrentTrack(randomTrack));
-                dispatch(setPlaying(true));
-            }
-            return;
-        }
-        const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
-        const isLastTrack = currentIndex === tracks.length - 1;
-        const nextIndex = isLastTrack ? 0 : currentIndex + 1;
-        const nextTrack = tracks[nextIndex];
-        if (nextTrack) {
-            dispatch(setCurrentTrack(nextTrack));
-            dispatch(setPlaying(true));
-        }
-    }, [currentTrackItem, tracks, isShuffle, dispatch, getRandomTrack]);
-
-    const handlePrev = useCallback(() => {
-        if (!currentTrackItem || tracks.length === 0) return;
-        if (isShuffle) {
-            const randomTrack = getRandomTrack(currentTrackItem._id);
-            if (randomTrack) {
-                dispatch(setCurrentTrack(randomTrack));
-                dispatch(setPlaying(true));
-            }
-            return;
-        }
-        const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
-        const isFirstTrack = currentIndex === 0;
-        const prevIndex = isFirstTrack ? tracks.length - 1 : currentIndex - 1;
-        const prevTrack = tracks[prevIndex];
-        if (prevTrack) {
-            dispatch(setCurrentTrack(prevTrack));
-            dispatch(setPlaying(true));
-        }
-    }, [currentTrackItem, tracks, isShuffle, dispatch, getRandomTrack]);
-
-    // useMemo: кэшируем вычисление индексов
+    // Вычисляем индексы один раз и используем в хендлерах
     const trackIndices = useMemo(() => {
         if (!currentTrackItem) return { currentIndex: -1, isFirstTrack: true, isLastTrack: true };
         const currentIndex = tracks.findIndex(track => track._id === currentTrackItem._id);
@@ -164,6 +130,56 @@ export default function Bar({ tracks }: BarProps) {
             isLastTrack: currentIndex === tracks.length - 1,
         };
     }, [tracks, currentTrackItem]);
+
+    const handleNext = useCallback(() => {
+        if (!currentTrackItem || tracks.length === 0) return;
+
+        // Блокируем, если последний трек и нет перемешивания
+        if (!isShuffle && trackIndices.isLastTrack) return;
+
+        if (isShuffle) {
+            const randomTrack = getRandomTrack(currentTrackItem._id);
+            if (randomTrack) {
+                dispatch(setCurrentTrack(randomTrack));
+                dispatch(setPlaying(true));
+            }
+            return;
+        }
+
+        const nextIndex =
+            trackIndices.currentIndex === tracks.length - 1 ? 0 : trackIndices.currentIndex + 1;
+        const nextTrack = tracks[nextIndex];
+
+        if (nextTrack) {
+            dispatch(setCurrentTrack(nextTrack));
+            dispatch(setPlaying(true));
+        }
+    }, [currentTrackItem, tracks, isShuffle, dispatch, getRandomTrack, trackIndices]);
+
+    const handlePrev = useCallback(() => {
+        if (!currentTrackItem || tracks.length === 0) return;
+
+        // Блокируем, если первый трек и нет перемешивания
+        if (!isShuffle && trackIndices.isFirstTrack) return;
+
+        if (isShuffle) {
+            const randomTrack = getRandomTrack(currentTrackItem._id);
+            if (randomTrack) {
+                dispatch(setCurrentTrack(randomTrack));
+                dispatch(setPlaying(true));
+            }
+            return;
+        }
+
+        const prevIndex =
+            trackIndices.currentIndex === 0 ? tracks.length - 1 : trackIndices.currentIndex - 1;
+        const prevTrack = tracks[prevIndex];
+
+        if (prevTrack) {
+            dispatch(setCurrentTrack(prevTrack));
+            dispatch(setPlaying(true));
+        }
+    }, [currentTrackItem, tracks, isShuffle, dispatch, getRandomTrack, trackIndices]);
 
     useEffect(() => {
         setIsPlaying(isPlayingRedux);
@@ -175,36 +191,13 @@ export default function Bar({ tracks }: BarProps) {
         }
     }, [volume]);
 
+    // Простой эффект: сбрасываем состояние при смене трека
     useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio || !audioSrc) return;
-        audio.pause();
-        audio.currentTime = 0;
+        if (!audioSrc) return;
         setIsLoading(true);
         setCurrentTime(0);
-        setDuration(0);
-        audio.src = audioSrc;
-        audio.preload = 'auto';
-        audio.load();
-        if (isPlayingRedux) {
-            const onCanPlay = () => {
-                setIsLoading(false);
-                audio.play().catch(err => {
-                    if (err.name === 'NotAllowedError') {
-                        console.warn('Требуется взаимодействие пользователя');
-                        dispatch(setPlaying(false));
-                    }
-                });
-                audio.removeEventListener('canplay', onCanPlay);
-            };
-            audio.addEventListener('canplay', onCanPlay);
-        } else {
-            setIsLoading(false);
-        }
-        return () => {
-            audio.pause();
-        };
-    }, [audioSrc, currentTrackItem?._id, dispatch, isPlayingRedux]);
+        // duration обновится через onLoadedMetadata на <audio>
+    }, [audioSrc]);
 
     useEffect(() => {
         const progressLine = document.querySelector(
@@ -229,49 +222,48 @@ export default function Bar({ tracks }: BarProps) {
         }
     }, [isPlaying]);
 
-    const toggleLike = useCallback(
-        async (e?: React.MouseEvent) => {
-            e?.stopPropagation();
-            if (!currentTrackItem) return;
-            const token = localStorage.getItem('token');
-            if (!token) {
-                setShowAuthToast(true);
-                return;
-            }
+    // useCallback: кэшируем функцию лайка
+    const toggleLike = useCallback(async () => {
+        if (isLikeLoading || !currentTrackItem) return;
+        setIsLikeLoading(true);
 
-            // Оптимистичное обновление через Redux
-            dispatch(toggleFavorite(currentTrackItem));
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setShowAuthToast(true);
+            setIsLikeLoading(false);
+            return;
+        }
 
-            // Запрос к бэкенду
-            try {
-                const method = isLiked ? 'DELETE' : 'POST';
-                await withReauth(async (accessToken: string) => {
-                    const response = await fetch(
-                        `${API_URL}/catalog/track/${currentTrackItem._id}/favorite/`,
-                        {
-                            method,
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`,
-                                'Content-Type': 'application/json',
-                            },
-                        }
-                    );
-                    if (!response.ok) {
-                        const error: any = new Error('Failed to update favorites');
-                        error.status = response.status;
-                        throw error;
+        const wasLiked = isLikedRef.current;
+        dispatch(toggleFavorite(currentTrackItem));
+
+        try {
+            const method = wasLiked ? 'DELETE' : 'POST';
+            await withReauth(async (accessToken: string) => {
+                const response = await fetch(
+                    `${API_URL}/catalog/track/${currentTrackItem._id}/favorite/`,
+                    {
+                        method,
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                            'Content-Type': 'application/json',
+                        },
                     }
-                    return response;
-                });
-            } catch (error) {
-                console.error('Error toggling favorite in Bar:', error);
-                // Откат изменения в Redux при ошибке
-                dispatch(toggleFavorite(currentTrackItem));
-                setShowApiErrorToast(true);
-            }
-        },
-        [dispatch, currentTrackItem, isLiked]
-    );
+                );
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response;
+            });
+
+            setSuccessMessage(wasLiked ? 'Трек удалён из плейлиста' : 'Трек добавлен в плейлист');
+            setShowSuccessToast(true);
+        } catch (error) {
+            dispatch(toggleFavorite(currentTrackItem));
+            setShowApiErrorToast(true);
+            console.error('Like error:', error);
+        } finally {
+            setIsLikeLoading(false);
+        }
+    }, [dispatch, currentTrackItem, isLikeLoading]);
 
     const handleTimeUpdate = useCallback(() => {
         if (audioRef.current) {
@@ -294,7 +286,6 @@ export default function Bar({ tracks }: BarProps) {
 
     const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const newTime = parseFloat(e.target.value);
-        setCurrentTime(newTime);
         if (audioRef.current) {
             audioRef.current.currentTime = newTime;
         }
@@ -310,8 +301,12 @@ export default function Bar({ tracks }: BarProps) {
         dispatch(setPlaying(false));
     }, [dispatch]);
 
+    // Полная логика автопереключения
     const handleEnded = useCallback(() => {
+        if (!currentTrackItem) return;
+
         if (isRepeat) {
+            // 🔁 Режим повтора: перезапускаем текущий трек
             if (audioRef.current) {
                 audioRef.current.currentTime = 0;
                 audioRef.current.play().catch(err => {
@@ -321,17 +316,48 @@ export default function Bar({ tracks }: BarProps) {
                     }
                 });
             }
+        } else if (isShuffle) {
+            // 🔀 Режим перемешивания: выбираем случайный трек
+            const randomTrack = getRandomTrack(currentTrackItem._id);
+            if (randomTrack) {
+                dispatch(setCurrentTrack(randomTrack));
+                dispatch(setPlaying(true));
+            } else {
+                // Нет других треков — останавливаем
+                dispatch(setPlaying(false));
+            }
         } else {
-            handleNext();
+            // ▶️ Обычный режим
+            if (!trackIndices.isLastTrack) {
+                // Есть следующий трек — включаем его
+                const nextIndex = trackIndices.currentIndex + 1;
+                const nextTrack = tracks[nextIndex];
+                if (nextTrack) {
+                    dispatch(setCurrentTrack(nextTrack));
+                    dispatch(setPlaying(true));
+                }
+            } else {
+                // 🔚 Последний трек — останавливаем воспроизведение
+                dispatch(setPlaying(false));
+            }
         }
-    }, [isRepeat, dispatch, handleNext]);
+    }, [currentTrackItem, tracks, isRepeat, isShuffle, dispatch, getRandomTrack, trackIndices]);
 
     const handleError = useCallback((e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
         console.error('Audio error:', e);
+        setIsLoading(false);
     }, []);
 
     const handleMouseEnter = useCallback(() => setIsHovered(true), []);
     const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+
+    const handleLikeClick = useCallback(
+        (e?: React.MouseEvent) => {
+            e?.stopPropagation();
+            toggleLike();
+        },
+        [toggleLike]
+    );
 
     if (!currentTrackItem || !audioSrc) {
         if (isLoading) return <BarSkeleton />;
@@ -349,6 +375,7 @@ export default function Bar({ tracks }: BarProps) {
                 <div className={styles.progress__time}>{getTimePanel(currentTime, duration)}</div>
                 <ProgressBar max={duration} value={currentTime} step={0.1} onChange={handleSeek} />
             </div>
+
             <div className={styles.bar__block}>
                 <audio
                     ref={audioRef}
@@ -360,6 +387,30 @@ export default function Bar({ tracks }: BarProps) {
                     onEnded={handleEnded}
                     onTimeUpdate={handleTimeUpdate}
                     onError={handleError}
+                    onLoadedMetadata={e => {
+                        const audio = e.currentTarget;
+                        setDuration(audio.duration || 0);
+                        if (isPlayingRedux && audio.readyState >= 2) {
+                            audio.play().catch(err => {
+                                if (err.name === 'NotAllowedError') {
+                                    console.warn('Требуется взаимодействие пользователя');
+                                    dispatch(setPlaying(false));
+                                }
+                            });
+                        }
+                    }}
+                    onCanPlay={e => {
+                        setIsLoading(false);
+                        const audio = e.currentTarget;
+                        if (isPlayingRedux) {
+                            audio.play().catch(err => {
+                                if (err.name === 'NotAllowedError') {
+                                    console.warn('Требуется взаимодействие пользователя');
+                                    dispatch(setPlaying(false));
+                                }
+                            });
+                        }
+                    }}
                 />
                 <div className={styles.bar__btn}>
                     <div
@@ -369,6 +420,8 @@ export default function Bar({ tracks }: BarProps) {
                             cursor:
                                 trackIndices.isFirstTrack && !isShuffle ? 'not-allowed' : 'pointer',
                             opacity: trackIndices.isFirstTrack && !isShuffle ? 0.3 : 1,
+                            pointerEvents:
+                                trackIndices.isFirstTrack && !isShuffle ? 'none' : 'auto',
                         }}
                     >
                         <svg className={styles.btn__prevSvg}>
@@ -389,6 +442,7 @@ export default function Bar({ tracks }: BarProps) {
                             cursor:
                                 trackIndices.isLastTrack && !isShuffle ? 'not-allowed' : 'pointer',
                             opacity: trackIndices.isLastTrack && !isShuffle ? 0.3 : 1,
+                            pointerEvents: trackIndices.isLastTrack && !isShuffle ? 'none' : 'auto',
                         }}
                     >
                         <svg className={styles.btn__nextSvg}>
@@ -435,7 +489,7 @@ export default function Bar({ tracks }: BarProps) {
                             })}
                             isFilled={isLiked}
                             isHovered={isHovered}
-                            onClick={toggleLike}
+                            onClick={handleLikeClick}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
                         />
@@ -461,16 +515,26 @@ export default function Bar({ tracks }: BarProps) {
                     </div>
                 </div>
             </div>
+
             {showAuthToast && (
                 <Toast
                     message='Чтобы ставить лайки, пожалуйста, авторизуйтесь'
+                    icon='⚠️'
                     onClose={() => setShowAuthToast(false)}
                 />
             )}
             {showApiErrorToast && (
                 <Toast
                     message='Не удалось обновить лайк. Попробуйте позже.'
+                    icon='❗'
                     onClose={() => setShowApiErrorToast(false)}
+                />
+            )}
+            {showSuccessToast && (
+                <Toast
+                    message={successMessage}
+                    icon={successMessage.includes('удалён') ? '❌' : '✔️'}
+                    onClose={() => setShowSuccessToast(false)}
                 />
             )}
         </div>

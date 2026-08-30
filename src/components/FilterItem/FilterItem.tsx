@@ -47,25 +47,21 @@ export default function FilterItem({
     return (
         <div className={styles.filter__item} ref={itemRef}>
             <button
-                className={`${styles.filter__button} ${isButtonActive ? styles.active : ''}`}
+                className={`btn-filter ${styles.filter__button} ${isButtonActive ? 'active' : ''}`}
                 onClick={handleClick}
             >
                 {titleFilter}
-                {/* Показываем количество выбранных */}
-                {selectedValues && selectedValues.length > 0 && !isActiveMenu && (
-                    <span className={styles.filter__count}> ({selectedValues.length})</span>
-                )}
             </button>
+
+            {/* Бейдж ВНЕ кнопки, абсолютно позиционирован (виден всегда без !isActiveMenu) */}
+            {selectedValues && selectedValues.length > 0 && (
+                <span key={selectedValues.length} className={styles.filter__badge}>
+                    {selectedValues.length}
+                </span>
+            )}
 
             {isActiveMenu && list.length > 0 && (
                 <div className={styles.filter__dropdown}>
-                    {/* Счётчик внутри открытого меню */}
-                    {selectedValues && selectedValues.length > 0 && (
-                        <div className={styles.dropdown__summary}>
-                            Выбрано: <strong>{selectedValues.length}</strong>
-                        </div>
-                    )}
-
                     <ul className={styles.dropdown__list}>
                         {list.map(item => {
                             const isSelectedItem = selectedValues

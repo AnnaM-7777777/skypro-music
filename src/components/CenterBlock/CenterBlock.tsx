@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import Filter from '@/components/Filter/Filter';
 import Search from '@/components/Search/Search';
 import TrackList from '@/components/Track/Track';
-import styles from './CenterBlock.module.css';
+import styles from '@/components/CenterBlock/CenterBlock.module.css';
 import { TrackType } from '@/sharedTypes/sharedTypes';
 import Bar from '@/components/Bar/Bar';
 
@@ -13,6 +13,8 @@ interface CenterBlockProps {
     title?: string;
     isLoading?: boolean;
     showEmptyState?: boolean;
+    emptyMessage?: string;
+    emptyDescription?: React.ReactNode;
 }
 
 type SortType = 'Сначала новые' | 'Сначала старые' | 'По умолчанию';
@@ -22,6 +24,8 @@ export default function CenterBlock({
     title = 'Треки',
     isLoading = false,
     showEmptyState = true,
+    emptyMessage,
+    emptyDescription,
 }: CenterBlockProps) {
     const [searchQuery, setSearchQuery] = useState('');
     // Массивы для мультивыбора
@@ -119,10 +123,13 @@ export default function CenterBlock({
                         onReset={handleReset}
                         isFilterActive={isFilterActive}
                     />
+
                     <div className={styles.centerBlock__empty}>
-                        <p className={styles.empty__title}>Нет подходящих треков</p>
+                        <p className={styles.empty__title}>
+                            {emptyMessage || 'Нет подходящих треков'}
+                        </p>
                         <p className={styles.empty__text}>
-                            Попробуй изменить параметры поиска или фильтров
+                            {emptyDescription || 'Попробуй изменить параметры поиска или фильтров'}
                         </p>
                     </div>
                 </div>

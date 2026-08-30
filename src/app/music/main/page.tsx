@@ -38,15 +38,13 @@ export default function MusicMain() {
                 }));
 
                 if (isActive) {
-                    setTracks(processed);
-                    console.log('🟢 Данные с СЕРВЕРА (треков:', processed.length, ')');
+                    setTracks(processed); // Данные с СЕРВЕРА (треков:', processed.length, ')
                 }
             } catch (err) {
                 console.warn('API unavailable, using fallback data:', err);
-                // Фоллбэк на тестовые данные
+
                 if (isActive) {
-                    setTracks(data);
-                    console.log('🟡 Данные из ФОЛЛБЭКА (треков:', data.length, ')');
+                    setTracks(data); // Данные из ФОЛЛБЭКА (треков:', data.length, ')
                 }
             } finally {
                 if (isActive) {

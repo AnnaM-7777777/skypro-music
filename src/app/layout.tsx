@@ -2,12 +2,13 @@ import '../../globals.css';
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import ReduxProvider from '../store/ReduxProvider';
+import NetworkToast from '@/components/NetworkToast/NetworkToast';
 
 const montserrat = Montserrat({
     variable: '--font-montserrat',
     subsets: ['cyrillic', 'latin'],
     weight: ['300', '400', '500', '600', '700', '800'],
-    display: 'swap', // Плавная загрузка без скачков текста
+    display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -24,7 +25,10 @@ export default function RootLayout({
         <ReduxProvider>
             <html lang='ru'>
                 {''}
-                <body className={montserrat.variable}>{children}</body>
+                <body className={montserrat.variable}>
+                    {children}
+                    <NetworkToast />
+                </body>
             </html>
         </ReduxProvider>
     );
